@@ -6,12 +6,16 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 // swiper
 import "swiper/css";
+// 点击波纹指令
+import { ripple } from "@/utils/ripple";
 
 const app = createApp(App);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
 app.use(pinia);
+// 注册全局点击波纹指令
+app.directive("ripple", ripple);
 app.mount("#app");
 
 // PWA

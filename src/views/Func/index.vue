@@ -9,7 +9,7 @@
         </div>
       </el-col>
       <el-col :span="12">
-        <div class="right cards">
+        <div class="right cards enter" style="--enter-delay: 0.3s" v-ripple>
           <div class="time">
             <div class="date">
               <span>{{ currentTime.year }}&nbsp;年&nbsp;</span>

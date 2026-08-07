@@ -230,3 +230,59 @@ scrollbar-thumb {
   border-radius: 10px;
   background-color: #eeeeee;
 }
+
+/* ===== 动效增强 ===== */
+
+// 卡片悬停浮起：在原有 scale 基础上增加上浮 + 阴影
+.cards {
+  transition:
+    backdrop-filter 0.3s,
+    transform 0.3s,
+    box-shadow 0.3s;
+  &:hover {
+    transform: scale(1.02) translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  &:active {
+    transform: scale(0.98) translateY(0);
+  }
+}
+
+// 入场动画：从下方淡入上滑
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 错落入场工具类：配合 .cards 使用
+// 用法：在元素上添加 .enter 类，并通过 style 设置 --enter-delay 控制延迟
+// 注意：opacity 不使用 !important，否则会覆盖动画的 forwards 填充导致动画结束后仍为 0
+// 仅 animation 使用 !important 以覆盖组件内 scoped 的 animation: fade 0.5s
+.enter {
+  opacity: 0;
+  animation: enter-up 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+  animation-delay: var(--enter-delay, 0.1s) !important;
+}
+
+// 点击波纹效果
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0);
+  animation: ripple-spread 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes ripple-spread {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}

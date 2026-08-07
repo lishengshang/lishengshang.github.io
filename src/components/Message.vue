@@ -10,7 +10,7 @@
       </div>
     </div>
     <!-- 简介 -->
-    <div class="description cards" @click="changeBox">
+    <div class="description cards enter" style="--enter-delay: 0.15s" v-ripple @click="changeBox">
       <div class="content">
         <Icon size="16">
           <QuoteLeft />

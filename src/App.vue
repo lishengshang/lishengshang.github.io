@@ -3,6 +3,8 @@
   <Loading />
   <!-- 壁纸 -->
   <Background @loadComplete="loadComplete" />
+  <!-- 樱花飘落动效 -->
+  <Sakura />
   <!-- 主界面 -->
   <Transition name="fade" mode="out-in">
     <main id="main" v-if="store.imgLoadStatus">
@@ -42,6 +44,7 @@ import Loading from "@/components/Loading.vue";
 import MainLeft from "@/views/Main/Left.vue";
 import MainRight from "@/views/Main/Right.vue";
 import Background from "@/components/Background.vue";
+import Sakura from "@/components/Sakura.vue";
 import Footer from "@/components/Footer.vue";
 import cursorInit from "@/utils/cursor.js";
 import config from "@/../package.json";

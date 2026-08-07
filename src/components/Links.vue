@@ -23,8 +23,9 @@
         <el-row class="link-all" :gutter="20">
           <el-col v-for="(item, index) in site" :span="8" :key="item">
             <div
-              class="item cards"
-              :style="index < 3 ? 'margin-bottom: 20px' : null"
+              class="item cards enter"
+              :style="[index < 3 ? 'margin-bottom: 20px' : null, { '--enter-delay': `${0.4 + index * 0.05}s` }]"
+              v-ripple
               @click="jumpLink(item)"
             >
               <Icon size="26">

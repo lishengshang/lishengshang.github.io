@@ -79,6 +79,10 @@ class Cursor {
 
   render() {
     this.rafId = null;
+    // 鼠标还未移动过（pos.curr 为 null），等待 mousemove 触发后再渲染
+    if (!this.pos.curr) {
+      return;
+    }
     if (this.pos.prev) {
       this.pos.prev.x = lerp(this.pos.prev.x, this.pos.curr.x, 0.35);
       this.pos.prev.y = lerp(this.pos.prev.y, this.pos.curr.y, 0.35);
