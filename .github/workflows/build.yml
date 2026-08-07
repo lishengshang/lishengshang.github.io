@@ -26,17 +26,15 @@ jobs:
       - name: Check out git repository
         uses: actions/checkout@v4
 
-      # 安装 pnpm
+      # 安装 pnpm（版本由 package.json 的 packageManager 字段指定）
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11.20.0
 
       # 安装 Node.js
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "pnpm"
 
       # 复制环境变量文件
