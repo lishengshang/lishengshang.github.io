@@ -1,4 +1,3 @@
-// import axios from "axios";
 import fetchJsonp from "fetch-jsonp";
 
 /**
@@ -10,6 +9,7 @@ export const getPlayerList = async (server, type, id) => {
   const res = await fetch(
     `${import.meta.env.VITE_SONG_API}?server=${server}&type=${type}&id=${id}`,
   );
+  if (!res.ok) throw new Error("音乐播放列表获取失败");
   const data = await res.json();
 
   if (data[0].url.startsWith("@")) {
@@ -46,6 +46,7 @@ export const getPlayerList = async (server, type, id) => {
 // 获取一言数据
 export const getHitokoto = async () => {
   const res = await fetch("https://v1.hitokoto.cn");
+  if (!res.ok) throw new Error("一言获取失败");
   return await res.json();
 };
 
@@ -56,6 +57,7 @@ export const getHitokoto = async () => {
 // 获取高德地理位置信息
 export const getAdcode = async (key) => {
   const res = await fetch(`https://restapi.amap.com/v3/ip?key=${key}`);
+  if (!res.ok) throw new Error("地理位置信息获取失败");
   return await res.json();
 };
 
@@ -64,6 +66,7 @@ export const getWeather = async (key, city) => {
   const res = await fetch(
     `https://restapi.amap.com/v3/weather/weatherInfo?key=${key}&city=${city}`,
   );
+  if (!res.ok) throw new Error("天气信息获取失败");
   return await res.json();
 };
 
@@ -71,5 +74,6 @@ export const getWeather = async (key, city) => {
 // https://api.oioweb.cn/doc/weather/GetWeather
 export const getOtherWeather = async () => {
   const res = await fetch("https://api.oioweb.cn/api/weather/GetWeather");
+  if (!res.ok) throw new Error("备用天气接口获取失败");
   return await res.json();
 };

@@ -75,15 +75,11 @@ const siteIcon = {
 // 链接跳转
 const jumpLink = (data) => {
   if (data.name === "音乐" && store.musicClick) {
-    if (typeof $openList === "function") $openList();
+    store.openMusicList();
   } else {
     window.open(data.link, "_blank");
   }
 };
-
-onMounted(() => {
-  console.log(siteLinks);
-});
 </script>
 
 <style lang="scss" scoped>

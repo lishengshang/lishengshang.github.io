@@ -1,23 +1,15 @@
-// 防抖
-let timeout;
-
+// 防抖（标准实现：返回函数 + 闭包）
 function debounce(func, wait = 300, immediate = false) {
-  // 清除定时器
-  if (timeout !== null) {
-    clearTimeout(timeout);
-  }
-  // 立即执行
-  if (immediate) {
-    var callNow = !timeout;
-    timeout = setTimeout(function () {
+  let timeout = null;
+  return function (...args) {
+    const callNow = immediate && !timeout;
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
       timeout = null;
+      if (!immediate) func.apply(this, args);
     }, wait);
-    if (callNow) typeof func === "function" && func();
-  } else {
-    timeout = setTimeout(function () {
-      typeof func === "function" && func();
-    }, wait);
-  }
+    if (callNow) func.apply(this, args);
+  };
 }
 
 export default debounce;

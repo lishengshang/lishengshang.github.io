@@ -85,18 +85,13 @@ const listHeight = computed(() => {
 
 // 初始化播放器
 onMounted(() => {
-  nextTick(() => {
+  nextTick(async () => {
     try {
-      getPlayerList(props.songServer, props.songType, props.songId).then((res) => {
-        console.log(res);
-        // 更改播放器加载状态
-        store.musicIsOk = true;
-        // 生成歌单
-        playList.value = res;
-        console.log("音乐加载完成");
-        console.log(playList.value);
-        console.log(playIndex.value, playList.value.length, props.volume);
-      });
+      const res = await getPlayerList(props.songServer, props.songType, props.songId);
+      // 更改播放器加载状态
+      store.musicIsOk = true;
+      // 生成歌单
+      playList.value = res;
     } catch (err) {
       console.error(err);
       store.musicIsOk = false;
@@ -114,14 +109,13 @@ onMounted(() => {
 
 // 播放
 const onPlay = () => {
-  console.log("播放");
   playIndex.value = player.value.aplayer.index;
   // 播放状态
   store.setPlayerState(player.value.audioRef.paused);
   // 储存播放器信息
   store.setPlayerData(playList.value[playIndex.value].name, playList.value[playIndex.value].artist);
   ElMessage({
-    message: store.getPlayerData.name + " - " + store.getPlayerData.artist,
+    message: store.playerTitle + " - " + store.playerArtist,
     grouping: true,
     icon: h(MusicOne, {
       theme: "filled",

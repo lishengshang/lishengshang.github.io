@@ -23,8 +23,8 @@
     <div class="menu">
       <div class="name" v-show="!volumeShow">
         <span>{{
-          store.getPlayerData.name
-            ? store.getPlayerData.name + " - " + store.getPlayerData.artist
+          store.playerTitle
+            ? store.playerTitle + " - " + store.playerArtist
             : "未播放音乐"
         }}</span>
       </div>
@@ -108,6 +108,17 @@ const closeMusicList = () => {
   playerRef.value.toggleList();
 };
 
+// 监听外部打开音乐列表请求（替代全局 window.$openList）
+watch(
+  () => store.musicListOpenState,
+  (value) => {
+    if (value) {
+      openMusicList();
+      store.musicListOpenState = false;
+    }
+  },
+);
+
 // 音乐播放暂停
 const changePlayState = () => {
   playerRef.value.playToggle();
@@ -118,18 +129,22 @@ const changeMusicIndex = (type) => {
   playerRef.value.changeSong(type);
 };
 
+// 空格键事件
+const onKeyDown = (e) => {
+  if (!store.musicIsOk) {
+    return;
+  }
+  if (e.code == "Space") {
+    changePlayState();
+  }
+};
+
 onMounted(() => {
-  // 空格键事件
-  window.addEventListener("keydown", (e) => {
-    if (!store.musicIsOk) {
-      return;
-    }
-    if (e.code == "Space") {
-      changePlayState();
-    }
-  });
-  // 挂载方法至 window
-  window.$openList = openMusicList;
+  window.addEventListener("keydown", onKeyDown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKeyDown);
 });
 
 // 监听音量变化

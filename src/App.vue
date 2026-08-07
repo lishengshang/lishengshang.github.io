@@ -10,9 +10,9 @@
         <section class="all" v-show="!store.setOpenState">
           <MainLeft />
           <MainRight v-show="!store.boxOpenState" />
-          <Box v-show="store.boxOpenState" />
+          <Box v-if="store.boxOpenState" />
         </section>
-        <section class="more" v-show="store.setOpenState" @click="store.setOpenState = false">
+        <section class="more" v-if="store.setOpenState" @click="store.setOpenState = false">
           <MoreSet />
         </section>
       </div>
@@ -43,16 +43,39 @@ import MainLeft from "@/views/Main/Left.vue";
 import MainRight from "@/views/Main/Right.vue";
 import Background from "@/components/Background.vue";
 import Footer from "@/components/Footer.vue";
-import Box from "@/views/Box/index.vue";
-import MoreSet from "@/views/MoreSet/index.vue";
 import cursorInit from "@/utils/cursor.js";
 import config from "@/../package.json";
+
+// 非首屏组件懒加载
+const Box = defineAsyncComponent(() => import("@/views/Box/index.vue"));
+const MoreSet = defineAsyncComponent(() => import("@/views/MoreSet/index.vue"));
 
 const store = mainStore();
 
 // 页面宽度
 const getWidth = () => {
   store.setInnerWidth(window.innerWidth);
+};
+
+// 鼠标中键事件
+const onMouseDown = (event) => {
+  if (event.button == 1) {
+    store.backgroundShow = !store.backgroundShow;
+    ElMessage({
+      message: `已${store.backgroundShow ? "开启" : "退出"}壁纸展示状态`,
+      grouping: true,
+    });
+  }
+};
+
+// 屏蔽右键
+const onContextMenu = () => {
+  ElMessage({
+    message: "为了浏览体验，本站禁用右键",
+    grouping: true,
+    duration: 2000,
+  });
+  return false;
 };
 
 // 加载完成事件
@@ -81,25 +104,10 @@ onMounted(() => {
   cursorInit();
 
   // 屏蔽右键
-  document.oncontextmenu = () => {
-    ElMessage({
-      message: "为了浏览体验，本站禁用右键",
-      grouping: true,
-      duration: 2000,
-    });
-    return false;
-  };
+  document.addEventListener("contextmenu", onContextMenu);
 
   // 鼠标中键事件
-  window.addEventListener("mousedown", (event) => {
-    if (event.button == 1) {
-      store.backgroundShow = !store.backgroundShow;
-      ElMessage({
-        message: `已${store.backgroundShow ? "开启" : "退出"}壁纸展示状态`,
-        grouping: true,
-      });
-    }
-  });
+  window.addEventListener("mousedown", onMouseDown);
 
   // 监听当前页面宽度
   getWidth();
@@ -123,6 +131,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", getWidth);
+  window.removeEventListener("mousedown", onMouseDown);
+  document.removeEventListener("contextmenu", onContextMenu);
 });
 </script>
 

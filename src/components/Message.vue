@@ -34,21 +34,13 @@ import { Icon } from "@vicons/utils";
 import { QuoteLeft, QuoteRight } from "@vicons/fa";
 import { Error } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
+import { useSiteUrl } from "@/composables/useSiteUrl";
 const store = mainStore();
 
 // 主页站点logo
 const siteLogo = import.meta.env.VITE_SITE_MAIN_LOGO;
 // 站点链接
-const siteUrl = computed(() => {
-  const url = import.meta.env.VITE_SITE_URL;
-  if (!url) return "imsyy.top".split(".");
-  // 判断协议前缀
-  if (url.startsWith("http://") || url.startsWith("https://")) {
-    const urlFormat = url.replace(/^(https?:\/\/)/, "");
-    return urlFormat.split(".");
-  }
-  return url.split(".");
-});
+const { siteUrl } = useSiteUrl();
 
 // 简介区域文字
 const descriptionText = reactive({
@@ -58,7 +50,7 @@ const descriptionText = reactive({
 
 // 切换右侧功能区
 const changeBox = () => {
-  if (store.getInnerWidth >= 721) {
+  if (store.innerWidth >= 721) {
     store.boxOpenState = !store.boxOpenState;
   } else {
     ElMessage({

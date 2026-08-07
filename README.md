@@ -1,8 +1,10 @@
 简体中文 | [English](./README_EN.md)
 
-> [!IMPORTANT]
-> ## 致大家
-> 此项目最初只是一个简单的主页。然而，随着越来越多的小伙伴发现了这个项目，它受到了大量本不应有的关注。而且，此项目作为初学前端的作品，其代码相当杂乱且质量低下。此外，该项目还遭到众多不明资源站或下载站的倒卖，致使许多不明真相的购买者从源代码中找到本人的联系方式进行问题咨询或提出功能需求。由于目前个人原因，该仓库进行存档，敬请谅解！
+> [!NOTE]
+> ## 关于本仓库
+> 本仓库是 [imsyy/home](https://github.com/imsyy/home) 的 fork 维护版本，原项目已停止维护。
+> 在保留原作者成果的基础上，进行了性能优化、代码重构与依赖维护，并持续跟进上游生态升级。
+> 如有问题或建议，欢迎提 issue / PR。
 
 <p>
 <strong><h2>無名の主页</h2></strong>
@@ -46,17 +48,14 @@
 
 ### ⚙️ 手动部署
 
-- **安装** [node.js](https://nodejs.org/zh-cn/) **环境**
+- **安装** [node.js](https://nodejs.org/zh-cn/) **环境**（建议 v20 LTS 或更高）
 
-  > node > 16.16.0  
-  > npm > 8.15.0
-
-- 然后以 **管理员权限** 运行 `cmd` 终端，并 `cd` 到 项目根目录
+- 然后在终端中 `cd` 到 项目根目录
 - 在 `终端` 中输入：
 
 ```bash
-# 安装 pnpm
-npm install -g pnpm
+# 通过 corepack 启用 pnpm（推荐）
+corepack enable
 
 # 安装依赖
 pnpm install
@@ -102,7 +101,7 @@ docker run -p 12445:12445 -d home
 },
 ```
 
-其中 `icon` 网站链接的图标可以在 `src/components/Links/index.vue` 中添加:
+其中 `icon` 网站链接的图标可以在 `src/components/Links.vue` 中添加:
 
 ```js
 // 可前往 https://www.xicons.org 自行挑选并在此处引入
@@ -211,12 +210,12 @@ make clean all
 
 可以在 `public/images` 中修改网站背景
 
-如果想要添加更多的本地图片作为网站背景，可以将图片重命名 `background+数字` 的形式，并在 `src/components/Background/index.vue` 中进行修改：
+如果想要添加更多的本地图片作为网站背景，可以将图片重命名 `background+数字` 的形式，并在 `src/components/Background.vue` 中进行修改：
 
 ```js
 if (type == 0) {
   // 修改此处 Math.random() 后面的第一个数字为图片的数量
-  bgUrl.value = `/images/background${Math.floor(Math.random() * 10 + 1)}.webp`;
+  bgUrl.value = `/images/background${Math.floor(Math.random() * 10 + 1)}.jpg`;
 }
 ```
 
@@ -243,6 +242,10 @@ if (type == 0) {
 
 ## Star History
 
+<!-- TODO: 将下方 imsyy/home 替换为你的仓库地址（如 your-name/home） -->
+
 [![Star History Chart](https://api.star-history.com/svg?repos=imsyy/home&type=Date)](https://star-history.com/#imsyy/home&Date)
+
+<!-- TODO: 以下徽章为原作者站点信息，请按需替换或删除 -->
 
 <a title="SSL" target="_blank" href="https://myssl.com/seal/detail?domain=blog.imsyy.top"><img src="https://img.shields.io/badge/MySSL-安全认证-brightgreen"></a>&nbsp;<a title="CDN" target="_blank" href="https://cdnjs.com/"><img src="https://img.shields.io/badge/CDN-Cloudflare-blue"></a>&nbsp;<a title="Copyright" target="_blank" href="https://imsyy.top/"><img src="https://img.shields.io/badge/Copyright%20%C2%A9%202020--2023-%E7%84%A1%E5%90%8D-red"></a>

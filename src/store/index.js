@@ -11,6 +11,7 @@ export const mainStore = defineStore("main", {
       musicIsOk: false, // 音乐是否加载完成
       musicVolume: 0, // 音乐音量;
       musicOpenState: false, // 音乐面板开启状态
+      musicListOpenState: false, // 音乐列表弹窗开启状态（触发用）
       backgroundShow: false, // 壁纸展示状态
       boxOpenState: false, // 盒子开启状态
       mobileOpenState: false, // 移动端开启状态
@@ -27,23 +28,6 @@ export const mainStore = defineStore("main", {
       playerOrder: "list", // 循环顺序 "list", "random"
     };
   },
-  getters: {
-    // 获取歌词
-    getPlayerLrc(state) {
-      return state.playerLrc;
-    },
-    // 获取歌曲信息
-    getPlayerData(state) {
-      return {
-        name: state.playerTitle,
-        artist: state.playerArtist,
-      };
-    },
-    // 获取页面宽度
-    getInnerWidth(state) {
-      return state.innerWidth;
-    },
-  },
   actions: {
     // 更改当前页面宽度
     setInnerWidth(value) {
@@ -55,11 +39,7 @@ export const mainStore = defineStore("main", {
     },
     // 更改播放状态
     setPlayerState(value) {
-      if (value) {
-        this.playerState = false;
-      } else {
-        this.playerState = true;
-      }
+      this.playerState = !value;
     },
     // 更改歌词
     setPlayerLrc(value) {
@@ -73,6 +53,10 @@ export const mainStore = defineStore("main", {
     // 更改壁纸加载状态
     setImgLoadStatus(value) {
       this.imgLoadStatus = value;
+    },
+    // 打开音乐列表弹窗（供外部组件调用）
+    openMusicList() {
+      this.musicListOpenState = true;
     },
   },
   persist: {
