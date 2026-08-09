@@ -13,15 +13,8 @@
 
 ![無名の主页](/screenshots/main.jpg)
 
-> 主页的 Logo 字体已经过压缩，若用本站 Logo 以外的字母会变回默认字体，这里是 [完整字体](https://file.imsyy.top/font/Other/Pacifico-Regular.ttf)，若无法下载，可将字体目录下的 `Pacifico-Regular-all.ttf` 进行替换
-
-### 👀 Demo
-
-> 由于 CDN 缓存原因，查看最新效果可能需要 `Ctrl` + `F5` 强制刷新浏览器缓存
-
-- [無名の主页](https://www.imsyy.top)
-- [無名の主页 - Dev](https://home-imsyy.vercel.app)
-- [無名の主页 - 备用线路](https://home-5iw.pages.dev)
+> 主页的 Logo 字体（Pacifico）已经过压缩，仅包含本站 Logo 所需字符，若使用其他字符会回退为默认字体。
+> 完整字体已随仓库内置（`public/font/Pacifico-Regular-all.ttf`），将其覆盖 `public/font/Pacifico-Regular.ttf` 即可支持全部字符。
 
 ### 🎉 功能
 
@@ -29,9 +22,11 @@
 - [x] 站点简介
 - [x] Hitokoto 一言
 - [x] 日期及时间
-- [x] 实时天气
 - [x] 时光进度条
 - [x] 音乐播放器
+- [x] 樱花飘落动画
+- [x] 入场动画
+- [x] 点击波纹动效
 - [x] 移动端适配
 
 ### ⚙️ 自动部署
@@ -48,7 +43,7 @@
 
 ### ⚙️ 手动部署
 
-- **安装** [node.js](https://nodejs.org/zh-cn/) **环境**（建议 v20 LTS 或更高）
+- **安装** [node.js](https://nodejs.org/zh-cn/) **环境**（建议 v22 LTS 或更高）
 
 - 然后在终端中 `cd` 到 项目根目录
 - 在 `终端` 中输入：
@@ -135,74 +130,29 @@ const siteIcon = {
 
 在 `src/assets/socialLinks.json` 中可以自定义社交链接。
 
-### 天气
-
-天气及地区获取需要 `高德开放平台` 相关 API
-
-- 前往 [高德开放平台控制台](https://console.amap.com/dev/index) 创建一个 `Web 服务` 类型的 `Key`，并将 `Key` 填入 `.env` 中的 `VITE_WEATHER_KEY` 中
-
-也可自行更换其他方式
-
 ### 音乐
 
-> 本项目采用了基于 `MetingJS` 的 `Aplayer` 音乐播放器，可实现快速自定义歌单  
+> 本项目采用了基于 `MetingJS` 的 `Aplayer` 音乐播放器，可实现快速自定义歌单
 > \*仅支持 **中国大陆地区**
 
 请在 `.env` 文件中更改歌曲相关参数即可实现自定义歌单列表
 
 ```bash
-# 歌曲 API 地址
-VITE_SONG_API = "https://api-meting.imsyy.top"
+# 歌曲 API 地址（建议自行部署 Meting-API，参考 https://github.com/xizeyoupan/Meting-API#deno-deploy；留空则默认使用公共实例 https://api.injahow.cn/meting/）
+VITE_SONG_API = ""
 # 歌曲服务器 ( netease-网易云, tencent-qq音乐 )
 VITE_SONG_SERVER = "netease"
 # 播放类型 ( song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家 )
 VITE_SONG_TYPE = "playlist"
 # 播放 ID
-VITE_SONG_ID = "7452421335"
+VITE_SONG_ID = "9379831714"
 ```
 
 ### 字体
 
 现采用 `HarmonyOS Sans` 开源字体，采用字体拆分，提升加载速度
 
-> 由于本站 `CDN` 已开启防盗链，**非本站域名不可访问**，请将字体引入链接更改为下方内容，否则 **自定义字体将失效**
->
-> `https://s1.hdslb.com/bfs/static/jinkela/long/font/regular.css`
-
-<details>
-<summary>旧版方式</summary>
-
-> 由于本项目引入了中文字体，需要压缩中文字体以提高网页加载速度（ 也可以取消使用中文字体 ）
-
-#### 中文字体去除繁体
-
-- 安装 `Python 3.7` 和 `pip`
-- 运行 `pip install fonttools`
-- 下载 [sc_unicode.txt](https://gist.githubusercontent.com/imaegoo/d64e5088b723c2e02c40985f55ff12db/raw/5ebd2ce49418c73459a9dfe050483409306a6c1d/sc_unicode.txt)
-- 运行 `pyftsubset 字体名称.ttf --unicodes-file=sc_unicode.txt`
-
-#### 字体进一步压缩
-
-- 编译安装 `Google woff2`
-
-```bash
-sudo apt-get install -y git g++ make
-git clone --recursive https://github.com/google/woff2.git
-cd woff2
-make clean all
-```
-
-- 再压缩字体
-
-```
-./woff2_compress ./字体名称.ttf
-```
-
-- 最终可对原字体进行缓加载，**先行加载压缩后的字体**
-
-> 详细信息可前往 [虹墨空间站](https://www.imaegoo.com/2020/chinese-font-compress/) 查看原文
-
-</details>
+> 字体通过 [B站静态资源 CDN](https://s1.hdslb.com/bfs/static/jinkela/long/font/regular.css) 引入，无需鉴权，保持默认配置即可生效
 
 ### 网站图标及网站背景
 
@@ -226,7 +176,7 @@ if (type == 0) {
 ### 技术栈
 
 - [Vue](https://cn.vuejs.org/)
-- [Vite](https://vitejs.cn/vite3-cn/)
+- [Vite](https://cn.vitejs.dev/)
 - [Pinia](https://pinia.vuejs.org/zh/)
 - [IconPark](https://iconpark.oceanengine.com/official)
 - [xicons](https://xicons.org/)
@@ -236,16 +186,8 @@ if (type == 0) {
 
 - [韩小韩 WebAPI 接口](https://api.vvhan.com/)
 - [搏天 API](https://api.btstu.cn/doc/sjbz.php)
-- [教书先生 API](https://api.oioweb.cn/doc/weather/GetWeather)
-- [高德开放平台](https://lbs.amap.com/)
 - [Hitokoto 一言](https://hitokoto.cn/)
 
 ## Star History
 
-<!-- TODO: 将下方 imsyy/home 替换为你的仓库地址（如 your-name/home） -->
-
-<!-- [![Star History Chart](https://api.star-history.com/svg?repos=imsyy/home&type=Date)](https://star-history.com/#imsyy/home&Date) -->
-
-<!-- TODO: 以下徽章为原作者站点信息，请按需替换或删除 -->
-
-<!-- <a title="SSL" target="_blank" href="https://myssl.com/seal/detail?domain=blog.imsyy.top"><img src="https://img.shields.io/badge/MySSL-安全认证-brightgreen"></a>&nbsp;<a title="CDN" target="_blank" href="https://cdnjs.com/"><img src="https://img.shields.io/badge/CDN-Cloudflare-blue"></a>&nbsp;<a title="Copyright" target="_blank" href="https://imsyy.top/"><img src="https://img.shields.io/badge/Copyright%20%C2%A9%202020--2023-%E7%84%A1%E5%90%8D-red"></a> -->
+[![Star History Chart](https://api.star-history.com/svg?repos=lishengshang/homepage&type=Date)](https://star-history.com/#lishengshang/homepage&Date)
