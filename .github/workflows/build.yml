@@ -1,13 +1,9 @@
-# 构建并部署到 GitHub Pages：push 到 main 即自动上线
+# 收到 homepage 仓库的 sync 通知后，拉取其最新代码构建并部署到 GitHub Pages
 name: Deploy
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  repository_dispatch:
+    types: [sync]
   workflow_dispatch:
 
 # 允许 deploy-pages 写入 Pages
@@ -16,7 +12,7 @@ permissions:
   pages: write
   id-token: write
 
-# 同一分支重复 push 时取消旧的部署
+# 重复触发时取消旧的部署
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -26,8 +22,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Check out git repository
+      - name: Check out homepage source
         uses: actions/checkout@v4
+        with:
+          repository: lishengshang/homepage
+          ref: main
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -56,8 +55,6 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
-    # 仅 push 到 main 时部署，PR 只做构建检查
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
