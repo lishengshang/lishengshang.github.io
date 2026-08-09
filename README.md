@@ -5,6 +5,11 @@
 > 本仓库是 [imsyy/home](https://github.com/imsyy/home) 的 fork 维护版本，原项目已停止维护。
 > 在保留原作者成果的基础上，进行了性能优化、代码重构与依赖维护，并持续跟进上游生态升级。
 > 如有问题或建议，欢迎提 issue / PR。
+>
+> ### 维护与部署架构
+> - **本仓库**为唯一维护仓库，所有代码改动都在此进行
+> - 作者个人的线上站点 [lishengshang.github.io](https://lishengshang.github.io/) 由 CI 自动同步构建部署（见 `.github/workflows/dispatch.yml`），push 后自动上线，无需手动干预
+> - Fork 使用者不受此机制影响，按下方 [给 Fork 用户](#给-fork-用户快速开始) 章节自行部署即可
 
 <p>
 <strong><h2>無名の主页</h2></strong>
@@ -28,6 +33,21 @@
 - [x] 入场动画
 - [x] 点击波纹动效
 - [x] 移动端适配
+
+### 🚀 给 Fork 用户：快速开始
+
+本仓库可自由 fork / 二次开发 / 复用，最短路径如下：
+
+1. `Fork` 本仓库到你的 GitHub 账号
+2. 复制 `/.env.example` 为 `/.env`，修改为**你的**站点信息（站点名、站点 URL、歌单等）
+3. 修改 `src/assets/siteLinks.json`（网站链接卡片）与 `src/assets/socialLinks.json`（社交链接）
+4. 部署到你的 GitHub Pages / Vercel / 任意静态托管（见下方部署章节）
+
+> [!WARNING]
+> 部署前请**删除 `.github/workflows/dispatch.yml`**——它仅用于作者把本仓库自动同步到个人站点（依赖作者仓库的 `PUBLISH_TOKEN` secret），fork 后不会生效，且会留下红色失败标记。
+
+> [!TIP]
+> 所有个性化配置均通过 `/.env` 与两个 JSON 文件完成，无需修改任何源码逻辑。天气功能已移除，无需申请高德 Key。
 
 ### ⚙️ 自动部署
 

@@ -5,6 +5,11 @@ English | [Chinese](./README.md)
 > This repository is a maintained fork of [imsyy/home](https://github.com/imsyy/home). The original project is no longer maintained.
 > Building on the original author's work, this fork focuses on performance optimization, code refactoring and dependency upkeep.
 > Issues and PRs are welcome.
+>
+> ### Maintenance & deployment architecture
+> - This repository is the single source of truth for development; all code changes happen here.
+> - The author's live site [lishengshang.github.io](https://lishengshang.github.io/) is auto-built and deployed by CI (see `.github/workflows/dispatch.yml`) — push once, deployed automatically.
+> - Fork users are not affected by this mechanism; see [Quick start for fork users](#quick-start-for-fork-users) below.
 
 <p>
 <strong><h2>Homepage</h2></strong>
@@ -28,6 +33,21 @@ Simple little homepage, had enough of the original one and made a new one
 - [x] Entrance animation
 - [x] Click ripple effect
 - [x] Mobile adaptation
+
+### 🚀 Quick start for fork users
+
+This repository is free to fork, modify and reuse. Shortest path:
+
+1. `Fork` this repository to your GitHub account
+2. Copy `/.env.example` to `/.env` and update it with **your** site info (site name, site URL, playlist, etc.)
+3. Edit `src/assets/siteLinks.json` (site link cards) and `src/assets/socialLinks.json` (social links)
+4. Deploy to your own GitHub Pages / Vercel / any static hosting (see deployment sections below)
+
+> [!WARNING]
+> **Delete `.github/workflows/dispatch.yml`** before deploying — it is only used by the author to auto-sync this repo to their personal site (it relies on a `PUBLISH_TOKEN` secret). It will not work on forks and will leave a red failed-run badge.
+
+> [!TIP]
+> All personalization is done via `/.env` and the two JSON files — no source code changes required. The weather feature has been removed; no AMap key needed.
 
 ### Deployment
 
