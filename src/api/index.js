@@ -53,31 +53,3 @@ export const getHitokoto = async () => {
   if (!res.ok) throw new Error("一言获取失败");
   return await res.json();
 };
-
-/**
- * 天气
- */
-
-// 获取高德地理位置信息
-export const getAdcode = async (key) => {
-  const res = await fetch(`https://restapi.amap.com/v3/ip?key=${key}`);
-  if (!res.ok) throw new Error("地理位置信息获取失败");
-  return await res.json();
-};
-
-// 获取高德地理天气信息
-export const getWeather = async (key, city) => {
-  const res = await fetch(
-    `https://restapi.amap.com/v3/weather/weatherInfo?key=${key}&city=${city}`,
-  );
-  if (!res.ok) throw new Error("天气信息获取失败");
-  return await res.json();
-};
-
-// 获取教书先生天气 API
-// https://api.oioweb.cn/doc/weather/GetWeather
-export const getOtherWeather = async () => {
-  const res = await fetch("https://api.oioweb.cn/api/weather/GetWeather");
-  if (!res.ok) throw new Error("备用天气接口获取失败");
-  return await res.json();
-};
