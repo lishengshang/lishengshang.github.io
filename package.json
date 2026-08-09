@@ -31,7 +31,7 @@
     "@icon-park/vue-next": "^1.4.2",
     "@vicons/fa": "^0.12.0",
     "@vicons/utils": "^0.1.4",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.8",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.25.0",
     "prettier": "^3.2.5",
