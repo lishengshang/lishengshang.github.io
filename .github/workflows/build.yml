@@ -1,0 +1,58 @@
+# 构建检查：PR 和 push 时都跑，确保构建不被破坏
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+# 同一分支重复 push 时取消旧的构建
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出 Git 仓库
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      # 安装 pnpm（版本由 package.json 的 packageManager 字段指定）
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      # 安装 Node.js
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+      # 复制环境变量文件
+      - name: Copy .env.example
+        run: cp .env.example .env
+
+      # 安装项目依赖
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 构建程序
+      - name: Build Website
+        run: pnpm build
+
+      # 上传构建产物（仅 push 时，PR 不需要）
+      - name: Upload artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Home
+          path: dist
