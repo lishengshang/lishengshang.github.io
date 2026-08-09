@@ -4,7 +4,7 @@
 export const useSiteUrl = () => {
   const siteUrl = computed(() => {
     const url = import.meta.env.VITE_SITE_URL;
-    if (!url) return "imsyy.top".split(".");
+    if (!url) return "lishengshang.github.io".split(".");
     // 判断协议前缀
     if (url.startsWith("http://") || url.startsWith("https://")) {
       const urlFormat = url.replace(/^(https?:\/\/)/, "");
@@ -15,7 +15,7 @@ export const useSiteUrl = () => {
 
   const siteUrlFull = computed(() => {
     const url = import.meta.env.VITE_SITE_URL;
-    if (!url) return "https://www.imsyy.top";
+    if (!url) return "https://lishengshang.github.io";
     // 判断协议前缀
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       return "//" + url;
