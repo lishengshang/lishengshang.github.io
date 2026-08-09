@@ -1,58 +1,67 @@
-# 构建检查：PR 和 push 时都跑，确保构建不被破坏
-name: Build
+# 构建并部署到 GitHub Pages：push 到 main 即自动上线
+name: Deploy
 
 on:
   push:
     branches:
       - main
-      - dev
   pull_request:
     branches:
       - main
-      - dev
+  workflow_dispatch:
 
-# 同一分支重复 push 时取消旧的构建
+# 允许 deploy-pages 写入 Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一分支重复 push 时取消旧的部署
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: pages
   cancel-in-progress: true
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
     steps:
-      # 检出 Git 仓库
       - name: Check out git repository
         uses: actions/checkout@v4
 
-      # 安装 pnpm（版本由 package.json 的 packageManager 字段指定）
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
-      # 安装 Node.js
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
           cache: "pnpm"
 
-      # 复制环境变量文件
       - name: Copy .env.example
         run: cp .env.example .env
 
-      # 安装项目依赖
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      # 构建程序
       - name: Build Website
         run: pnpm build
 
-      # 上传构建产物（仅 push 时，PR 不需要）
-      - name: Upload artifacts
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: Home
           path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    # 仅 push 到 main 时部署，PR 只做构建检查
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
