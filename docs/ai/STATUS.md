@@ -36,6 +36,7 @@
 - 源码迁移至 TypeScript（8 文件 + 18 SFC + tsconfig + typecheck），提交：`d8abebf`。
 - Vite 5 → 6 升级（vite-plugin-pwa 同步至 1.3.0，构建产物一致），提交：`4945efe`。
 - CI 接入 `pnpm typecheck` 门禁并升级 GitHub Actions 至新大版本（消除 Node 20 弃用标注），提交：`36b4931`、`e4444a1`；部署仓库工作流同步升级，提交：`17d2305`（lishengshang.github.io）。
+- 修复 PWA 导航兜底拦截 `/blog/` 子站点（workbox `navigateFallbackDenylist`），提交：`f25524b`。
 
 ## 下一步
 
