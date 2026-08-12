@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 无进行中的会话工作（2026-08-13 会话已收尾，见会话记录）。
+- 无进行中的会话工作（2026-08-13 两阶段会话均已收尾，见会话记录）。
 
 ## 已完成
 
@@ -31,13 +31,17 @@
 - 2026-08-13 GitHub Pages 部署链修复：部署仓库 Pages 源由分支模式切换为 GitHub Actions 模式（`build_type: legacy → workflow`），站点重新部署并验证线上为 Vite 构建产物。
 - 2026-08-13 STATUS.md 进度跟踪机制建立并接入协作流程，提交：`63c5f5f`。
 - CHANGELOG [Unreleased] 条目摘要：CI 重写、Dependabot、天气移除、音乐修复。
+- 补记 3 份 ADR（CI 重写/天气移除/站点配置迁移），提交：`ba0a1e4`。
+- ESLint 8 → 9 flat config 迁移（含 typescript-eslint），提交：`1143d3d`。
+- 源码迁移至 TypeScript（8 文件 + 18 SFC + tsconfig + typecheck），提交：`d8abebf`。
+- Vite 5 → 6 升级（vite-plugin-pwa 同步至 1.3.0，构建产物一致），提交：`4945efe`。
 
 ## 下一步
 
-1. ADR 补记三件历史架构决策：天气功能移除、站点配置迁移、CI 重写（验收：`docs/ai/decisions/` 下 3 个文件按 `templates/adr.md` 填写）。
-2. ESLint 8 → 9 迁移（验收：`pnpm lint` 通过且无兼容性告警）。
-3. TypeScript 迁移（验收：`tsc --noEmit` 通过、构建产物不变）。
-4. Vite 5 → 6 升级（验收：`pnpm build` 通过、产物一致）。
+1. `vite.config.js` 迁移为 `vite.config.ts`（验收：`pnpm build` 通过、配置行为不变）。
+2. CI 接入 `pnpm typecheck` 门禁（验收：`.github/workflows/build.yml` 增加 typecheck 步骤且 push 构建通过）。
+3. 评估 Vite 7 升级时机（验收：无阻塞性 peer 冲突时列入 roadmap）。
+4. 清理残留：确认 `components.d.ts` 中陈旧 Weather 声明不再出现（验收：两次构建后 grep Weather 无结果）。
 
 ## 会话记录
 
@@ -68,5 +72,30 @@
 - `PUBLISH_TOKEN` 为 classic token，作用域有限。
 
 #### 下一步
+
+- 见上文 `## 下一步`。
+
+#### 第二阶段：四项开发（ADR/ESLint/TS/Vite）
+
+##### 摘要
+
+完成四项开发：ADR 补记×3、ESLint 8→9、TypeScript 迁移、Vite 5→6；全部通过 lint/typecheck/build 三门槛。
+
+##### 涉及文件
+
+- `docs/ai/decisions/` 3 份 ADR、`eslint.config.js`、`tsconfig.json`、`src/env.d.ts`、8 个 js→ts、18 个 SFC、`index.html`、`package.json`、`pnpm-lock.yaml`。
+
+##### 验证
+
+- `pnpm lint` exit 0、`pnpm typecheck` exit 0、`pnpm build` exit 0（每提交逐一执行）。
+- Vite 6 构建产物与基线一致（`dist/assets` 14/14，sw/manifest/workbox 在位）；dev 冒烟通过。
+
+##### 风险与缺口
+
+- vite-plugin-pwa 0.20.5→1.3.0 跨大版本（已按 peer 验证 + 产物对比确认）。
+- `vue` 全局与 ElMessage 依赖 auto-imports.d.ts 生成物。
+- LSP 服务器在本环境不可用（以 vue-tsc 为准）。
+
+##### 下一步
 
 - 见上文 `## 下一步`。
