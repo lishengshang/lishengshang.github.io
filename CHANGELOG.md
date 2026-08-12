@@ -4,7 +4,12 @@
 
 ## [Unreleased]
 
+## [5.1.0] - 2026-08-13
+
 ### 工程化
+- 修复部署链：部署仓库 Pages 源切换为 GitHub Actions 模式，线上恢复 homepage 构建产物（此前被 Jekyll 渲染的 README 占据）
+- 新增多 Agent 协作基础设施：`AGENTS.md` 统一入口、`docs/ai/` 机器可读规范与模板、`docs/ai/STATUS.md` 实时进度跟踪机制
+- 建立开发前 tag 版本基线：开发点 `dev-YYYYMMDD`、里程碑 `vX.Y.Z`
 - 新增 `packageManager` 与 `engines` 字段，锁定 pnpm@11.20.0 与 Node >=20
 - 重写 GitHub Actions：改用 pnpm、ubuntu-latest、Node 20，新增 PR 构建检查与并发取消
 - 新增 Dependabot 配置，自动追踪 npm 依赖与 GitHub Actions 版本更新
