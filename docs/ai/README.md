@@ -8,6 +8,7 @@
 - `agent-spec.yaml`：机器可读的项目事实、目录边界、命令和质量门槛。
 - `architecture.md`：人和 Agent 都能快速理解的架构边界。
 - `workflow.md`：从需求到交接的标准流程和风险分级。
+- STATUS.md：多 Agent 协作唯一实时进度文件，开工前必读、交接后必更新。
 - `decisions/`：长期有效的架构、依赖和兼容性决策记录（ADR）。
 - `templates/`：变更计划、ADR、交接和 PR 模板。
 

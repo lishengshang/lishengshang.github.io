@@ -23,11 +23,11 @@
 
 ## 工作流程
 
-1. 明确目标、范围、非目标和验收标准；复杂变更先使用 `docs/ai/templates/change-plan.md`。
+1. 先读取 docs/ai/STATUS.md 掌握当前进度与下一步；明确目标、范围、非目标和验收标准；复杂变更先使用 `docs/ai/templates/change-plan.md`。
 2. 检索现有实现和可复用方案，确认影响面：`src/`、配置、资源、文档、CI、部署。
 3. 实施最小可审查变更；架构或依赖取舍写入 `docs/ai/decisions/`。
 4. 运行验证并检查 `git diff`；不把临时文件、构建产物或 `.env` 纳入变更。
-5. 按 `docs/ai/templates/handoff.md` 输出交接信息。
+5. 按 `docs/ai/templates/handoff.md` 输出交接信息，并在 docs/ai/STATUS.md 更新当前进度、下一步与会话记录。
 
 ## 权威规则
 
