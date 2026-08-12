@@ -10,8 +10,7 @@
 
 ## 当前进度
 
-- 修复 GitHub Pages 部署链，负责人/会话：会话 2026-08-13；状态：进行中（结果见会话记录，收尾时补记）。
-- 本文件（STATUS.md）创建与协作流程接入，负责人/会话：会话 2026-08-13；状态：进行中。
+- 无进行中的会话工作（2026-08-13 会话已收尾，见会话记录）。
 
 ## 已完成
 
@@ -28,16 +27,17 @@
   - `8879611 feat: 新增樱花飘落、入场动画与点击波纹动效`
   - `4f416e8 build: 升级 Vite 4 → 5 及相关插件`
   - `06e155c ci: 修复 pnpm 版本冲突，Node 20 升级到 24`
-- 2026-08-13 协作脚手架提交 + tag `dev-20260813`（回滚基线）。
+- 2026-08-13 协作脚手架提交 + tag `dev-20260813`（回滚基线），提交：`352165e`。
+- 2026-08-13 GitHub Pages 部署链修复：部署仓库 Pages 源由分支模式切换为 GitHub Actions 模式（`build_type: legacy → workflow`），站点重新部署并验证线上为 Vite 构建产物。
+- 2026-08-13 STATUS.md 进度跟踪机制建立并接入协作流程，提交：`63c5f5f`。
 - CHANGELOG [Unreleased] 条目摘要：CI 重写、Dependabot、天气移除、音乐修复。
 
 ## 下一步
 
-1. 完成部署链修复并验证站点上线（验收：https://lishengshang.github.io/ 返回 Vite 构建产物，含 `id="app"` 与 `/assets/`，无 Jekyll 标记）。
-2. ADR 补记三件历史架构决策：天气功能移除、站点配置迁移、CI 重写（验收：`docs/ai/decisions/` 下 3 个文件按 `templates/adr.md` 填写）。
-3. ESLint 8 → 9 迁移（验收：`pnpm lint` 通过且无兼容性告警）。
-4. TypeScript 迁移（验收：`tsc --noEmit` 通过、构建产物不变）。
-5. Vite 5 → 6 升级（验收：`pnpm build` 通过、产物一致）。
+1. ADR 补记三件历史架构决策：天气功能移除、站点配置迁移、CI 重写（验收：`docs/ai/decisions/` 下 3 个文件按 `templates/adr.md` 填写）。
+2. ESLint 8 → 9 迁移（验收：`pnpm lint` 通过且无兼容性告警）。
+3. TypeScript 迁移（验收：`tsc --noEmit` 通过、构建产物不变）。
+4. Vite 5 → 6 升级（验收：`pnpm build` 通过、产物一致）。
 
 ## 会话记录
 
@@ -45,7 +45,7 @@
 
 #### 摘要
 
-建立回滚基线 tag、修复 Pages 部署链（进行中）、创建本进度文件。
+建立回滚基线 tag、修复 Pages 部署链（已完成，见验证）、创建本进度文件。
 
 #### 涉及文件
 
@@ -53,14 +53,14 @@
 - `docs/ai/README.md`：补充 STATUS.md 文件职责。
 - `docs/ai/agent-spec.yaml`：补充实时进度文件及更新策略。
 - `docs/ai/STATUS.md`：创建实时进度记录。
-- `.github/workflows/dispatch.yml`：Pages 部署链修复涉及文件。
+- 部署链修复未改动本仓库文件：仅通过 GitHub API 将部署仓库 `lishengshang.github.io` 的 Pages 源切换为 GitHub Actions 模式（`.github/workflows/dispatch.yml` 与部署仓库 `build.yml` 均为既有文件）。
 
 #### 验证
 
 - `git tag dev-20260813` 与 `HEAD` 一致：通过。
 - `pnpm lint`：通过，exit 0。
 - `pnpm build`：通过，exit 0。
-- Pages 部署链验证：未完成（收尾补记）。
+- Pages 部署链：部署仓库 Pages 源 `build_type: legacy → workflow` 切换成功；手动触发 Deploy 工作流（run `31619032996`）成功；线上验证 `curl https://lishengshang.github.io/` 含 Vite 构建标记 `id="app"`、`/assets/`、`manifest.webmanifest`，无 Jekyll 标记。
 
 #### 风险与缺口
 
