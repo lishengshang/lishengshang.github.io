@@ -25,6 +25,8 @@ export default ({ mode }) =>
         workbox: {
           skipWaiting: true,
           clientsClaim: true,
+          // 导航兜底不拦截 /blog/ 子站点，避免访问博客时被渲染为首页
+          navigateFallbackDenylist: [/^\/blog(?:\/|$)/],
           runtimeCaching: [
             {
               urlPattern: /(.*?)\.(js|css|woff2|woff|ttf)/, // js / css 静态资源缓存
