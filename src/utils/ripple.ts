@@ -3,8 +3,7 @@
 // 原理：监听 click 事件，在点击位置生成一个扩散的圆形元素，动画结束后移除
 
 const createRipple = (event: MouseEvent): void => {
-  const target = event.currentTarget;
-  if (!(target instanceof HTMLElement)) return;
+  const target = event.currentTarget as HTMLElement;
   const rect = target.getBoundingClientRect();
   const size = Math.max(rect.width, rect.height);
   const x = event.clientX - rect.left - size / 2;

@@ -127,8 +127,7 @@ onMounted(() => {
 
 // 播放
 const onPlay = () => {
-  const playerInstance = player.value;
-  if (!playerInstance) return;
+  const playerInstance = player.value!;
   playIndex.value = playerInstance.aplayer.index;
   // 播放状态
   store.setPlayerState(playerInstance.audioRef.paused);
@@ -146,15 +145,12 @@ const onPlay = () => {
 
 // 暂停
 const onPause = () => {
-  const playerInstance = player.value;
-  if (!playerInstance) return;
-  store.setPlayerState(playerInstance.audioRef.paused);
+  store.setPlayerState(player.value!.audioRef.paused);
 };
 
 // 音频时间更新事件
 const onTimeUp = () => {
-  const playerInstance = player.value;
-  if (!playerInstance) return;
+  const playerInstance = player.value!;
   const lyrics = playerInstance.aplayer.lyrics[playIndex.value];
   const lyricIndex = playerInstance.aplayer.lyricIndex;
   if (!lyrics || !lyrics[lyricIndex]) {
@@ -171,32 +167,30 @@ const onTimeUp = () => {
 
 // 切换播放暂停事件
 const playToggle = () => {
-  player.value?.toggle();
+  player.value!.toggle();
 };
 
 // 切换音量事件
 const changeVolume = (value: number) => {
-  player.value?.setVolume(value, false);
+  player.value!.setVolume(value, false);
 };
 
 // 切换上下曲
 const changeSong = (type: number) => {
-  if (!player.value) return;
-  type === 0 ? player.value.skipBack() : player.value.skipForward();
+  type === 0 ? player.value!.skipBack() : player.value!.skipForward();
   nextTick(() => {
-    player.value?.play();
+    player.value!.play();
   });
 };
 
 // 切换歌曲列表状态
 const toggleList = () => {
-  player.value?.toggleList();
+  player.value!.toggleList();
 };
 
 // 加载音频错误
 const loadMusicError = () => {
-  const playerInstance = player.value;
-  if (!playerInstance) return;
+  const playerInstance = player.value!;
   let notice = "";
   if (playList.value.length > 1) {
     notice = "播放歌曲出现错误，播放器将在 2s 后进行下一首";

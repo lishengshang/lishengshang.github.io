@@ -84,21 +84,20 @@ class Petal {
     }
   }
   draw(ctx: CanvasRenderingContext2D): void {
-    if (!imgReady || !sakuraImg) return;
+    if (!imgReady) return;
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.r);
     // 原图为 40x40 区域，按缩放绘制
-    ctx.drawImage(sakuraImg, 0, 0, 40 * this.s, 40 * this.s);
+    ctx.drawImage(sakuraImg!, 0, 0, 40 * this.s, 40 * this.s);
     ctx.restore();
   }
 }
 
 // 调整画布尺寸（处理 DPR 以保证高清屏清晰）
 const resize = () => {
-  const canvas = canvasRef.value;
-  const context = ctx;
-  if (!canvas || !context) return;
+  const canvas = canvasRef.value!;
+  const context = ctx!;
   const dpr = window.devicePixelRatio || 1;
   width = window.innerWidth;
   height = window.innerHeight;
@@ -111,8 +110,7 @@ const resize = () => {
 
 // 动画循环
 const animate = () => {
-  const context = ctx;
-  if (!context) return;
+  const context = ctx!;
   context.clearRect(0, 0, width, height);
   for (const petal of petals) {
     petal.update();
@@ -134,10 +132,7 @@ const stop = () => {
 };
 
 onMounted(() => {
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  ctx = canvas.getContext("2d");
-  if (!ctx) return;
+  ctx = canvasRef.value!.getContext("2d");
   resize();
   // 加载花瓣图片
   sakuraImg = new Image();
