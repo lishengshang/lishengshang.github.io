@@ -35,12 +35,12 @@
 - ESLint 8 → 9 flat config 迁移（含 typescript-eslint），提交：`1143d3d`。
 - 源码迁移至 TypeScript（8 文件 + 18 SFC + tsconfig + typecheck），提交：`d8abebf`。
 - Vite 5 → 6 升级（vite-plugin-pwa 同步至 1.3.0，构建产物一致），提交：`4945efe`。
+- CI 接入 `pnpm typecheck` 门禁并升级 GitHub Actions 至新大版本（消除 Node 20 弃用标注），提交：`36b4931`、`e4444a1`；部署仓库工作流同步升级，提交：`17d2305`（lishengshang.github.io）。
 
 ## 下一步
 
 1. `vite.config.js` 迁移为 `vite.config.ts`（验收：`pnpm build` 通过、配置行为不变）。
-2. CI 接入 `pnpm typecheck` 门禁（验收：`.github/workflows/build.yml` 增加 typecheck 步骤且 push 构建通过）。
-3. 评估 Vite 7 升级时机（验收：无阻塞性 peer 冲突时列入 roadmap）。
+2. 评估 Vite 7 升级时机（验收：无阻塞性 peer 冲突时列入 roadmap）。
 
 ## 会话记录
 
