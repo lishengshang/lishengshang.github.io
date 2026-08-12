@@ -41,7 +41,6 @@
 1. `vite.config.js` 迁移为 `vite.config.ts`（验收：`pnpm build` 通过、配置行为不变）。
 2. CI 接入 `pnpm typecheck` 门禁（验收：`.github/workflows/build.yml` 增加 typecheck 步骤且 push 构建通过）。
 3. 评估 Vite 7 升级时机（验收：无阻塞性 peer 冲突时列入 roadmap）。
-4. 清理残留：确认 `components.d.ts` 中陈旧 Weather 声明不再出现（验收：两次构建后 grep Weather 无结果）。
 
 ## 会话记录
 
