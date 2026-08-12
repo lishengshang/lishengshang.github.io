@@ -11,6 +11,10 @@
 > - 作者个人的线上站点 [lishengshang.github.io](https://lishengshang.github.io/) 由 CI 自动同步构建部署（见 `.github/workflows/dispatch.yml`），push 后自动上线，无需手动干预
 > - Fork 使用者不受此机制影响，按下方 [给 Fork 用户](#给-fork-用户快速开始) 章节自行部署即可
 
+### AI Agent 协作规范
+
+本仓库支持多个 AI Agent 轮流协作开发。规范入口是 [`AGENTS.md`](./AGENTS.md)，完整的机器可读规则、架构边界、变更流程和 ADR 模板位于 [`docs/ai/`](./docs/ai/)。提交代码前请先阅读 [`CONTRIBUTING.md`](./CONTRIBUTING.md)。
+
 <p>
 <strong><h2>無名の主页</h2></strong>
 简单的小主页，原来的看够了，重新弄了一个

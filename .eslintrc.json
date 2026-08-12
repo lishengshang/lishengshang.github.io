@@ -8,6 +8,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "ignorePatterns": ["auto-imports.d.ts", "components.d.ts"],
   "plugins": ["vue"],
   "rules": {
     "vue/multi-word-component-names": "off"
@@ -25,6 +26,7 @@
     "provide": true,
     "inject": true,
     "defineComponent": true,
+    "defineAsyncComponent": true,
     "onBeforeMount": true,
     "onMounted": true,
     "onBeforeUnmount": true,

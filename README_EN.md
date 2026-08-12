@@ -11,6 +11,10 @@ English | [Chinese](./README.md)
 > - The author's live site [lishengshang.github.io](https://lishengshang.github.io/) is auto-built and deployed by CI (see `.github/workflows/dispatch.yml`) — push once, deployed automatically.
 > - Fork users are not affected by this mechanism; see [Quick start for fork users](#quick-start-for-fork-users) below.
 
+### AI Agent collaboration
+
+This repository supports collaboration across multiple AI Agents. The entry point is [`AGENTS.md`](./AGENTS.md); machine-readable rules, architecture boundaries, workflow and ADR templates are in [`docs/ai/`](./docs/ai/). Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before submitting changes.
+
 <p>
 <strong><h2>Homepage</h2></strong>
 Simple little homepage, had enough of the original one and made a new one

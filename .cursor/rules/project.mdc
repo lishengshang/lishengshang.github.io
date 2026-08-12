@@ -1,0 +1,6 @@
+---
+description: Repository-wide AI collaboration rules
+alwaysApply: true
+---
+
+Read and follow `/AGENTS.md` as the source of truth. Then read `/docs/ai/agent-spec.yaml` and `/docs/ai/README.md` when the task involves architecture, dependencies, CI, testing, or documentation. Do not create a conflicting rule set in this file.

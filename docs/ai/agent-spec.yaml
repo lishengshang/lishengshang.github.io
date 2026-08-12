@@ -1,0 +1,74 @@
+schema_version: "1.0"
+name: homepage-agent-governance
+language: zh-CN
+status: active
+source_of_truth: AGENTS.md
+project:
+  type: vue-static-site
+  runtime: "node >= 22"
+  package_manager: "pnpm@11.20.0"
+  stack:
+    - Vue 3
+    - Vite
+    - Pinia
+    - SCSS
+  commands:
+    install: pnpm install --frozen-lockfile
+    format: pnpm format
+    lint: pnpm lint
+    build: pnpm build
+    dev: pnpm dev
+change_policy:
+  inspect_before_edit: true
+  keep_changes_minimal: true
+  preserve_unrelated_worktree_changes: true
+  destructive_commands_require_approval: true
+  secrets_must_not_be_committed: true
+  generated_files_must_not_be_hand_edited: true
+architecture:
+  source_directories:
+    - src/components: reusable Vue UI components
+    - src/views: page-level compositions
+    - src/composables: reusable reactive logic
+    - src/store: Pinia state
+    - src/api: external API adapters
+    - src/assets: editable site data
+    - src/utils: framework-independent utilities
+    - public: static assets
+  dependency_direction:
+    - views may use components, composables, store, api, utils, and assets
+    - components may use composables, store, api, utils, and assets
+    - utils must not import views or components
+    - api must isolate external service details from UI components
+  configuration:
+    user_editable: [.env, src/assets/siteLinks.json, src/assets/socialLinks.json]
+    never_commit: [.env]
+quality:
+  required_for_code_changes:
+    - pnpm lint
+    - pnpm build
+  required_for_dependency_changes:
+    - pnpm install --frozen-lockfile
+    - pnpm lint
+    - pnpm build
+  evidence_required: true
+  test_policy: "新增可测试业务逻辑应补测试；当前仓库若无测试基础设施，必须在变更说明中记录覆盖缺口。"
+dependencies:
+  prefer_existing: true
+  evaluate_before_add:
+    - maintenance_activity
+    - license_compatibility
+    - bundle_size
+    - security_history
+    - browser_support
+  require_documented_reason: true
+documentation:
+  update_when_changed:
+    - public_behavior
+    - environment_variables
+    - architecture
+    - deployment
+    - dependencies
+collaboration:
+  required_handoff_fields: [summary, files, validation, risks, next_steps]
+  decision_record_directory: docs/ai/decisions
