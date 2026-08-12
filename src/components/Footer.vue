@@ -41,7 +41,7 @@
   </footer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { MusicOne } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";

@@ -51,7 +51,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CloseOne, SettingTwo, GithubOne, AddOne, Bug } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
@@ -76,7 +76,7 @@ const upData = reactive({
 });
 
 // 跳转源代码仓库
-const jumpTo = (url) => {
+const jumpTo = (url: string): void => {
   window.open(url);
 };
 </script>

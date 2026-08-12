@@ -2,24 +2,33 @@
   <canvas ref="canvasRef" class="sakura-canvas"></canvas>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // 樱花飘落动效：参考 nekro.top 实现
 // 使用真实花瓣 PNG 图片 + Canvas drawImage 绘制，比矢量曲线更自然
 // 支持自适应窗口尺寸、标签页隐藏时暂停以节省资源
-const canvasRef = ref(null);
-let ctx = null;
-let animationId = null;
-let petals = [];
+interface PetalMotion {
+  // eslint-disable-next-line no-unused-vars -- Parameter labels document each motion function contract.
+  x(value: number): number;
+  // eslint-disable-next-line no-unused-vars -- Parameter labels document each motion function contract.
+  y(value: number): number;
+  // eslint-disable-next-line no-unused-vars -- Parameter labels document each motion function contract.
+  r(value: number): number;
+}
+
+const canvasRef = ref<HTMLCanvasElement | null>(null);
+let ctx: CanvasRenderingContext2D | null = null;
+let animationId: number | null = null;
+let petals: Petal[] = [];
 let width = 0;
 let height = 0;
-let sakuraImg = null;
+let sakuraImg: HTMLImageElement | null = null;
 let imgReady = false;
 
 // 花瓣数量
 const COUNT = 50;
 
 // 生成单个花瓣固定的运动参数（nekro.top 同款运动逻辑）
-const makeFn = () => {
+const makeFn = (): PetalMotion => {
   // x 方向：每帧 x += 0.5*nx - 1.7，nx ∈ [-0.5, 0.5]，整体向左漂移
   const nx = Math.random() - 0.5;
   // y 方向：每帧 y += ny，ny ∈ [1.5, 2.2]，下落
@@ -27,13 +36,19 @@ const makeFn = () => {
   // 旋转：每帧 r += nr，nr ∈ [0, 0.03]，缓慢自转
   const nr = 0.03 * Math.random();
   return {
-    x: (x) => x + 0.5 * nx - 1.7,
-    y: (y) => y + ny,
-    r: (r) => r + nr,
+    x: (x: number) => x + 0.5 * nx - 1.7,
+    y: (y: number) => y + ny,
+    r: (r: number) => r + nr,
   };
 };
 
 class Petal {
+  declare x: number;
+  declare y: number;
+  declare s: number;
+  declare r: number;
+  declare fn: PetalMotion;
+
   constructor(spreadInScreen = false) {
     this.reset(spreadInScreen);
   }
@@ -68,8 +83,8 @@ class Petal {
       this.reset(false);
     }
   }
-  draw(ctx) {
-    if (!imgReady) return;
+  draw(ctx: CanvasRenderingContext2D): void {
+    if (!imgReady || !sakuraImg) return;
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.r);
@@ -81,22 +96,27 @@ class Petal {
 
 // 调整画布尺寸（处理 DPR 以保证高清屏清晰）
 const resize = () => {
+  const canvas = canvasRef.value;
+  const context = ctx;
+  if (!canvas || !context) return;
   const dpr = window.devicePixelRatio || 1;
   width = window.innerWidth;
   height = window.innerHeight;
-  canvasRef.value.width = width * dpr;
-  canvasRef.value.height = height * dpr;
-  canvasRef.value.style.width = width + "px";
-  canvasRef.value.style.height = height + "px";
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+  context.setTransform(dpr, 0, 0, dpr, 0, 0);
 };
 
 // 动画循环
 const animate = () => {
-  ctx.clearRect(0, 0, width, height);
+  const context = ctx;
+  if (!context) return;
+  context.clearRect(0, 0, width, height);
   for (const petal of petals) {
     petal.update();
-    petal.draw(ctx);
+    petal.draw(context);
   }
   animationId = requestAnimationFrame(animate);
 };
@@ -114,12 +134,16 @@ const stop = () => {
 };
 
 onMounted(() => {
-  ctx = canvasRef.value.getContext("2d");
+  const canvas = canvasRef.value;
+  if (!canvas) return;
+  ctx = canvas.getContext("2d");
+  if (!ctx) return;
   resize();
   // 加载花瓣图片
   sakuraImg = new Image();
-  sakuraImg.src = "/images/sakura.png";
-  sakuraImg.onload = () => {
+  const image = sakuraImg;
+  image.src = "/images/sakura.png";
+  image.onload = () => {
     imgReady = true;
     // 图片就绪后创建花瓣并启动动画（初始铺满屏幕）
     petals = Array.from({ length: COUNT }, () => new Petal(true));

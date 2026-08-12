@@ -35,8 +35,8 @@
   </Transition>
 </template>
 
-<script setup>
-import { helloInit, checkDays } from "@/utils/getTime.js";
+<script setup lang="ts">
+import { helloInit, checkDays } from "@/utils/getTime";
 import { HamburgerButton, CloseSmall } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { Icon } from "@vicons/utils";
@@ -46,7 +46,7 @@ import MainRight from "@/views/Main/Right.vue";
 import Background from "@/components/Background.vue";
 import Sakura from "@/components/Sakura.vue";
 import Footer from "@/components/Footer.vue";
-import cursorInit from "@/utils/cursor.js";
+import cursorInit from "@/utils/cursor";
 import config from "@/../package.json";
 
 // 非首屏组件懒加载
@@ -61,7 +61,7 @@ const getWidth = () => {
 };
 
 // 鼠标中键事件
-const onMouseDown = (event) => {
+const onMouseDown = (event: MouseEvent) => {
   if (event.button == 1) {
     store.backgroundShow = !store.backgroundShow;
     ElMessage({
@@ -95,7 +95,7 @@ const loadComplete = () => {
 watch(
   () => store.innerWidth,
   (value) => {
-    if (value < 721) {
+    if (value !== null && value < 721) {
       store.boxOpenState = false;
       store.setOpenState = false;
     }

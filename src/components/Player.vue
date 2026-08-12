@@ -20,19 +20,37 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { MusicOne, PlayWrong } from "@icon-park/vue-next";
 import { getPlayerList } from "@/api";
+import type { PlayerItem } from "@/api";
 import { mainStore } from "@/store";
 import APlayer from "@worstone/vue-aplayer";
 
 const store = mainStore();
 
+interface APlayerInstance {
+  readonly aplayer: {
+    readonly index: number;
+    readonly lyrics: Array<Array<[number, string]>>;
+    readonly lyricIndex: number;
+    readonly audio: PlayerItem[];
+  };
+  readonly audioRef: HTMLAudioElement;
+  toggle(): void;
+  // eslint-disable-next-line no-unused-vars -- Parameter labels document the APlayer instance contract.
+  setVolume(value: number, isUserAction?: boolean): void;
+  skipBack(): void;
+  skipForward(): void;
+  play(): void;
+  toggleList(): void;
+}
+
 // 获取播放器 DOM
-const player = ref(null);
+const player = ref<APlayerInstance | null>(null);
 
 // 歌曲播放列表
-const playList = ref([]);
+const playList = ref<PlayerItem[]>([]);
 
 // 歌曲播放项
 const playIndex = ref(0);
@@ -48,7 +66,7 @@ const props = defineProps({
   volume: {
     type: Number,
     default: 0.7,
-    validator: (value) => {
+    validator: (value: number): boolean => {
       return value >= 0 && value <= 1;
     },
   },
@@ -109,9 +127,11 @@ onMounted(() => {
 
 // 播放
 const onPlay = () => {
-  playIndex.value = player.value.aplayer.index;
+  const playerInstance = player.value;
+  if (!playerInstance) return;
+  playIndex.value = playerInstance.aplayer.index;
   // 播放状态
-  store.setPlayerState(player.value.audioRef.paused);
+  store.setPlayerState(playerInstance.audioRef.paused);
   // 储存播放器信息
   store.setPlayerData(playList.value[playIndex.value].name, playList.value[playIndex.value].artist);
   ElMessage({
@@ -126,13 +146,17 @@ const onPlay = () => {
 
 // 暂停
 const onPause = () => {
-  store.setPlayerState(player.value.audioRef.paused);
+  const playerInstance = player.value;
+  if (!playerInstance) return;
+  store.setPlayerState(playerInstance.audioRef.paused);
 };
 
 // 音频时间更新事件
 const onTimeUp = () => {
-  let lyrics = player.value.aplayer.lyrics[playIndex.value];
-  let lyricIndex = player.value.aplayer.lyricIndex;
+  const playerInstance = player.value;
+  if (!playerInstance) return;
+  const lyrics = playerInstance.aplayer.lyrics[playIndex.value];
+  const lyricIndex = playerInstance.aplayer.lyricIndex;
   if (!lyrics || !lyrics[lyricIndex]) {
     return;
   }
@@ -147,29 +171,32 @@ const onTimeUp = () => {
 
 // 切换播放暂停事件
 const playToggle = () => {
-  player.value.toggle();
+  player.value?.toggle();
 };
 
 // 切换音量事件
-const changeVolume = (value) => {
-  player.value.setVolume(value, false);
+const changeVolume = (value: number) => {
+  player.value?.setVolume(value, false);
 };
 
 // 切换上下曲
-const changeSong = (type) => {
+const changeSong = (type: number) => {
+  if (!player.value) return;
   type === 0 ? player.value.skipBack() : player.value.skipForward();
   nextTick(() => {
-    player.value.play();
+    player.value?.play();
   });
 };
 
 // 切换歌曲列表状态
 const toggleList = () => {
-  player.value.toggleList();
+  player.value?.toggleList();
 };
 
 // 加载音频错误
 const loadMusicError = () => {
+  const playerInstance = player.value;
+  if (!playerInstance) return;
   let notice = "";
   if (playList.value.length > 1) {
     notice = "播放歌曲出现错误，播放器将在 2s 后进行下一首";
@@ -186,7 +213,9 @@ const loadMusicError = () => {
     }),
   });
   console.error(
-    "播放歌曲: " + player.value.aplayer.audio[player.value.aplayer.index].name + " 出现错误",
+    "播放歌曲: " +
+      playerInstance.aplayer.audio[playerInstance.aplayer.index].name +
+      " 出现错误",
   );
 };
 

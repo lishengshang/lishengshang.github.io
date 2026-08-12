@@ -19,9 +19,9 @@
       }"
       :mousewheel="true"
     >
-      <SwiperSlide v-for="site in siteLinksList" :key="site">
+      <SwiperSlide v-for="site in siteLinksList" :key="site as never">
         <el-row class="link-all" :gutter="20">
-          <el-col v-for="(item, index) in site" :span="8" :key="item">
+          <el-col v-for="(item, index) in site" :span="8" :key="item as never">
             <div
               class="item cards enter"
               :style="[index < 3 ? 'margin-bottom: 20px' : null, { '--enter-delay': `${0.4 + index * 0.05}s` }]"
@@ -41,7 +41,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from "@vicons/utils";
 // 可前往 https://www.xicons.org 自行挑选并在此处引入
 import { Link, Blog, CompactDisc, Cloud, Compass, Book, Fire, LaptopCode } from "@vicons/fa"; // 注意使用正确的类别
@@ -49,12 +49,14 @@ import { mainStore } from "@/store";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Mousewheel } from "swiper/modules";
 import siteLinks from "@/assets/siteLinks.json";
+import type { Component } from "vue";
 
 const store = mainStore();
+type SiteLink = (typeof siteLinks)[number];
 
 // 计算网站链接
-const siteLinksList = computed(() => {
-  const result = [];
+const siteLinksList = computed<SiteLink[][]>(() => {
+  const result: SiteLink[][] = [];
   for (let i = 0; i < siteLinks.length; i += 6) {
     const subArr = siteLinks.slice(i, i + 6);
     result.push(subArr);
@@ -63,7 +65,7 @@ const siteLinksList = computed(() => {
 });
 
 // 网站链接图标
-const siteIcon = {
+const siteIcon: Record<string, Component> = {
   Blog,
   Cloud,
   CompactDisc,
@@ -74,7 +76,7 @@ const siteIcon = {
 };
 
 // 链接跳转
-const jumpLink = (data) => {
+const jumpLink = (data: SiteLink): void => {
   if (data.name === "音乐" && store.musicClick) {
     store.openMusicList();
   } else {

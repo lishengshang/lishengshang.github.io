@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
 import Func from "@/views/Func/index.vue";

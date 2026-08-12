@@ -2,17 +2,44 @@ import { h } from "vue";
 import { SpaCandle } from "@icon-park/vue-next";
 import dayjs from "dayjs";
 
+export type CurrentTime = {
+  readonly year: number;
+  readonly month: string | number;
+  readonly day: string | number;
+  readonly hour: string | number;
+  readonly minute: string | number;
+  readonly second: string | number;
+  readonly weekday: string;
+};
+
+type TimeUnit = "day" | "week" | "month" | "year";
+
+export type TimeDifference = {
+  readonly name: string;
+  readonly total: number;
+  readonly passed: number;
+  readonly remaining: number;
+  readonly percentage: string;
+};
+
+export type TimeCapsule = {
+  readonly day: TimeDifference;
+  readonly week: TimeDifference;
+  readonly month: TimeDifference;
+  readonly year: TimeDifference;
+};
+
 // 时钟
-export const getCurrentTime = () => {
-  let time = new Date();
-  let year = time.getFullYear();
-  let month = time.getMonth() + 1 < 10 ? "0" + (time.getMonth() + 1) : time.getMonth() + 1;
-  let day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
-  let hour = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
-  let minute = time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
-  let second = time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
-  let weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-  let currentTime = {
+export const getCurrentTime = (): CurrentTime => {
+  const time = new Date();
+  const year = time.getFullYear();
+  const month = time.getMonth() + 1 < 10 ? "0" + (time.getMonth() + 1) : time.getMonth() + 1;
+  const day = time.getDate() < 10 ? "0" + time.getDate() : time.getDate();
+  const hour = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
+  const minute = time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
+  const second = time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
+  const weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+  const currentTime = {
     year,
     month,
     day,
@@ -25,9 +52,9 @@ export const getCurrentTime = () => {
 };
 
 // 时光胶囊
-export const getTimeCapsule = () => {
+export const getTimeCapsule = (): TimeCapsule => {
   const now = dayjs();
-  const dayText = {
+  const dayText: Record<TimeUnit, string> = {
     day: "今日",
     week: "本周",
     month: "本月",
@@ -37,7 +64,7 @@ export const getTimeCapsule = () => {
    * 计算时间差的函数
    * @param {String} unit 时间单位，可以是 'day', 'week', 'month', 'year'
    */
-  const getDifference = (unit) => {
+  const getDifference = (unit: TimeUnit): TimeDifference => {
     // 获取当前时间单位的开始时间
     const start = now.startOf(unit);
     // 获取当前时间单位的结束时间
@@ -96,7 +123,7 @@ export const helloInit = () => {
 };
 
 // 默哀模式
-const anniversaries = {
+const anniversaries: Record<string, string> = {
   4.4: "清明节",
   5.12: "汶川大地震纪念日",
   7.7: "中国人民抗日战争纪念日",
@@ -121,7 +148,7 @@ export const checkDays = () => {
 };
 
 // 建站日期统计
-export const siteDateStatistics = (startDate) => {
+export const siteDateStatistics = (startDate: Date): string => {
   const currentDate = new Date();
   let years = currentDate.getFullYear() - startDate.getFullYear();
   let months = currentDate.getMonth() - startDate.getMonth();

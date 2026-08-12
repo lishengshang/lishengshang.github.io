@@ -86,7 +86,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CheckSmall, CloseSmall, SuccessPicture } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { storeToRefs } from "pinia";

@@ -13,7 +13,7 @@
     <div class="control">
       <go-start theme="filled" size="30" fill="#efefef" @click="changeMusicIndex(0)" />
       <Transition name="fade" mode="out-in">
-        <div :key="store.playerState" class="state" @click="changePlayState">
+        <div :key="store.playerState as never" class="state" @click="changePlayState">
           <play-one theme="filled" size="50" fill="#efefef" v-show="!store.playerState" />
           <pause theme="filled" size="50" fill="#efefef" v-show="store.playerState" />
         </div>
@@ -68,7 +68,7 @@
   </Transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   GoStart,
   PlayOne,
@@ -82,6 +82,7 @@ import {
 import Player from "@/components/Player.vue";
 import { mainStore } from "@/store";
 const store = mainStore();
+type PlayerInstance = InstanceType<typeof Player>;
 
 // 音量条数据
 const volumeShow = ref(false);
@@ -89,7 +90,7 @@ const volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
 
 // 播放列表数据
 const musicListShow = ref(false);
-const playerRef = ref(null);
+const playerRef = ref<PlayerInstance | null>(null);
 const playerData = reactive({
   server: import.meta.env.VITE_SONG_SERVER,
   type: import.meta.env.VITE_SONG_TYPE,
@@ -99,13 +100,13 @@ const playerData = reactive({
 // 开启播放列表
 const openMusicList = () => {
   musicListShow.value = true;
-  playerRef.value.toggleList();
+  playerRef.value?.toggleList();
 };
 
 // 关闭播放列表
 const closeMusicList = () => {
   musicListShow.value = false;
-  playerRef.value.toggleList();
+  playerRef.value?.toggleList();
 };
 
 // 监听外部打开音乐列表请求（替代全局 window.$openList）
@@ -121,16 +122,16 @@ watch(
 
 // 音乐播放暂停
 const changePlayState = () => {
-  playerRef.value.playToggle();
+  playerRef.value?.playToggle();
 };
 
 // 音乐上下曲
-const changeMusicIndex = (type) => {
-  playerRef.value.changeSong(type);
+const changeMusicIndex = (type: number) => {
+  playerRef.value?.changeSong(type);
 };
 
 // 空格键事件
-const onKeyDown = (e) => {
+const onKeyDown = (e: KeyboardEvent) => {
   if (!store.musicIsOk) {
     return;
   }
@@ -152,7 +153,7 @@ watch(
   () => volumeNum.value,
   (value) => {
     store.musicVolume = value;
-    playerRef.value.changeVolume(store.musicVolume);
+    playerRef.value?.changeVolume(store.musicVolume);
   },
 );
 </script>

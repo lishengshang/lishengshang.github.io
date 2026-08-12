@@ -27,11 +27,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { MusicMenu, Error } from "@icon-park/vue-next";
 import { getHitokoto } from "@/api";
 import { mainStore } from "@/store";
-import debounce from "@/utils/debounce.js";
+import debounce from "@/utils/debounce";
 
 const store = mainStore();
 

@@ -1,18 +1,33 @@
-let mainCursor;
+type Point = {
+  x: number;
+  y: number;
+};
 
-const lerp = (a, b, n) => {
+type CursorPosition = {
+  curr: Point | null;
+  prev: Point | null;
+};
+
+let mainCursor: Cursor | null = null;
+
+const lerp = (a: number, b: number, n: number): number => {
   if (Math.round(a) === b) {
     return b;
   }
   return (1 - n) * a + n * b;
 };
 
-const cursorInit = () => {
+const cursorInit = (): Cursor => {
   mainCursor = new Cursor();
   return mainCursor;
 };
 
 class Cursor {
+  declare cursor: HTMLDivElement;
+  declare scr: HTMLStyleElement;
+  pos: CursorPosition;
+  rafId: number | null;
+
   constructor() {
     this.pos = {
       curr: null,
@@ -24,12 +39,12 @@ class Cursor {
     this.render();
   }
 
-  move(left, top) {
+  move(left: number, top: number): void {
     this.cursor.style["left"] = `${left}px`;
     this.cursor.style["top"] = `${top}px`;
   }
 
-  create() {
+  create(): void {
     if (!this.cursor) {
       this.cursor = document.createElement("div");
       this.cursor.id = "cursor";
@@ -42,7 +57,7 @@ class Cursor {
     this.scr.innerHTML = `* {cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='10px' height='10px'><circle cx='4' cy='4' r='4' fill='white' /></svg>") 4 4, auto !important}`;
   }
 
-  refresh() {
+  refresh(): void {
     this.scr.remove();
     this.cursor.classList.remove("active");
     this.pos = {
@@ -59,9 +74,9 @@ class Cursor {
     this.render();
   }
 
-  init() {
-    document.onmousemove = (e) => {
-      this.pos.curr == null && this.move(e.clientX - 8, e.clientY - 8);
+  init(): void {
+    document.onmousemove = (e: MouseEvent) => {
+      if (this.pos.curr == null) this.move(e.clientX - 8, e.clientY - 8);
       this.pos.curr = {
         x: e.clientX - 8,
         y: e.clientY - 8,
@@ -77,7 +92,7 @@ class Cursor {
     document.onmouseup = () => this.cursor.classList.remove("active");
   }
 
-  render() {
+  render(): void {
     this.rafId = null;
     // 鼠标还未移动过（pos.curr 为 null），等待 mousemove 触发后再渲染
     if (!this.pos.curr) {

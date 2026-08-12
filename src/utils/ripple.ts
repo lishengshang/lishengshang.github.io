@@ -2,8 +2,9 @@
 // 用法：在任意元素上添加 v-ripple 即可触发点击波纹效果
 // 原理：监听 click 事件，在点击位置生成一个扩散的圆形元素，动画结束后移除
 
-const createRipple = (event) => {
+const createRipple = (event: MouseEvent): void => {
   const target = event.currentTarget;
+  if (!(target instanceof HTMLElement)) return;
   const rect = target.getBoundingClientRect();
   const size = Math.max(rect.width, rect.height);
   const x = event.clientX - rect.left - size / 2;
@@ -20,7 +21,7 @@ const createRipple = (event) => {
 };
 
 export const ripple = {
-  mounted(el) {
+  mounted(el: HTMLElement): void {
     // 确保宿主元素是相对定位，波纹才能绝对定位在内部
     const position = getComputedStyle(el).position;
     if (position === "static" || !position) {
@@ -33,7 +34,7 @@ export const ripple = {
     }
     el.addEventListener("click", createRipple);
   },
-  unmounted(el) {
+  unmounted(el: HTMLElement): void {
     el.removeEventListener("click", createRipple);
   },
 };

@@ -27,8 +27,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { getCurrentTime } from "@/utils/getTime";
+import type { CurrentTime } from "@/utils/getTime";
 import { mainStore } from "@/store";
 import Music from "@/components/Music.vue";
 import Hitokoto from "@/components/Hitokoto.vue";
@@ -36,8 +37,8 @@ import Hitokoto from "@/components/Hitokoto.vue";
 const store = mainStore();
 
 // 当前时间
-const currentTime = ref({});
-const timeInterval = ref(null);
+const currentTime = ref<Partial<CurrentTime>>({});
+const timeInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 // 播放器 id
 const playerHasId = import.meta.env.VITE_SONG_ID;
@@ -53,7 +54,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  clearInterval(timeInterval.value);
+  if (timeInterval.value !== null) clearInterval(timeInterval.value);
 });
 </script>
 

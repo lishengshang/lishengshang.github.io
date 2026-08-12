@@ -1,7 +1,33 @@
 import { defineStore } from "pinia";
 
+type MainState = {
+  imgLoadStatus: boolean;
+  innerWidth: number | null;
+  coverType: string;
+  siteStartShow: boolean;
+  musicClick: boolean;
+  musicIsOk: boolean;
+  musicVolume: number;
+  musicOpenState: boolean;
+  musicListOpenState: boolean;
+  backgroundShow: boolean;
+  boxOpenState: boolean;
+  mobileOpenState: boolean;
+  mobileFuncState: boolean;
+  setOpenState: boolean;
+  playerState: boolean;
+  playerTitle: string | null;
+  playerArtist: string | null;
+  playerLrc: string;
+  playerLrcShow: boolean;
+  footerBlur: boolean;
+  playerAutoplay: boolean;
+  playerLoop: string;
+  playerOrder: string;
+};
+
 export const mainStore = defineStore("main", {
-  state: () => {
+  state: (): MainState => {
     return {
       imgLoadStatus: false, // 壁纸加载状态
       innerWidth: null, // 当前窗口宽度
@@ -30,7 +56,7 @@ export const mainStore = defineStore("main", {
   },
   actions: {
     // 更改当前页面宽度
-    setInnerWidth(value) {
+    setInnerWidth(value: number) {
       this.innerWidth = value;
       if (value >= 720) {
         this.mobileOpenState = false;
@@ -38,20 +64,20 @@ export const mainStore = defineStore("main", {
       }
     },
     // 更改播放状态
-    setPlayerState(value) {
+    setPlayerState(value: boolean) {
       this.playerState = !value;
     },
     // 更改歌词
-    setPlayerLrc(value) {
+    setPlayerLrc(value: string) {
       this.playerLrc = value;
     },
     // 更改歌曲数据
-    setPlayerData(title, artist) {
+    setPlayerData(title: string, artist: string) {
       this.playerTitle = title;
       this.playerArtist = artist;
     },
     // 更改壁纸加载状态
-    setImgLoadStatus(value) {
+    setImgLoadStatus(value: boolean) {
       this.imgLoadStatus = value;
     },
     // 打开音乐列表弹窗（供外部组件调用）

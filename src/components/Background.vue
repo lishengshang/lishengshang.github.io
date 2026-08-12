@@ -2,7 +2,7 @@
   <div :class="store.backgroundShow ? 'cover show' : 'cover'">
     <img
       v-show="store.imgLoadStatus"
-      :src="bgUrl"
+      :src="bgUrl as never"
       class="bg"
       alt="cover"
       @load="imgLoadComplete"
@@ -14,7 +14,7 @@
       <a
         v-if="store.backgroundShow && store.coverType != '3'"
         class="down"
-        :href="bgUrl"
+        :href="bgUrl as never"
         target="_blank"
       >
         下载壁纸
@@ -23,21 +23,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { mainStore } from "@/store";
 import { Error } from "@icon-park/vue-next";
 
 const store = mainStore();
-const bgUrl = ref(null);
-const imgTimeout = ref(null);
-const emit = defineEmits(["loadComplete"]);
+const bgUrl = ref<string | null>(null);
+const imgTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+const emit = defineEmits<{ loadComplete: [] }>();
 
 // 壁纸随机数
 // 请依据文件夹内的图片个数修改 Math.random() 后面的第一个数字
 const bgRandom = Math.floor(Math.random() * 10 + 1);
 
 // 更换壁纸链接
-const changeBg = (type) => {
+const changeBg = (type: string | number) => {
   if (type == 0) {
     bgUrl.value = `/images/background${bgRandom}.jpg`;
   } else if (type == 1) {
@@ -92,7 +92,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  clearTimeout(imgTimeout.value);
+  if (imgTimeout.value !== null) clearTimeout(imgTimeout.value);
 });
 </script>
 

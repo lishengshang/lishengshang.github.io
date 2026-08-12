@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import socialLinks from "@/assets/socialLinks.json";
 
 // 社交链接提示

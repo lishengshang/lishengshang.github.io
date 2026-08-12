@@ -29,7 +29,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from "@vicons/utils";
 import { QuoteLeft, QuoteRight } from "@vicons/fa";
 import { Error } from "@icon-park/vue-next";
@@ -50,7 +50,7 @@ const descriptionText = reactive({
 
 // 切换右侧功能区
 const changeBox = () => {
-  if (store.innerWidth >= 721) {
+  if (store.innerWidth !== null && store.innerWidth >= 721) {
     store.boxOpenState = !store.boxOpenState;
   } else {
     ElMessage({
