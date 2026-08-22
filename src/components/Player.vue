@@ -324,13 +324,32 @@ defineExpose({ playToggle, changeVolume, changeSong });
         padding: 8px 10px;
         margin: 2px 0;
         border-radius: 6px;
+        // 当前播放指示：固定占位宽 14px，选中时显示左侧小蓝条 + 高亮，
+        // 未选中时占位保持宽度，保证序号/歌名与选中项对齐
         .aplayer-list-cur {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          margin-right: 4px;
           opacity: 0;
+          position: relative;
         }
         &.aplayer-list-light {
           background: #ffffff55;
           .aplayer-list-cur {
             opacity: 1;
+            // 左侧 2px 竖条作为"正在播放"指示
+            &::before {
+              content: "";
+              position: absolute;
+              left: 2px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 2px;
+              height: 16px;
+              border-radius: 2px;
+              background: #5b8def;
+            }
           }
         }
         &:hover {

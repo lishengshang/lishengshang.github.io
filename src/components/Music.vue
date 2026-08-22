@@ -131,12 +131,17 @@ const changeMusicIndex = (type: number) => {
   playerRef.value?.changeSong(type);
 };
 
-// 空格键事件
+// 键盘事件：空格播放/暂停，ESC 关闭音乐列表弹窗
 const onKeyDown = (e: KeyboardEvent) => {
+  if (e.code === "Escape" && musicListShow.value) {
+    closeMusicList();
+    e.preventDefault();
+    return;
+  }
   if (!store.musicIsOk) {
     return;
   }
-  if (e.code == "Space") {
+  if (e.code === "Space") {
     changePlayState();
   }
 };
@@ -251,17 +256,36 @@ watch(
           display: block;
         }
       }
-      :deep(*) {
-        transition: none;
-      }
-      :deep(.el-slider__button) {
-        transition: 0.3s;
-      }
-      .el-slider {
+      // 音量滑块：与底栏进度条风格统一——细线、白色，去掉按钮和 Element Plus 原生蓝主题
+      :deep(.el-slider) {
         margin-right: 12px;
         --el-slider-main-bg-color: #efefef;
-        --el-slider-runway-bg-color: #ffffff40;
-        --el-slider-button-size: 16px;
+        --el-slider-runway-bg-color: rgba(255, 255, 255, 0.2);
+        --el-slider-button-size: 0px;
+        --el-slider-button-border: none;
+        --el-slider-button-bg-color: transparent;
+        --el-slider-button-hover-bg-color: transparent;
+        --el-slider-button-hover-border-color: transparent;
+        --el-slider-button-drag-bg-color: transparent;
+        --el-slider-height: 3px;
+        --el-slider-runway-height: 3px;
+        // hover 时增粗，与底栏进度条呼应
+        &:hover {
+          --el-slider-height: 6px;
+          --el-slider-runway-height: 6px;
+        }
+      }
+      :deep(.el-slider__runway) {
+        border-radius: 2px;
+      }
+      :deep(.el-slider__bar) {
+        border-radius: 2px;
+      }
+      :deep(.el-slider__button-wrapper) {
+        display: none;
+      }
+      :deep(.el-slider__stop) {
+        display: none;
       }
     }
   }
