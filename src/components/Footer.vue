@@ -13,11 +13,11 @@
           {{ fullYear }}
           <a :href="siteUrl">{{ siteAuthor }}</a>
         </span>
-        <!-- 原作者署名（fork 自 imsyy/home，请保留） -->
+        <!-- 当前维护者署名 -->
         <span class="hidden">
           &amp;&nbsp;Made&nbsp;by
-          <a href="https://github.com/imsyy/home" target="_blank">
-            imsyy
+          <a href="https://github.com/lishengshang" target="_blank">
+            {{ siteAuthor }}
           </a>
         </span>
         <!-- 站点备案 -->
