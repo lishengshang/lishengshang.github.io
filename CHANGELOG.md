@@ -4,6 +4,25 @@
 
 ## [Unreleased]
 
+## [5.3.0] - 2026-08-22
+
+### 性能
+- 音乐播放器懒加载：aplayer 懒加载 + 列表弹窗首次打开才挂载，fetch-jsonp 动态导入（首屏不再加载 aplayer chunk 与歌单 API）
+- 构建产物 vendor 分包（element-plus / aplayer / vendor 独立 chunk），提升浏览器缓存复用
+- 壁纸 JPEG → WebP（3.6MB → 1.2MB，-67%）
+- HarmonyOS Sans 字体 CSS 改非阻塞加载（preload 方式，先以系统字体渲染）
+- 站点总体积 dist 6.2MB → 3.5MB（-44%）
+
+### 定制
+- 新增 `VITE_SITE_LOGO_TEXT` 站名艺术字配置（默认 `li'remio`，留空回退域名第一段）
+- 补全站名超长 `.long` 缩字号样式，去除域名后缀显示（桌面端与移动端一致）
+- 控制台品牌与一言兜底文案去除原作者「無名」残留
+
+### 修复与清理
+- 删除未被引用的 `Pacifico-Regular-all.ttf`（315KB 死资产）
+- Sakura `visibilitychange` 监听器卸载时移除（内存泄漏）
+- 移除 cursor.ts 死代码（`refresh()` / `mainCursor`）
+
 ## [5.2.0] - 2026-08-22
 
 ### 定制

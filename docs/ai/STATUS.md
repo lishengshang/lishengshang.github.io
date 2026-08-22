@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 无进行中的会话工作（2026-08-22 定制与安全修复会话已收尾，成果在 `feat/custom-homepage` 分支，未合并 main、未推送远端）。
+- 无进行中的会话工作（2026-08-22 定制 + 安全修复 + 性能优化会话已收尾，成果在 `feat/custom-homepage` 分支，未合并 main、未推送远端）。
 
 ## 已完成
 
@@ -168,3 +168,31 @@
 ##### 下一步
 
 - 用户 `pnpm dev` 预览确认壁纸/图标效果，不满意可指定替换；确认后合并 main 并推送触发部署。
+
+#### 5.3.0 全仓性能审查与优化（同日第二场）
+
+##### 摘要
+
+应用户「高性能、轻量化」要求做全仓审查。结论：整体非屎山（v5.0 重构 + 工程化升级质量良好），修复 6 处遗留问题并落地 4 项性能优化（用户确认）。版本升至 5.3.0。
+
+##### 审查发现与处置
+
+- 已直接修复：死资产 `Pacifico-Regular-all.ttf`（315KB）；Sakura `visibilitychange` 匿名监听器泄漏；cursor.ts 死代码（`refresh()`/`mainCursor`）；Right.vue 移动端 Logo 与桌面不一致；控制台「無名の主页」与一言兜底「無名」品牌残留。提交：`7adb78e`。
+- 用户确认后落地：①音乐懒加载（aplayer `defineAsyncComponent` + 弹窗 `v-if` 首开挂载 + fetch-jsonp 动态导入，首屏 0 条 aplayer 请求，行为变化：空格播放需先开过列表）；②vendor 分包（element-plus/aplayer/vendor 三 chunk）；③壁纸 WebP（3.6MB→1.2MB）；④HarmonyOS Sans 非阻塞加载。提交：`15b36e8`。
+- 审查通过未改动：樱花 Canvas（rAF+隐藏暂停）、光标（rAF 节流）、波纹（animationend 清理）、时钟/胶囊定时器、Box/MoreSet 懒加载、EP 按需导入。
+
+##### 验证
+
+- `pnpm lint` / `pnpm typecheck` / `pnpm build`：均通过。
+- dist 6.2MB → 3.5MB（-44%）；壁纸 -67%；首屏 3 chunk（index 29.5K + vendor 245.6K + element-plus 99.6K），aplayer 44.4K 独立懒加载。
+- 浏览器实测：首屏 0 条 aplayer 请求；点击音乐列表后懒加载成功，19 首歌单正常；WebP 壁纸 200；站名无后缀。
+
+##### 风险与缺口
+
+- `musicIsOk` 语义变化：Player 懒加载后仅在首次打开列表且歌单加载成功后才为 true（空格播放依赖此状态，属合理行为）。
+- WebP 兼容性：现代浏览器全支持；PWA 图片缓存正则已覆盖 webp。
+- 行为变化：歌单 API 请求从首屏移至首次打开音乐列表。
+
+##### 下一步
+
+- 用户预览确认；后续可做路线图剩余项（外部 API 超时降级、Vitest、Dockerfile、依赖升级）。
