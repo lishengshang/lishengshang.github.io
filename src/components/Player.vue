@@ -349,29 +349,20 @@ defineExpose({ playToggle, changeVolume, changeSong });
       li {
         position: relative;
         border-color: transparent;
-        padding: 9px 10px;
+        padding: 9px 10px 9px 24px; // 左侧多留 14px 指示区（不再依赖 cur span 占位）
         margin: 2px 0;
         border-radius: 6px;
-        // .aplayer-list-cur 仅承担占位：选中/未选中都保持同宽，
-        // 保证序号/歌名左对齐；真实的蓝条改画在 li::before
+        // APlayer 仍会插入 cur span：直接隐藏，不参与布局
         .aplayer-list-cur {
-          display: inline-block;
-          width: 6px;
-          height: 1em;
-          margin-right: 2px;
-          opacity: 0;
-          flex-shrink: 0;
-          vertical-align: middle;
-          visibility: hidden;
+          display: none;
         }
         &.aplayer-list-light {
           background: #ffffff55;
-          // 蓝条直接画在 li 上，绝对定位对齐 li 垂直中线，
-          // left: 12px 正好落在 cur 占位 6px 的中心，不压到序号
+          // 蓝条画在 14px 指示区的中心：left: 12 与序号起点 24 之间留 10px
           &::before {
             content: "";
             position: absolute;
-            left: 12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
             width: 2px;
