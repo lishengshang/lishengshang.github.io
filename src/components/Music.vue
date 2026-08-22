@@ -302,29 +302,43 @@ watch(
   z-index: 1;
   .list {
     position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: calc(50% - 300px);
-    left: calc(50% - 320px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 640px;
+    max-width: 90%;
     height: 600px;
+    max-height: 90vh;
+    padding: 56px 16px 16px;
+    box-sizing: border-box;
     background-color: #ffffff66;
-    border-radius: 6px;
+    border-radius: 8px;
     z-index: 999;
+    display: flex;
+    flex-direction: column;
     @media (max-width: 720px) {
-      left: calc(50% - 45%);
-      width: 90%;
+      padding: 52px 12px 12px;
     }
     .close {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 28px;
-      height: 28px;
-      display: block;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 10;
+      :deep(.i-icon) {
+        width: 22px;
+        height: 22px;
+      }
       &:hover {
-        transform: scale(1.2);
+        background: #00000018;
+        transform: scale(1.1);
       }
       &:active {
         transform: scale(0.95);

@@ -93,7 +93,7 @@ const props = defineProps({
   // 列表最大高度
   listMaxHeight: {
     type: Number,
-    default: 420,
+    default: 470,
   },
 });
 
@@ -243,14 +243,21 @@ defineExpose({ playToggle, changeVolume, changeSong });
 
 <style lang="scss" scoped>
 .aplayer {
-  width: 92%;
+  width: 100%;
   height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   border-radius: 6px;
   font-family: "HarmonyOS_Regular", sans-serif !important;
   background-color: transparent !important;
+  box-sizing: border-box;
   :deep(.aplayer-body) {
     background-color: transparent;
-    margin: 14px 14px 10px;
+    margin: 0 0 12px;
+    padding: 0;
+    flex: none;
     // 封面：正常显示 72x72 圆角方形 + 阴影，贴合弹窗白模糊风格
     .aplayer-pic {
       display: block;
@@ -309,19 +316,39 @@ defineExpose({ playToggle, changeVolume, changeSong });
       }
     }
   }
-  // 歌单列表：加大边距与项间距，提高可读性
+  // 歌单列表：flex:1 占满剩余高度 + max-height 兜底溢出滚动，提高可读性
   :deep(.aplayer-list) {
-    margin: 0 14px 14px;
-    height: v-bind(listHeight);
+    margin: 0;
+    padding: 0;
     background-color: transparent;
     border-radius: 6px;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     ol {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: v-bind(listHeight);
+      overflow-y: auto;
+      padding-right: 4px;
+      margin: 0;
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
       &::-webkit-scrollbar-track {
         background-color: transparent;
       }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ffffff60;
+        border-radius: 3px;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #ffffff90;
+      }
       li {
         border-color: transparent;
-        padding: 8px 10px;
+        padding: 9px 10px;
         margin: 2px 0;
         border-radius: 6px;
         // 当前播放指示：固定占位宽 14px，选中时显示左侧小蓝条 + 高亮，
@@ -333,6 +360,7 @@ defineExpose({ playToggle, changeVolume, changeSong });
           margin-right: 4px;
           opacity: 0;
           position: relative;
+          flex-shrink: 0;
         }
         &.aplayer-list-light {
           background: #ffffff55;
@@ -361,6 +389,21 @@ defineExpose({ playToggle, changeVolume, changeSong });
         }
         .aplayer-list-title {
           color: #1a1a1a;
+          flex-shrink: 1;
+          min-width: 0;
+        }
+        .aplayer-list-author {
+          flex-shrink: 0;
+          max-width: 30%;
+          text-align: right;
+        }
+        .aplayer-list-duration {
+          color: #777;
+          font-size: 12px;
+          flex-shrink: 0;
+          margin-left: 8px;
+          min-width: 40px;
+          text-align: right;
         }
       }
     }
