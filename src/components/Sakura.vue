@@ -131,6 +131,11 @@ const stop = () => {
   }
 };
 
+// 标签页隐藏时暂停，节省资源
+const onVisibilityChange = () => {
+  document.hidden ? stop() : start();
+};
+
 onMounted(() => {
   ctx = canvasRef.value!.getContext("2d");
   resize();
@@ -146,15 +151,13 @@ onMounted(() => {
   };
 
   window.addEventListener("resize", resize);
-  // 标签页隐藏时暂停，节省资源
-  document.addEventListener("visibilitychange", () => {
-    document.hidden ? stop() : start();
-  });
+  document.addEventListener("visibilitychange", onVisibilityChange);
 });
 
 onBeforeUnmount(() => {
   stop();
   window.removeEventListener("resize", resize);
+  document.removeEventListener("visibilitychange", onVisibilityChange);
 });
 </script>
 
