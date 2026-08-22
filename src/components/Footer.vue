@@ -13,11 +13,11 @@
           {{ fullYear }}
           <a :href="siteUrl">{{ siteAuthor }}</a>
         </span>
-        <!-- 以下信息请不要修改哦 -->
+        <!-- 当前维护者署名 -->
         <span class="hidden">
           &amp;&nbsp;Made&nbsp;by
-          <a :href="config.github" target="_blank">
-            {{ config.author }}
+          <a href="https://github.com/lishengshang" target="_blank">
+            {{ siteAuthor }}
           </a>
         </span>
         <!-- 站点备案 -->
@@ -32,12 +32,25 @@
         <Transition name="fade" mode="out-in">
           <div class="lrc-all" :key="store.playerLrc">
             <music-one theme="filled" size="18" fill="#efefef" />
-            <span class="lrc-text text-hidden" v-html="store.playerLrc" />
+            <span class="lrc-text text-hidden">{{ store.playerLrc }}</span>
             <music-one theme="filled" size="18" fill="#efefef" />
           </div>
         </Transition>
       </div>
     </Transition>
+    <!-- 歌曲进度条（点击跳转） -->
+    <div
+      v-if="store.playerDuration > 0"
+      class="progress"
+      @click="onProgressSeek"
+      @mousemove="onProgressHover"
+      @mouseleave="hoverTime = null"
+    >
+      <div class="progress-played" :style="{ width: `${progressPercent}%` }" />
+      <span v-if="hoverTime !== null" class="progress-tip" :style="{ left: `${hoverLeft}px` }">
+        {{ formatTime(hoverTime) }}
+      </span>
+    </div>
   </footer>
 </template>
 
@@ -45,7 +58,6 @@
 import { MusicOne } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
-import config from "@/../package.json";
 
 const store = mainStore();
 const fullYear = new Date().getFullYear();
@@ -59,6 +71,36 @@ const startYear = ref(
 const siteIcp = ref(import.meta.env.VITE_SITE_ICP);
 const siteAuthor = ref(import.meta.env.VITE_SITE_AUTHOR);
 const { siteUrlFull: siteUrl } = useSiteUrl();
+
+// 歌曲进度条
+const progressPercent = computed(() =>
+  store.playerDuration > 0 ? (store.playerTime / store.playerDuration) * 100 : 0,
+);
+const hoverTime = ref<number | null>(null);
+const hoverLeft = ref(0);
+
+// 时间格式化（mm:ss）
+const formatTime = (seconds: number): string => {
+  const min = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60);
+  return `${min}:${sec < 10 ? "0" + sec : sec}`;
+};
+
+// 进度条 hover：显示对应位置的时间气泡
+const onProgressHover = (e: MouseEvent) => {
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  hoverTime.value = Math.min(Math.max(ratio, 0), 1) * store.playerDuration;
+  // 限制气泡不超出进度条两端
+  hoverLeft.value = Math.min(Math.max(e.clientX - rect.left, 32), rect.width - 32);
+};
+
+// 点击进度条跳转
+const onProgressSeek = (e: MouseEvent) => {
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+  store.requestPlayerSeek(ratio * store.playerDuration);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -104,6 +146,39 @@ const { siteUrlFull: siteUrl } = useSiteUrl();
     backdrop-filter: blur(10px);
     background: rgb(0 0 0 / 25%);
     font-size: 16px;
+  }
+  // 歌曲进度条（贴底细线，hover 增高，点击跳转）
+  .progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgb(255 255 255 / 20%);
+    cursor: pointer;
+    transition: height 0.2s;
+    z-index: 1;
+    &:hover {
+      height: 6px;
+    }
+    .progress-played {
+      height: 100%;
+      background: #efefef;
+    }
+    .progress-tip {
+      position: absolute;
+      bottom: 14px;
+      transform: translateX(-50%);
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgb(0 0 0 / 50%);
+      backdrop-filter: blur(10px);
+      font-size: 12px;
+      line-height: 1;
+      color: #efefef;
+      pointer-events: none;
+      white-space: nowrap;
+    }
   }
   .fade-enter-active,
   .fade-leave-active {

@@ -8,8 +8,6 @@ type CursorPosition = {
   prev: Point | null;
 };
 
-let mainCursor: Cursor | null = null;
-
 const lerp = (a: number, b: number, n: number): number => {
   if (Math.round(a) === b) {
     return b;
@@ -18,8 +16,7 @@ const lerp = (a: number, b: number, n: number): number => {
 };
 
 const cursorInit = (): Cursor => {
-  mainCursor = new Cursor();
-  return mainCursor;
+  return new Cursor();
 };
 
 class Cursor {
@@ -55,23 +52,6 @@ class Cursor {
 
     document.body.appendChild((this.scr = document.createElement("style")));
     this.scr.innerHTML = `* {cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='10px' height='10px'><circle cx='4' cy='4' r='4' fill='white' /></svg>") 4 4, auto !important}`;
-  }
-
-  refresh(): void {
-    this.scr.remove();
-    this.cursor.classList.remove("active");
-    this.pos = {
-      curr: null,
-      prev: null,
-    };
-    if (this.rafId) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
-
-    this.create();
-    this.init();
-    this.render();
   }
 
   init(): void {

@@ -10,7 +10,7 @@
     <Transition name="el-fade-in-linear">
       <div
         class="open-music"
-        v-show="openMusicShow && store.musicIsOk"
+        v-show="openMusicShow && playerHasId"
         @click="store.musicOpenState = true"
       >
         <music-menu theme="filled" size="18" fill="#efefef" />
@@ -35,13 +35,16 @@ import debounce from "@/utils/debounce";
 
 const store = mainStore();
 
+// 是否配置了音乐（Player 懒加载后不再依赖 musicIsOk 判断入口显隐）
+const playerHasId = !!import.meta.env.VITE_SONG_ID;
+
 // 开启音乐面板按钮显隐
 const openMusicShow = ref(false);
 
 // 一言数据
 const hitokotoData = reactive({
   text: "这里应该显示一句话",
-  from: "無名",
+  from: "未知",
 });
 
 // 获取一言数据
@@ -59,7 +62,7 @@ const getHitokotoData = async () => {
       }),
     });
     hitokotoData.text = "这里应该显示一句话";
-    hitokotoData.from = "無名";
+    hitokotoData.from = "未知";
   }
 };
 

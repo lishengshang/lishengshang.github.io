@@ -4,9 +4,8 @@
     <!-- Logo -->
     <div class="logo">
       <img class="logo-img" :src="siteLogo" alt="logo" />
-      <div :class="{ name: true, 'text-hidden': true, long: siteUrl[0].length >= 6 }">
-        <span class="bg">{{ siteUrl[0] }}</span>
-        <span class="sm">.{{ siteUrl[1] }}</span>
+      <div :class="{ name: true, 'text-hidden': true, long: logoText.length >= 6 }">
+        <span class="bg">{{ logoText }}</span>
       </div>
     </div>
     <!-- 简介 -->
@@ -41,6 +40,8 @@ const store = mainStore();
 const siteLogo = import.meta.env.VITE_SITE_MAIN_LOGO;
 // 站点链接
 const { siteUrl } = useSiteUrl();
+// 站名艺术字（未配置时回退为域名第一段）
+const logoText = import.meta.env.VITE_SITE_LOGO_TEXT || siteUrl.value[0];
 
 // 简介区域文字
 const descriptionText = reactive({
@@ -101,11 +102,10 @@ watch(
         font-size: 5rem;
       }
 
-      .sm {
-        margin-left: 6px;
-        font-size: 2rem;
-        @media (min-width: 721px) and (max-width: 789px) {
-          display: none;
+      // 站名过长时缩小字号，避免被 text-hidden 截断
+      &.long {
+        .bg {
+          font-size: 3.5rem;
         }
       }
     }
@@ -117,6 +117,11 @@ watch(
         height: 128px;
         .bg {
           font-size: 4.5rem;
+        }
+        &.long {
+          .bg {
+            font-size: 3rem;
+          }
         }
       }
     }

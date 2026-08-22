@@ -9,7 +9,6 @@
     :loop="store.playerLoop"
     :order="store.playerOrder"
     :volume="volume"
-    :showLrc="true"
     :listFolded="listFolded"
     :listMaxHeight="listMaxHeight"
     :noticeSwitch="false"
@@ -25,7 +24,9 @@ import { MusicOne, PlayWrong } from "@icon-park/vue-next";
 import { getPlayerList } from "@/api";
 import type { PlayerItem } from "@/api";
 import { mainStore } from "@/store";
-import APlayer from "@worstone/vue-aplayer";
+
+// 懒加载 aplayer，减小首屏体积（首次打开音乐列表时才加载）
+const APlayer = defineAsyncComponent(() => import("@worstone/vue-aplayer"));
 
 const store = mainStore();
 
@@ -43,7 +44,6 @@ interface APlayerInstance {
   skipBack(): void;
   skipForward(): void;
   play(): void;
-  toggleList(): void;
 }
 
 // 获取播放器 DOM
@@ -85,15 +85,15 @@ const props = defineProps({
     type: String,
     default: "7452421335",
   },
-  // 列表是否默认折叠
+  // 列表展开状态（注意：该库语义相反，listFolded=true 才表示列表展开显示）
   listFolded: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   // 列表最大高度
   listMaxHeight: {
     type: Number,
-    default: 420,
+    default: 470,
   },
 });
 
@@ -110,6 +110,8 @@ onMounted(() => {
       store.musicIsOk = true;
       // 生成歌单
       playList.value = res;
+      // 初始渲染后清理 author 行的 " - " 前缀（未自动播放时不会触发 onPlay）
+      setTimeout(stripAuthorDash, 50);
     } catch (err) {
       console.error(err);
       store.musicIsOk = false;
@@ -124,6 +126,17 @@ onMounted(() => {
     }
   });
 });
+
+// APlayer 默认把 author 元素内容前缀写成 " - "，歌名/歌手分行时需去掉
+const stripAuthorDash = () => {
+  const root = player.value as unknown as { $el?: Element } | undefined | null;
+  const el = root?.$el?.querySelector?.(".aplayer-author") as HTMLElement | null;
+  if (!el) return;
+  const t = el.textContent;
+  if (t && t.trim().startsWith("- ")) {
+    el.textContent = t.trim().replace(/^-\s*/, "");
+  }
+};
 
 // 播放
 const onPlay = () => {
@@ -141,6 +154,7 @@ const onPlay = () => {
       fill: "#efefef",
     }),
   });
+  nextTick(stripAuthorDash);
 };
 
 // 暂停
@@ -151,6 +165,11 @@ const onPause = () => {
 // 音频时间更新事件
 const onTimeUp = () => {
   const playerInstance = player.value!;
+  // 更新播放进度（供底栏进度条显示）
+  store.setPlayerProgress(
+    playerInstance.audioRef.currentTime,
+    playerInstance.audioRef.duration || 0,
+  );
   const lyrics = playerInstance.aplayer.lyrics[playIndex.value];
   const lyricIndex = playerInstance.aplayer.lyricIndex;
   if (!lyrics || !lyrics[lyricIndex]) {
@@ -183,10 +202,15 @@ const changeSong = (type: number) => {
   });
 };
 
-// 切换歌曲列表状态
-const toggleList = () => {
-  player.value!.toggleList();
-};
+// 响应底栏进度条跳转请求
+watch(
+  () => store.playerSeekTo,
+  (value) => {
+    if (value === null || !player.value) return;
+    player.value.audioRef.currentTime = value;
+    store.playerSeekTo = null;
+  },
+);
 
 // 加载音频错误
 const loadMusicError = () => {
@@ -214,89 +238,166 @@ const loadMusicError = () => {
 };
 
 // 暴露子组件方法
-defineExpose({ playToggle, changeVolume, changeSong, toggleList });
+defineExpose({ playToggle, changeVolume, changeSong });
 </script>
 
 <style lang="scss" scoped>
 .aplayer {
-  width: 80%;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   border-radius: 6px;
   font-family: "HarmonyOS_Regular", sans-serif !important;
+  background-color: transparent !important;
+  box-sizing: border-box;
   :deep(.aplayer-body) {
     background-color: transparent;
+    margin: 0 0 12px;
+    padding: 0;
+    flex: none;
+    // 封面：正常显示 72x72 圆角方形 + 阴影，贴合弹窗白模糊风格
     .aplayer-pic {
-      display: none;
+      display: block;
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      margin: 0;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
     }
     .aplayer-info {
-      margin-left: 0;
-      background-color: #ffffff40;
+      margin-left: 14px;
+      background-color: transparent;
       border-color: transparent !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
       .aplayer-music {
-        flex-grow: initial;
-        margin-bottom: 2px;
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        margin: 0;
         overflow: initial;
+        clear: none;
+        flex: none;
         .aplayer-title {
-          font-size: 16px;
-          margin-right: 6px;
+          display: block;
+          font-size: 17px;
+          font-weight: 500;
+          color: #1a1a1a;
+          margin: 0 0 4px;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
         .aplayer-author {
-          color: #efefef;
+          display: block;
+          color: #555;
+          font-size: 13px;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
       }
+      // 歌词：底栏已有，弹窗内不重复显示
       .aplayer-lrc {
-        text-align: left;
-        margin: 7px 0 6px 6px;
-        height: 44px;
-        mask: linear-gradient(
-          #fff 15%,
-          #fff 85%,
-          hsla(0deg, 0%, 100%, 0.6) 90%,
-          hsla(0deg, 0%, 100%, 0)
-        );
-        -webkit-mask: linear-gradient(
-          #fff 15%,
-          #fff 85%,
-          hsla(0deg, 0%, 100%, 0.6) 90%,
-          hsla(0deg, 0%, 100%, 0)
-        );
-        &::before,
-        &::after {
-          display: none;
-        }
-        p {
-          color: #efefef;
-        }
-        .aplayer-lrc-current {
-          font-size: 0.95rem;
-          margin-bottom: 4px !important;
-        }
+        display: none !important;
       }
+      // 控制条（进度+按钮）：右栏有自定义按钮 + 底栏有进度条，不重复
       .aplayer-controller {
-        display: none;
+        display: none !important;
       }
     }
   }
+  // 歌单列表：flex:1 占满剩余高度 + max-height 兜底溢出滚动，提高可读性
   :deep(.aplayer-list) {
-    margin-top: 6px;
-    height: v-bind(listHeight);
+    margin: 0;
+    padding: 0;
     background-color: transparent;
+    border-radius: 6px;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     ol {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: v-bind(listHeight);
+      overflow-y: auto;
+      padding-right: 4px;
+      margin: 0;
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
       &::-webkit-scrollbar-track {
         background-color: transparent;
       }
+      &::-webkit-scrollbar-thumb {
+        background-color: #ffffff60;
+        border-radius: 3px;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #ffffff90;
+      }
       li {
+        position: relative;
         border-color: transparent;
+        padding: 9px 10px 9px 24px; // 左侧多留 14px 指示区（不再依赖 cur span 占位）
+        margin: 2px 0;
+        border-radius: 6px;
+        // APlayer 库自带的 .aplayer-list-cur 是一条绝对定位的白色 3px 竖条
+        // （top:5px; left:0; width:3px; height:22px），特异性高会覆盖 display:none
+        // 这里用同等特异性强制隐藏，改用我们自己画在 li::before 的蓝条
+        &.aplayer-list-light .aplayer-list-cur,
+        .aplayer-list-cur {
+          display: none !important;
+        }
         &.aplayer-list-light {
-          background: #ffffff40;
-          border-radius: 6px;
+          background: #ffffff55;
+          // 蓝条画在 14px 指示区的中心：left: 12 与序号起点 24 之间留 10px
+          &::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 18px;
+            border-radius: 2px;
+            background: #5b8def;
+          }
         }
         &:hover {
-          background: #ffffff26 !important;
-          border-radius: 6px !important;
+          background: #ffffff33 !important;
         }
         .aplayer-list-index,
         .aplayer-list-author {
-          color: #efefef;
+          color: #444;
+        }
+        .aplayer-list-title {
+          color: #1a1a1a;
+          flex-shrink: 1;
+          min-width: 0;
+        }
+        .aplayer-list-author {
+          flex-shrink: 0;
+          max-width: 30%;
+          text-align: right;
+        }
+        .aplayer-list-duration {
+          color: #777;
+          font-size: 12px;
+          flex-shrink: 0;
+          margin-left: 8px;
+          min-width: 40px;
+          text-align: right;
         }
       }
     }

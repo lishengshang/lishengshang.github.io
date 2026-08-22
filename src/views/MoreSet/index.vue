@@ -67,17 +67,21 @@ const { siteUrl } = useSiteUrl();
 // 更新日志
 const upData = reactive({
   new: [
-    "采用 Vue 进行重构",
-    "音乐歌单支持快速自定义",
-    "壁纸支持个性化设置",
-    "音乐播放器支持音量控制",
+    "站点图标与壁纸个人化定制",
+    "樱花飘落、入场动画与点击波纹动效",
+    "工程化升级：Vite 6、ESLint 9、TypeScript",
   ],
-  fix: ["修复天气 API", "时光胶囊显示错误", "移动端动画及细节", "图标更换为 IconPark"],
+  fix: [
+    "修复音乐播放器加载失败",
+    "修复 PWA 拦截博客跳转",
+    "修复歌词渲染 XSS 风险与图标路径 404",
+    "移除失效的天气功能",
+  ],
 });
 
 // 跳转源代码仓库
 const jumpTo = (url: string): void => {
-  window.open(url);
+  window.open(url, "_blank", "noopener,noreferrer");
 };
 </script>
 

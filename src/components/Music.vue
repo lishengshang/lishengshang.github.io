@@ -43,9 +43,9 @@
       </div>
     </div>
   </div>
-  <!-- 音乐列表弹窗 -->
+  <!-- 音乐列表弹窗（首次打开才挂载 Player，懒加载 aplayer；之后保持挂载避免重复请求歌单） -->
   <Transition name="fade" mode="out-in">
-    <div class="music-list" v-show="musicListShow" @click="closeMusicList()">
+    <div class="music-list" v-if="listMounted" v-show="musicListShow" @click="closeMusicList()">
       <Transition name="zoom">
         <div class="list" v-show="musicListShow" @click.stop>
           <close-one
@@ -90,6 +90,7 @@ const volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
 
 // 播放列表数据
 const musicListShow = ref(false);
+const listMounted = ref(false);
 const playerRef = ref<PlayerInstance | null>(null);
 const playerData = reactive({
   server: import.meta.env.VITE_SONG_SERVER,
@@ -100,13 +101,13 @@ const playerData = reactive({
 // 开启播放列表
 const openMusicList = () => {
   musicListShow.value = true;
-  playerRef.value?.toggleList();
+  // 首次打开挂载 Player（触发 aplayer 异步 chunk 与歌单请求），此后保持挂载
+  listMounted.value = true;
 };
 
 // 关闭播放列表
 const closeMusicList = () => {
   musicListShow.value = false;
-  playerRef.value?.toggleList();
 };
 
 // 监听外部打开音乐列表请求（替代全局 window.$openList）
@@ -130,12 +131,17 @@ const changeMusicIndex = (type: number) => {
   playerRef.value?.changeSong(type);
 };
 
-// 空格键事件
+// 键盘事件：空格播放/暂停，ESC 关闭音乐列表弹窗
 const onKeyDown = (e: KeyboardEvent) => {
+  if (e.code === "Escape" && musicListShow.value) {
+    closeMusicList();
+    e.preventDefault();
+    return;
+  }
   if (!store.musicIsOk) {
     return;
   }
-  if (e.code == "Space") {
+  if (e.code === "Space") {
     changePlayState();
   }
 };
@@ -250,17 +256,36 @@ watch(
           display: block;
         }
       }
-      :deep(*) {
-        transition: none;
-      }
-      :deep(.el-slider__button) {
-        transition: 0.3s;
-      }
-      .el-slider {
+      // 音量滑块：与底栏进度条风格统一——细线、白色，去掉按钮和 Element Plus 原生蓝主题
+      :deep(.el-slider) {
         margin-right: 12px;
         --el-slider-main-bg-color: #efefef;
-        --el-slider-runway-bg-color: #ffffff40;
-        --el-slider-button-size: 16px;
+        --el-slider-runway-bg-color: rgba(255, 255, 255, 0.2);
+        --el-slider-button-size: 0px;
+        --el-slider-button-border: none;
+        --el-slider-button-bg-color: transparent;
+        --el-slider-button-hover-bg-color: transparent;
+        --el-slider-button-hover-border-color: transparent;
+        --el-slider-button-drag-bg-color: transparent;
+        --el-slider-height: 3px;
+        --el-slider-runway-height: 3px;
+        // hover 时增粗，与底栏进度条呼应
+        &:hover {
+          --el-slider-height: 6px;
+          --el-slider-runway-height: 6px;
+        }
+      }
+      :deep(.el-slider__runway) {
+        border-radius: 2px;
+      }
+      :deep(.el-slider__bar) {
+        border-radius: 2px;
+      }
+      :deep(.el-slider__button-wrapper) {
+        display: none;
+      }
+      :deep(.el-slider__stop) {
+        display: none;
       }
     }
   }
@@ -277,29 +302,43 @@ watch(
   z-index: 1;
   .list {
     position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    top: calc(50% - 300px);
-    left: calc(50% - 320px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 640px;
+    max-width: 90%;
     height: 600px;
+    max-height: 90vh;
+    padding: 56px 16px 16px;
+    box-sizing: border-box;
     background-color: #ffffff66;
-    border-radius: 6px;
+    border-radius: 8px;
     z-index: 999;
+    display: flex;
+    flex-direction: column;
     @media (max-width: 720px) {
-      left: calc(50% - 45%);
-      width: 90%;
+      padding: 52px 12px 12px;
     }
     .close {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 28px;
-      height: 28px;
-      display: block;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 10;
+      :deep(.i-icon) {
+        width: 22px;
+        height: 22px;
+      }
       &:hover {
-        transform: scale(1.2);
+        background: #00000018;
+        transform: scale(1.1);
       }
       &:active {
         transform: scale(0.95);
@@ -308,21 +347,41 @@ watch(
   }
 }
 
-// 弹窗动画
+// 遮罩层淡入淡出
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+// 弹窗卡片：中心微缩 + 微移的自然过渡
 .zoom-enter-active {
-  animation: zoom 0.4s ease-in-out;
+  transition:
+    opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .zoom-leave-active {
-  animation: zoom 0.3s ease-in-out reverse;
+  transition:
+    opacity 160ms cubic-bezier(0.4, 0, 1, 1),
+    transform 160ms cubic-bezier(0.4, 0, 1, 1);
 }
-@keyframes zoom {
-  0% {
-    opacity: 0;
-    transform: scale(0) translateY(-600px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.zoom-enter-from {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 12px)) scale(0.96);
+}
+.zoom-enter-to {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.zoom-leave-from {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.zoom-leave-to {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 6px)) scale(0.98);
 }
 </style>

@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 无进行中的会话工作（2026-08-13 两阶段会话均已收尾，见会话记录）。
+- 无进行中的会话工作（2026-08-22 定制 + 安全修复 + 性能优化会话已收尾，成果在 `feat/custom-homepage` 分支，未合并 main、未推送远端）。
 
 ## 已完成
 
@@ -37,11 +37,17 @@
 - Vite 5 → 6 升级（vite-plugin-pwa 同步至 1.3.0，构建产物一致），提交：`4945efe`。
 - CI 接入 `pnpm typecheck` 门禁并升级 GitHub Actions 至新大版本（消除 Node 20 弃用标注），提交：`36b4931`、`e4444a1`；部署仓库工作流同步升级，提交：`17d2305`（lishengshang.github.io）。
 - 修复 PWA 导航兜底拦截 `/blog/` 子站点（workbox `navigateFallbackDenylist`），提交：`f25524b`。
+- 2026-08-22 5.2.0 个人化定制 + 安全修复（分支 `feat/custom-homepage`）：图标/壁纸全套个人化、apple-touch-icon 路径 404 修复、歌词 XSS、serviceWorker 守卫、外链 noopener、更新日志与元信息更新，提交：`70e7e49`、`f06a686`。
 
 ## 下一步
 
-1. `vite.config.js` 迁移为 `vite.config.ts`（验收：`pnpm build` 通过、配置行为不变）。
-2. 评估 Vite 7 升级时机（验收：无阻塞性 peer 冲突时列入 roadmap）。
+评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项已于 2026-08-22 完成）：
+
+1. **可靠性**：外部 API（一言/壁纸/Meting）统一超时 + 失败降级；Sakura 的 `visibilitychange` 匿名监听在卸载时移除。
+2. **工程化**：引入 Vitest + Vue Test Utils（`utils/`、`api/`、composable 单测）；CI 增加 `pnpm lint`（无 `--fix`）门禁；重写 Dockerfile（Node 22 + pnpm + 静态镜像）；`vite.config.js` 迁移 `vite.config.ts`；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
+3. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）。
+4. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
+5. **分支收尾**：`feat/custom-homepage` 预览确认壁纸与图标效果后合并 main 并推送，触发部署链同步。
 
 ## 会话记录
 
@@ -99,3 +105,94 @@
 ##### 下一步
 
 - 见上文 `## 下一步`。
+
+#### 第三阶段：全仓评审与路线图（未改代码）
+
+##### 摘要
+
+对全仓做代码审查 + 同类项目调研，产出优化路线图。未修改源码，仅更新本文件。
+
+##### 结论
+
+- 现状：lint/typecheck/build 三门槛通过；CI（Build/Notify）绿；线上站点与本地构建产物哈希一致；5.1.0 重构 + 工程化升级整体扎实。
+- 关键发现：①Footer 歌词 `v-html` 存在第三方歌词注入的 XSS 面；②`navigator.serviceWorker` 无守卫（不支持的浏览器会抛错）；③`pnpm audit --prod` 15 个漏洞（swiper 原型污染 critical、element-plus 携带的 lodash、vue/compiler-sfc 链上的 postcss/nanoid），均可通过依赖升级消除；④无任何测试（Vitest 缺位）、CI 缺 lint 门禁；⑤Dockerfile 使用 Node 18 + npm 与项目基线（Node>=22 + pnpm）冲突；⑥外部 API（一言/壁纸/Meting）无超时与降级；⑦dev 分支落后 main 9 个提交；⑧MoreSet 更新日志为原作者硬编码残留。
+
+##### 涉及文件
+
+- 仅 `docs/ai/STATUS.md`（评审记录与路线图）。
+
+##### 验证
+
+- `pnpm typecheck` / `pnpm lint` / `pnpm build`：均通过，exit 0。
+- `pnpm audit --prod`：15 vulnerabilities（1 critical / 6 high / 8 moderate）。
+- 线上 `lishengshang.github.io`：HTTP 200，产物哈希与本地 dist 一致。
+
+##### 风险与缺口
+
+- 依赖大版本升级（Vue 3.5 / Vite 7 / Pinia 3 / Element Plus 2.11+）属高风险变更，需 ADR 与产物对比，不可与功能开发混在同一 PR。
+
+##### 下一步
+
+- 见上文 `## 下一步`。
+
+### 2026-08-22
+
+#### 5.2.0 个人化定制 + 安全修复（分支 feat/custom-homepage）
+
+##### 摘要
+
+按用户选择完成站点个人化（图标用 `anime_s.jpg` 生成全套、壁纸从个人收藏挑选 10 张压缩替换、歌单与简介保留）与路线图安全项修复；顺带修复 apple-touch-icon 路径 404、更新日志硬编码残留与 package.json 元信息，版本升至 5.2.0。
+
+##### 涉及文件
+
+- `public/images/icon/*`：favicon.ico（PNG-in-ICO 256x256）、logo.png、apple-touch-icon.png（原为 JPEG 伪装 PNG，现为真 PNG）及 32~512 全部 PWA 尺寸。
+- `public/images/background1-10.jpg`：替换为个人收藏（7 动漫向 + 3 风景向），统一 1920x1080 JPEG（sips 缩放 + 居中裁切 + 质量 80，140~708K）。
+- `.env.example`（及本地 `.env`，未入库）：`VITE_SITE_APPLE_LOGO` 路径修复。
+- `src/components/Footer.vue`：歌词 `v-html` → 纯文本插值；原作者署名固定指向 imsyy/home。
+- `src/main.ts`：`navigator.serviceWorker` 存在性守卫。
+- `src/components/Links.vue`、`src/views/MoreSet/index.vue`：`window.open` 显式 `noopener,noreferrer`；MoreSet 更新日志改为本 fork 实际变更。
+- `package.json`：author/github/home 改为 fork 信息，版本 5.1.0 → 5.2.0。
+- `CHANGELOG.md`：补 5.2.0 条目。
+
+##### 验证
+
+- `pnpm lint` / `pnpm typecheck` / `pnpm build`：均通过，exit 0（precache 17 entries / 548.80 KiB）。
+- `file` 校验：favicon.ico 为合法 MS Windows icon resource；background*.jpg 均为 1920x1080 JPEG。
+
+##### 风险与缺口
+
+- 壁纸挑选基于文件名/规格启发式（当前模型无法预览图片内容），用户尚未预览确认，可能需要替换个别图片。
+- `.env` 为 gitignore 文件，本地修改不随仓库分发；部署链使用 `.env.example` 已同步修复。
+- 分支未合并 main、未推送远端，线上仍为 5.1.0。
+
+##### 下一步
+
+- 用户 `pnpm dev` 预览确认壁纸/图标效果，不满意可指定替换；确认后合并 main 并推送触发部署。
+
+#### 5.3.0 全仓性能审查与优化（同日第二场）
+
+##### 摘要
+
+应用户「高性能、轻量化」要求做全仓审查。结论：整体非屎山（v5.0 重构 + 工程化升级质量良好），修复 6 处遗留问题并落地 4 项性能优化（用户确认）。版本升至 5.3.0。
+
+##### 审查发现与处置
+
+- 已直接修复：死资产 `Pacifico-Regular-all.ttf`（315KB）；Sakura `visibilitychange` 匿名监听器泄漏；cursor.ts 死代码（`refresh()`/`mainCursor`）；Right.vue 移动端 Logo 与桌面不一致；控制台「無名の主页」与一言兜底「無名」品牌残留。提交：`7adb78e`。
+- 用户确认后落地：①音乐懒加载（aplayer `defineAsyncComponent` + 弹窗 `v-if` 首开挂载 + fetch-jsonp 动态导入，首屏 0 条 aplayer 请求，行为变化：空格播放需先开过列表）；②vendor 分包（element-plus/aplayer/vendor 三 chunk）；③壁纸 WebP（3.6MB→1.2MB）；④HarmonyOS Sans 非阻塞加载。提交：`15b36e8`。
+- 审查通过未改动：樱花 Canvas（rAF+隐藏暂停）、光标（rAF 节流）、波纹（animationend 清理）、时钟/胶囊定时器、Box/MoreSet 懒加载、EP 按需导入。
+
+##### 验证
+
+- `pnpm lint` / `pnpm typecheck` / `pnpm build`：均通过。
+- dist 6.2MB → 3.5MB（-44%）；壁纸 -67%；首屏 3 chunk（index 29.5K + vendor 245.6K + element-plus 99.6K），aplayer 44.4K 独立懒加载。
+- 浏览器实测：首屏 0 条 aplayer 请求；点击音乐列表后懒加载成功，19 首歌单正常；WebP 壁纸 200；站名无后缀。
+
+##### 风险与缺口
+
+- `musicIsOk` 语义变化：Player 懒加载后仅在首次打开列表且歌单加载成功后才为 true（空格播放依赖此状态，属合理行为）。
+- WebP 兼容性：现代浏览器全支持；PWA 图片缓存正则已覆盖 webp。
+- 行为变化：歌单 API 请求从首屏移至首次打开音乐列表。
+
+##### 下一步
+
+- 用户预览确认；后续可做路线图剩余项（外部 API 超时降级、Vitest、Dockerfile、依赖升级）。

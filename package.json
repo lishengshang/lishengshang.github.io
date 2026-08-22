@@ -1,10 +1,10 @@
 {
   "name": "home",
-  "author": "imsyy",
-  "github": "https://github.com/imsyy/home",
-  "home": "https://imsyy.top",
+  "author": "lishengshang",
+  "github": "https://github.com/lishengshang/homepage",
+  "home": "https://lishengshang.github.io",
   "private": true,
-  "version": "5.1.0",
+  "version": "5.2.0",
   "type": "module",
   "engines": {
     "node": ">=22"

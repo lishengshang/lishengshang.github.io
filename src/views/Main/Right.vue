@@ -2,8 +2,7 @@
   <div :class="store.mobileOpenState ? 'right' : 'right hidden'">
     <!-- 移动端 Logo -->
     <div class="logo text-hidden" @click="store.mobileFuncState = !store.mobileFuncState">
-      <span class="bg">{{ siteUrl[0] }}</span>
-      <span class="sm">.{{ siteUrl[1] }}</span>
+      <span class="bg">{{ logoText }}</span>
     </div>
     <!-- 功能区 -->
     <Func />
@@ -21,6 +20,8 @@ const store = mainStore();
 
 // 站点链接
 const { siteUrl } = useSiteUrl();
+// 站名艺术字（未配置时回退为域名第一段）
+const logoText = import.meta.env.VITE_SITE_LOGO_TEXT || siteUrl.value[0];
 </script>
 
 <style lang="scss" scoped>
