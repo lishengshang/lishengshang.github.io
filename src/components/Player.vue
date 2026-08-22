@@ -110,6 +110,8 @@ onMounted(() => {
       store.musicIsOk = true;
       // 生成歌单
       playList.value = res;
+      // 初始渲染后清理 author 行的 " - " 前缀（未自动播放时不会触发 onPlay）
+      setTimeout(stripAuthorDash, 50);
     } catch (err) {
       console.error(err);
       store.musicIsOk = false;
@@ -124,6 +126,17 @@ onMounted(() => {
     }
   });
 });
+
+// APlayer 默认把 author 元素内容前缀写成 " - "，歌名/歌手分行时需去掉
+const stripAuthorDash = () => {
+  const root = player.value as unknown as { $el?: Element } | undefined | null;
+  const el = root?.$el?.querySelector?.(".aplayer-author") as HTMLElement | null;
+  if (!el) return;
+  const t = el.textContent;
+  if (t && t.trim().startsWith("- ")) {
+    el.textContent = t.trim().replace(/^-\s*/, "");
+  }
+};
 
 // 播放
 const onPlay = () => {
@@ -141,6 +154,7 @@ const onPlay = () => {
       fill: "#efefef",
     }),
   });
+  nextTick(stripAuthorDash);
 };
 
 // 暂停
@@ -229,56 +243,105 @@ defineExpose({ playToggle, changeVolume, changeSong });
 
 <style lang="scss" scoped>
 .aplayer {
-  width: 80%;
+  width: 92%;
+  height: 100%;
   border-radius: 6px;
   font-family: "HarmonyOS_Regular", sans-serif !important;
+  background-color: transparent !important;
   :deep(.aplayer-body) {
     background-color: transparent;
+    margin: 14px 14px 10px;
+    // 封面：正常显示 72x72 圆角方形 + 阴影，贴合弹窗白模糊风格
     .aplayer-pic {
-      display: none;
+      display: block;
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      margin: 0;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
     }
     .aplayer-info {
-      margin-left: 0;
-      background-color: #ffffff40;
+      margin-left: 14px;
+      background-color: transparent;
       border-color: transparent !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
       .aplayer-music {
-        flex-grow: initial;
-        margin-bottom: 2px;
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        margin: 0;
         overflow: initial;
+        clear: none;
+        flex: none;
         .aplayer-title {
-          font-size: 16px;
-          margin-right: 6px;
+          display: block;
+          font-size: 17px;
+          font-weight: 500;
+          color: #1a1a1a;
+          margin: 0 0 4px;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
         .aplayer-author {
-          color: #efefef;
+          display: block;
+          color: #555;
+          font-size: 13px;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
       }
+      // 歌词：底栏已有，弹窗内不重复显示
+      .aplayer-lrc {
+        display: none !important;
+      }
+      // 控制条（进度+按钮）：右栏有自定义按钮 + 底栏有进度条，不重复
       .aplayer-controller {
-        display: none;
+        display: none !important;
       }
     }
   }
+  // 歌单列表：加大边距与项间距，提高可读性
   :deep(.aplayer-list) {
-    margin-top: 6px;
+    margin: 0 14px 14px;
     height: v-bind(listHeight);
     background-color: transparent;
+    border-radius: 6px;
     ol {
       &::-webkit-scrollbar-track {
         background-color: transparent;
       }
       li {
         border-color: transparent;
+        padding: 8px 10px;
+        margin: 2px 0;
+        border-radius: 6px;
+        .aplayer-list-cur {
+          opacity: 0;
+        }
         &.aplayer-list-light {
-          background: #ffffff40;
-          border-radius: 6px;
+          background: #ffffff55;
+          .aplayer-list-cur {
+            opacity: 1;
+          }
         }
         &:hover {
-          background: #ffffff26 !important;
-          border-radius: 6px !important;
+          background: #ffffff33 !important;
         }
         .aplayer-list-index,
         .aplayer-list-author {
-          color: #efefef;
+          color: #444;
+        }
+        .aplayer-list-title {
+          color: #1a1a1a;
         }
       }
     }
