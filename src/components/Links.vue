@@ -80,7 +80,7 @@ const jumpLink = (data: SiteLink): void => {
   if (data.name === "音乐" && store.musicClick) {
     store.openMusicList();
   } else {
-    window.open(data.link, "_blank");
+    window.open(data.link, "_blank", "noopener,noreferrer");
   }
 };
 </script>

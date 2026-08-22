@@ -13,11 +13,11 @@
           {{ fullYear }}
           <a :href="siteUrl">{{ siteAuthor }}</a>
         </span>
-        <!-- 以下信息请不要修改哦 -->
+        <!-- 原作者署名（fork 自 imsyy/home，请保留） -->
         <span class="hidden">
           &amp;&nbsp;Made&nbsp;by
-          <a :href="config.github" target="_blank">
-            {{ config.author }}
+          <a href="https://github.com/imsyy/home" target="_blank">
+            imsyy
           </a>
         </span>
         <!-- 站点备案 -->
@@ -32,7 +32,7 @@
         <Transition name="fade" mode="out-in">
           <div class="lrc-all" :key="store.playerLrc">
             <music-one theme="filled" size="18" fill="#efefef" />
-            <span class="lrc-text text-hidden" v-html="store.playerLrc" />
+            <span class="lrc-text text-hidden">{{ store.playerLrc }}</span>
             <music-one theme="filled" size="18" fill="#efefef" />
           </div>
         </Transition>
@@ -45,7 +45,6 @@
 import { MusicOne } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
-import config from "@/../package.json";
 
 const store = mainStore();
 const fullYear = new Date().getFullYear();
