@@ -1,5 +1,9 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly VITE_SITE_LOGO_TEXT?: string;
+}
+
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
 
