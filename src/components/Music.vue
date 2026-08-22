@@ -347,21 +347,41 @@ watch(
   }
 }
 
-// 弹窗动画
+// 遮罩层淡入淡出
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+// 弹窗卡片：中心微缩 + 微移的自然过渡
 .zoom-enter-active {
-  animation: zoom 0.4s ease-in-out;
+  transition:
+    opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .zoom-leave-active {
-  animation: zoom 0.3s ease-in-out reverse;
+  transition:
+    opacity 160ms cubic-bezier(0.4, 0, 1, 1),
+    transform 160ms cubic-bezier(0.4, 0, 1, 1);
 }
-@keyframes zoom {
-  0% {
-    opacity: 0;
-    transform: scale(0) translateY(-600px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.zoom-enter-from {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 12px)) scale(0.96);
+}
+.zoom-enter-to {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.zoom-leave-from {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.zoom-leave-to {
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 6px)) scale(0.98);
 }
 </style>
