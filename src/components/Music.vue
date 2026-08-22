@@ -103,13 +103,11 @@ const openMusicList = () => {
   musicListShow.value = true;
   // 首次打开挂载 Player（触发 aplayer 异步 chunk 与歌单请求），此后保持挂载
   listMounted.value = true;
-  playerRef.value?.toggleList();
 };
 
 // 关闭播放列表
 const closeMusicList = () => {
   musicListShow.value = false;
-  playerRef.value?.toggleList();
 };
 
 // 监听外部打开音乐列表请求（替代全局 window.$openList）

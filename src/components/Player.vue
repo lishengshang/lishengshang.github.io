@@ -9,7 +9,6 @@
     :loop="store.playerLoop"
     :order="store.playerOrder"
     :volume="volume"
-    :showLrc="true"
     :listFolded="listFolded"
     :listMaxHeight="listMaxHeight"
     :noticeSwitch="false"
@@ -45,7 +44,6 @@ interface APlayerInstance {
   skipBack(): void;
   skipForward(): void;
   play(): void;
-  toggleList(): void;
 }
 
 // 获取播放器 DOM
@@ -87,10 +85,10 @@ const props = defineProps({
     type: String,
     default: "7452421335",
   },
-  // 列表是否默认折叠
+  // 列表展开状态（注意：该库语义相反，listFolded=true 才表示列表展开显示）
   listFolded: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   // 列表最大高度
   listMaxHeight: {
@@ -153,6 +151,11 @@ const onPause = () => {
 // 音频时间更新事件
 const onTimeUp = () => {
   const playerInstance = player.value!;
+  // 更新播放进度（供底栏进度条显示）
+  store.setPlayerProgress(
+    playerInstance.audioRef.currentTime,
+    playerInstance.audioRef.duration || 0,
+  );
   const lyrics = playerInstance.aplayer.lyrics[playIndex.value];
   const lyricIndex = playerInstance.aplayer.lyricIndex;
   if (!lyrics || !lyrics[lyricIndex]) {
@@ -185,10 +188,15 @@ const changeSong = (type: number) => {
   });
 };
 
-// 切换歌曲列表状态
-const toggleList = () => {
-  player.value!.toggleList();
-};
+// 响应底栏进度条跳转请求
+watch(
+  () => store.playerSeekTo,
+  (value) => {
+    if (value === null || !player.value) return;
+    player.value.audioRef.currentTime = value;
+    store.playerSeekTo = null;
+  },
+);
 
 // 加载音频错误
 const loadMusicError = () => {
@@ -216,7 +224,7 @@ const loadMusicError = () => {
 };
 
 // 暴露子组件方法
-defineExpose({ playToggle, changeVolume, changeSong, toggleList });
+defineExpose({ playToggle, changeVolume, changeSong });
 </script>
 
 <style lang="scss" scoped>
@@ -243,34 +251,6 @@ defineExpose({ playToggle, changeVolume, changeSong, toggleList });
         }
         .aplayer-author {
           color: #efefef;
-        }
-      }
-      .aplayer-lrc {
-        text-align: left;
-        margin: 7px 0 6px 6px;
-        height: 44px;
-        mask: linear-gradient(
-          #fff 15%,
-          #fff 85%,
-          hsla(0deg, 0%, 100%, 0.6) 90%,
-          hsla(0deg, 0%, 100%, 0)
-        );
-        -webkit-mask: linear-gradient(
-          #fff 15%,
-          #fff 85%,
-          hsla(0deg, 0%, 100%, 0.6) 90%,
-          hsla(0deg, 0%, 100%, 0)
-        );
-        &::before,
-        &::after {
-          display: none;
-        }
-        p {
-          color: #efefef;
-        }
-        .aplayer-lrc-current {
-          font-size: 0.95rem;
-          margin-bottom: 4px !important;
         }
       }
       .aplayer-controller {

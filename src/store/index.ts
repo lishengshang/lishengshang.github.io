@@ -24,6 +24,9 @@ type MainState = {
   playerAutoplay: boolean;
   playerLoop: string;
   playerOrder: string;
+  playerTime: number;
+  playerDuration: number;
+  playerSeekTo: number | null;
 };
 
 export const mainStore = defineStore("main", {
@@ -52,6 +55,9 @@ export const mainStore = defineStore("main", {
       playerAutoplay: false, // 是否自动播放
       playerLoop: "all", // 循环播放 "all", "one", "none"
       playerOrder: "list", // 循环顺序 "list", "random"
+      playerTime: 0, // 当前播放位置（秒）
+      playerDuration: 0, // 当前歌曲总时长（秒）
+      playerSeekTo: null, // 进度条跳转请求（Player 消费后置回 null）
     };
   },
   actions: {
@@ -79,6 +85,15 @@ export const mainStore = defineStore("main", {
     // 更改壁纸加载状态
     setImgLoadStatus(value: boolean) {
       this.imgLoadStatus = value;
+    },
+    // 更新播放进度（供底栏进度条显示）
+    setPlayerProgress(time: number, duration: number) {
+      this.playerTime = time;
+      this.playerDuration = duration;
+    },
+    // 请求跳转播放位置
+    requestPlayerSeek(value: number) {
+      this.playerSeekTo = value;
     },
     // 打开音乐列表弹窗（供外部组件调用）
     openMusicList() {
