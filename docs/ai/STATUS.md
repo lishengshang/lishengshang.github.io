@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-08-13 全仓评审会话（代码审查 + 同类项目调研）进行中，见会话记录。
+- 无进行中的会话工作（2026-08-22 定制与安全修复会话已收尾，成果在 `feat/custom-homepage` 分支，未合并 main、未推送远端）。
 
 ## 已完成
 
@@ -37,16 +37,17 @@
 - Vite 5 → 6 升级（vite-plugin-pwa 同步至 1.3.0，构建产物一致），提交：`4945efe`。
 - CI 接入 `pnpm typecheck` 门禁并升级 GitHub Actions 至新大版本（消除 Node 20 弃用标注），提交：`36b4931`、`e4444a1`；部署仓库工作流同步升级，提交：`17d2305`（lishengshang.github.io）。
 - 修复 PWA 导航兜底拦截 `/blog/` 子站点（workbox `navigateFallbackDenylist`），提交：`f25524b`。
+- 2026-08-22 5.2.0 个人化定制 + 安全修复（分支 `feat/custom-homepage`）：图标/壁纸全套个人化、apple-touch-icon 路径 404 修复、歌词 XSS、serviceWorker 守卫、外链 noopener、更新日志与元信息更新，提交：`70e7e49`、`f06a686`。
 
 ## 下一步
 
-评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录）：
+评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项已于 2026-08-22 完成）：
 
-1. **安全**：Footer 歌词 `v-html` 改为纯文本渲染；`main.ts` 增加 `navigator.serviceWorker` 存在性守卫；外链 `window.open` 显式 `noopener,noreferrer`。
-2. **可靠性**：外部 API（一言/壁纸/Meting）统一超时 + 失败降级；Sakura 的 `visibilitychange` 匿名监听在卸载时移除。
-3. **工程化**：引入 Vitest + Vue Test Utils（`utils/`、`api/`、composable 单测）；CI 增加 `pnpm lint`（无 `--fix`）门禁；重写 Dockerfile（Node 22 + pnpm + 静态镜像）；`vite.config.js` 迁移 `vite.config.ts`；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
-4. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）。
-5. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
+1. **可靠性**：外部 API（一言/壁纸/Meting）统一超时 + 失败降级；Sakura 的 `visibilitychange` 匿名监听在卸载时移除。
+2. **工程化**：引入 Vitest + Vue Test Utils（`utils/`、`api/`、composable 单测）；CI 增加 `pnpm lint`（无 `--fix`）门禁；重写 Dockerfile（Node 22 + pnpm + 静态镜像）；`vite.config.js` 迁移 `vite.config.ts`；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
+3. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）。
+4. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
+5. **分支收尾**：`feat/custom-homepage` 预览确认壁纸与图标效果后合并 main 并推送，触发部署链同步。
 
 ## 会话记录
 
@@ -133,3 +134,37 @@
 ##### 下一步
 
 - 见上文 `## 下一步`。
+
+### 2026-08-22
+
+#### 5.2.0 个人化定制 + 安全修复（分支 feat/custom-homepage）
+
+##### 摘要
+
+按用户选择完成站点个人化（图标用 `anime_s.jpg` 生成全套、壁纸从个人收藏挑选 10 张压缩替换、歌单与简介保留）与路线图安全项修复；顺带修复 apple-touch-icon 路径 404、更新日志硬编码残留与 package.json 元信息，版本升至 5.2.0。
+
+##### 涉及文件
+
+- `public/images/icon/*`：favicon.ico（PNG-in-ICO 256x256）、logo.png、apple-touch-icon.png（原为 JPEG 伪装 PNG，现为真 PNG）及 32~512 全部 PWA 尺寸。
+- `public/images/background1-10.jpg`：替换为个人收藏（7 动漫向 + 3 风景向），统一 1920x1080 JPEG（sips 缩放 + 居中裁切 + 质量 80，140~708K）。
+- `.env.example`（及本地 `.env`，未入库）：`VITE_SITE_APPLE_LOGO` 路径修复。
+- `src/components/Footer.vue`：歌词 `v-html` → 纯文本插值；原作者署名固定指向 imsyy/home。
+- `src/main.ts`：`navigator.serviceWorker` 存在性守卫。
+- `src/components/Links.vue`、`src/views/MoreSet/index.vue`：`window.open` 显式 `noopener,noreferrer`；MoreSet 更新日志改为本 fork 实际变更。
+- `package.json`：author/github/home 改为 fork 信息，版本 5.1.0 → 5.2.0。
+- `CHANGELOG.md`：补 5.2.0 条目。
+
+##### 验证
+
+- `pnpm lint` / `pnpm typecheck` / `pnpm build`：均通过，exit 0（precache 17 entries / 548.80 KiB）。
+- `file` 校验：favicon.ico 为合法 MS Windows icon resource；background*.jpg 均为 1920x1080 JPEG。
+
+##### 风险与缺口
+
+- 壁纸挑选基于文件名/规格启发式（当前模型无法预览图片内容），用户尚未预览确认，可能需要替换个别图片。
+- `.env` 为 gitignore 文件，本地修改不随仓库分发；部署链使用 `.env.example` 已同步修复。
+- 分支未合并 main、未推送远端，线上仍为 5.1.0。
+
+##### 下一步
+
+- 用户 `pnpm dev` 预览确认壁纸/图标效果，不满意可指定替换；确认后合并 main 并推送触发部署。
