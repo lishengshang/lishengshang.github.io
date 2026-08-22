@@ -6,7 +6,6 @@
       <img class="logo-img" :src="siteLogo" alt="logo" />
       <div :class="{ name: true, 'text-hidden': true, long: logoText.length >= 6 }">
         <span class="bg">{{ logoText }}</span>
-        <span class="sm">.{{ siteUrl[1] }}</span>
       </div>
     </div>
     <!-- 简介 -->
@@ -103,21 +102,10 @@ watch(
         font-size: 5rem;
       }
 
-      .sm {
-        margin-left: 6px;
-        font-size: 2rem;
-        @media (min-width: 721px) and (max-width: 789px) {
-          display: none;
-        }
-      }
-
       // 站名过长时缩小字号，避免被 text-hidden 截断
       &.long {
         .bg {
           font-size: 3.5rem;
-        }
-        .sm {
-          font-size: 1.4rem;
         }
       }
     }
@@ -133,9 +121,6 @@ watch(
         &.long {
           .bg {
             font-size: 3rem;
-          }
-          .sm {
-            font-size: 1.2rem;
           }
         }
       }
