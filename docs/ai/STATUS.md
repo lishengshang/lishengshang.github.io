@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 无进行中的会话工作（2026-08-13 两阶段会话均已收尾，见会话记录）。
+- 2026-08-13 全仓评审会话（代码审查 + 同类项目调研）进行中，见会话记录。
 
 ## 已完成
 
@@ -40,8 +40,13 @@
 
 ## 下一步
 
-1. `vite.config.js` 迁移为 `vite.config.ts`（验收：`pnpm build` 通过、配置行为不变）。
-2. 评估 Vite 7 升级时机（验收：无阻塞性 peer 冲突时列入 roadmap）。
+评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录）：
+
+1. **安全**：Footer 歌词 `v-html` 改为纯文本渲染；`main.ts` 增加 `navigator.serviceWorker` 存在性守卫；外链 `window.open` 显式 `noopener,noreferrer`。
+2. **可靠性**：外部 API（一言/壁纸/Meting）统一超时 + 失败降级；Sakura 的 `visibilitychange` 匿名监听在卸载时移除。
+3. **工程化**：引入 Vitest + Vue Test Utils（`utils/`、`api/`、composable 单测）；CI 增加 `pnpm lint`（无 `--fix`）门禁；重写 Dockerfile（Node 22 + pnpm + 静态镜像）；`vite.config.js` 迁移 `vite.config.ts`；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
+4. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）。
+5. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
 
 ## 会话记录
 
@@ -95,6 +100,35 @@
 - vite-plugin-pwa 0.20.5→1.3.0 跨大版本（已按 peer 验证 + 产物对比确认）。
 - `vue` 全局与 ElMessage 依赖 auto-imports.d.ts 生成物。
 - LSP 服务器在本环境不可用（以 vue-tsc 为准）。
+
+##### 下一步
+
+- 见上文 `## 下一步`。
+
+#### 第三阶段：全仓评审与路线图（未改代码）
+
+##### 摘要
+
+对全仓做代码审查 + 同类项目调研，产出优化路线图。未修改源码，仅更新本文件。
+
+##### 结论
+
+- 现状：lint/typecheck/build 三门槛通过；CI（Build/Notify）绿；线上站点与本地构建产物哈希一致；5.1.0 重构 + 工程化升级整体扎实。
+- 关键发现：①Footer 歌词 `v-html` 存在第三方歌词注入的 XSS 面；②`navigator.serviceWorker` 无守卫（不支持的浏览器会抛错）；③`pnpm audit --prod` 15 个漏洞（swiper 原型污染 critical、element-plus 携带的 lodash、vue/compiler-sfc 链上的 postcss/nanoid），均可通过依赖升级消除；④无任何测试（Vitest 缺位）、CI 缺 lint 门禁；⑤Dockerfile 使用 Node 18 + npm 与项目基线（Node>=22 + pnpm）冲突；⑥外部 API（一言/壁纸/Meting）无超时与降级；⑦dev 分支落后 main 9 个提交；⑧MoreSet 更新日志为原作者硬编码残留。
+
+##### 涉及文件
+
+- 仅 `docs/ai/STATUS.md`（评审记录与路线图）。
+
+##### 验证
+
+- `pnpm typecheck` / `pnpm lint` / `pnpm build`：均通过，exit 0。
+- `pnpm audit --prod`：15 vulnerabilities（1 critical / 6 high / 8 moderate）。
+- 线上 `lishengshang.github.io`：HTTP 200，产物哈希与本地 dist 一致。
+
+##### 风险与缺口
+
+- 依赖大版本升级（Vue 3.5 / Vite 7 / Pinia 3 / Element Plus 2.11+）属高风险变更，需 ADR 与产物对比，不可与功能开发混在同一 PR。
 
 ##### 下一步
 
