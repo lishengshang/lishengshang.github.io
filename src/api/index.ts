@@ -1,5 +1,3 @@
-import fetchJsonp from "fetch-jsonp";
-
 /**
  * 音乐播放器
  */
@@ -57,6 +55,8 @@ export const getPlayerList = async (
 
   if (data[0].url.startsWith("@")) {
     const [, , , url] = data[0].url.split("@").slice(1);
+    // 动态加载 fetch-jsonp，避免其进入首屏包（仅 QQ 音乐源会走到该分支）
+    const { default: fetchJsonp } = await import("fetch-jsonp");
     const jsonpData: JsonpPlayerResponse = await fetchJsonp(url).then((res) => res.json());
     const domain = (
       jsonpData.req_0.data.sip.find((i) => !i.startsWith("http://ws")) ||

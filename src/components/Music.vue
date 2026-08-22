@@ -43,9 +43,9 @@
       </div>
     </div>
   </div>
-  <!-- 音乐列表弹窗 -->
+  <!-- 音乐列表弹窗（首次打开才挂载 Player，懒加载 aplayer；之后保持挂载避免重复请求歌单） -->
   <Transition name="fade" mode="out-in">
-    <div class="music-list" v-show="musicListShow" @click="closeMusicList()">
+    <div class="music-list" v-if="listMounted" v-show="musicListShow" @click="closeMusicList()">
       <Transition name="zoom">
         <div class="list" v-show="musicListShow" @click.stop>
           <close-one
@@ -90,6 +90,7 @@ const volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
 
 // 播放列表数据
 const musicListShow = ref(false);
+const listMounted = ref(false);
 const playerRef = ref<PlayerInstance | null>(null);
 const playerData = reactive({
   server: import.meta.env.VITE_SONG_SERVER,
@@ -100,6 +101,8 @@ const playerData = reactive({
 // 开启播放列表
 const openMusicList = () => {
   musicListShow.value = true;
+  // 首次打开挂载 Player（触发 aplayer 异步 chunk 与歌单请求），此后保持挂载
+  listMounted.value = true;
   playerRef.value?.toggleList();
 };
 

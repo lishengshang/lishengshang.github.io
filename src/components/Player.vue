@@ -25,7 +25,9 @@ import { MusicOne, PlayWrong } from "@icon-park/vue-next";
 import { getPlayerList } from "@/api";
 import type { PlayerItem } from "@/api";
 import { mainStore } from "@/store";
-import APlayer from "@worstone/vue-aplayer";
+
+// 懒加载 aplayer，减小首屏体积（首次打开音乐列表时才加载）
+const APlayer = defineAsyncComponent(() => import("@worstone/vue-aplayer"));
 
 const store = mainStore();
 

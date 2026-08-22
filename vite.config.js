@@ -120,5 +120,16 @@ export default ({ mode }) =>
           pure_funcs: ["console.log"],
         },
       },
+      rollupOptions: {
+        output: {
+          // vendor 分包：依赖升级时只失效对应 chunk，提升浏览器缓存复用
+          manualChunks(id) {
+            if (!id.includes("node_modules")) return;
+            if (id.includes("element-plus") || id.includes("@element-plus")) return "element-plus";
+            if (id.includes("aplayer")) return "aplayer";
+            return "vendor";
+          },
+        },
+      },
     },
   });

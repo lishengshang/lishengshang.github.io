@@ -10,7 +10,7 @@
     <Transition name="el-fade-in-linear">
       <div
         class="open-music"
-        v-show="openMusicShow && store.musicIsOk"
+        v-show="openMusicShow && playerHasId"
         @click="store.musicOpenState = true"
       >
         <music-menu theme="filled" size="18" fill="#efefef" />
@@ -34,6 +34,9 @@ import { mainStore } from "@/store";
 import debounce from "@/utils/debounce";
 
 const store = mainStore();
+
+// 是否配置了音乐（Player 懒加载后不再依赖 musicIsOk 判断入口显隐）
+const playerHasId = !!import.meta.env.VITE_SONG_ID;
 
 // 开启音乐面板按钮显隐
 const openMusicShow = ref(false);
