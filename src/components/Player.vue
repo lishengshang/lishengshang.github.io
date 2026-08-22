@@ -352,9 +352,12 @@ defineExpose({ playToggle, changeVolume, changeSong });
         padding: 9px 10px 9px 24px; // 左侧多留 14px 指示区（不再依赖 cur span 占位）
         margin: 2px 0;
         border-radius: 6px;
-        // APlayer 仍会插入 cur span：直接隐藏，不参与布局
+        // APlayer 库自带的 .aplayer-list-cur 是一条绝对定位的白色 3px 竖条
+        // （top:5px; left:0; width:3px; height:22px），特异性高会覆盖 display:none
+        // 这里用同等特异性强制隐藏，改用我们自己画在 li::before 的蓝条
+        &.aplayer-list-light .aplayer-list-cur,
         .aplayer-list-cur {
-          display: none;
+          display: none !important;
         }
         &.aplayer-list-light {
           background: #ffffff55;
