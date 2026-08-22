@@ -4,6 +4,22 @@
 
 ## [Unreleased]
 
+## [5.2.0] - 2026-08-22
+
+### 定制
+- 站点图标全套替换为个人头像（favicon / logo / apple-touch-icon / PWA 各尺寸）
+- 壁纸替换为个人收藏 10 张（统一 1920x1080 JPEG）
+- 修复 `VITE_SITE_APPLE_LOGO` 错误路径（`/images/logo/` → `/images/icon/`，此前 404）
+
+### 安全
+- Footer 歌词由 `v-html` 改为纯文本渲染，消除第三方歌词注入的 XSS 面
+- `main.ts` 增加 `navigator.serviceWorker` 存在性守卫
+- 外链 `window.open` 显式传入 `noopener,noreferrer`
+
+### 其他
+- 设置页更新日志改为本 fork 实际变更（原为上游硬编码残留）
+- `package.json` 元信息更新为 fork 信息；页脚保留原作者 imsyy 署名
+
 ## [5.1.0] - 2026-08-13
 
 ### 工程化
