@@ -347,37 +347,37 @@ defineExpose({ playToggle, changeVolume, changeSong });
         background-color: #ffffff90;
       }
       li {
+        position: relative;
         border-color: transparent;
         padding: 9px 10px;
         margin: 2px 0;
         border-radius: 6px;
-        // 当前播放指示：固定占位宽 14px，选中时显示左侧小蓝条 + 高亮，
-        // 未选中时占位保持宽度，保证序号/歌名与选中项对齐
+        // .aplayer-list-cur 仅承担占位：选中/未选中都保持同宽，
+        // 保证序号/歌名左对齐；真实的蓝条改画在 li::before
         .aplayer-list-cur {
           display: inline-block;
-          width: 14px;
-          height: 14px;
-          margin-right: 4px;
+          width: 6px;
+          height: 1em;
+          margin-right: 2px;
           opacity: 0;
-          position: relative;
           flex-shrink: 0;
+          vertical-align: middle;
+          visibility: hidden;
         }
         &.aplayer-list-light {
           background: #ffffff55;
-          .aplayer-list-cur {
-            opacity: 1;
-            // 左侧 2px 竖条作为"正在播放"指示
-            &::before {
-              content: "";
-              position: absolute;
-              left: 2px;
-              top: 50%;
-              transform: translateY(-50%);
-              width: 2px;
-              height: 16px;
-              border-radius: 2px;
-              background: #5b8def;
-            }
+          // 蓝条直接画在 li 上，绝对定位对齐 li 垂直中线，
+          // left: 12px 正好落在 cur 占位 6px 的中心，不压到序号
+          &::before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 18px;
+            border-radius: 2px;
+            background: #5b8def;
           }
         }
         &:hover {
