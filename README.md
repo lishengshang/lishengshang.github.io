@@ -7,9 +7,9 @@
 > 如有问题或建议，欢迎提 issue / PR。
 >
 > ### 维护与部署架构
-> - **本仓库**为唯一维护仓库，所有代码改动都在此进行
-> - 作者个人的线上站点 [lishengshang.github.io](https://lishengshang.github.io/) 由 CI 自动同步构建部署（见 `.github/workflows/dispatch.yml`），push 后自动上线，无需手动干预
-> - Fork 使用者不受此机制影响，按下方 [给 Fork 用户](#给-fork-用户快速开始) 章节自行部署即可
+> - **本仓库**为唯一维护仓库，所有代码改动都在此进行；仓库已更名为 [lishengshang.github.io](https://github.com/lishengshang/lishengshang.github.io)，同时承担源码与站点仓库角色
+> - 线上站点 [lishengshang.github.io](https://lishengshang.github.io/) 由 GitHub Actions 构建部署（见 `.github/workflows/deploy.yml`），push 到 main 后自动上线，无需手动干预
+> - Fork 使用者按下方 [给 Fork 用户](#给-fork-用户快速开始) 章节自行部署即可，工作流开箱即用，无需删除任何文件
 
 ### AI Agent 协作规范
 
@@ -46,9 +46,6 @@
 2. 复制 `/.env.example` 为 `/.env`，修改为**你的**站点信息（站点名、站点 URL、歌单等）
 3. 修改 `src/assets/siteLinks.json`（网站链接卡片）与 `src/assets/socialLinks.json`（社交链接）
 4. 部署到你的 GitHub Pages / Vercel / 任意静态托管（见下方部署章节）
-
-> [!WARNING]
-> 部署前请**删除 `.github/workflows/dispatch.yml`**——它仅用于作者把本仓库自动同步到个人站点（依赖作者仓库的 `PUBLISH_TOKEN` secret），fork 后不会生效，且会留下红色失败标记。
 
 > [!TIP]
 > 所有个性化配置均通过 `/.env` 与两个 JSON 文件完成，无需修改任何源码逻辑。天气功能已移除，无需申请高德 Key。

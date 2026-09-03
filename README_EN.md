@@ -7,9 +7,9 @@ English | [Chinese](./README.md)
 > Issues and PRs are welcome.
 >
 > ### Maintenance & deployment architecture
-> - This repository is the single source of truth for development; all code changes happen here.
-> - The author's live site [lishengshang.github.io](https://lishengshang.github.io/) is auto-built and deployed by CI (see `.github/workflows/dispatch.yml`) — push once, deployed automatically.
-> - Fork users are not affected by this mechanism; see [Quick start for fork users](#quick-start-for-fork-users) below.
+> - This repository is the single source of truth for development; it has been renamed to [lishengshang.github.io](https://github.com/lishengshang/lishengshang.github.io) and serves as both source and site repository.
+> - The live site [lishengshang.github.io](https://lishengshang.github.io/) is built and deployed by GitHub Actions (see `.github/workflows/deploy.yml`) — push once, deployed automatically.
+> - Fork users: see [Quick start for fork users](#quick-start-for-fork-users) below; the workflow works out of the box, no files need to be deleted.
 
 ### AI Agent collaboration
 
@@ -46,9 +46,6 @@ This repository is free to fork, modify and reuse. Shortest path:
 2. Copy `/.env.example` to `/.env` and update it with **your** site info (site name, site URL, playlist, etc.)
 3. Edit `src/assets/siteLinks.json` (site link cards) and `src/assets/socialLinks.json` (social links)
 4. Deploy to your own GitHub Pages / Vercel / any static hosting (see deployment sections below)
-
-> [!WARNING]
-> **Delete `.github/workflows/dispatch.yml`** before deploying — it is only used by the author to auto-sync this repo to their personal site (it relies on a `PUBLISH_TOKEN` secret). It will not work on forks and will leave a red failed-run badge.
 
 > [!TIP]
 > All personalization is done via `/.env` and the two JSON files — no source code changes required. The weather feature has been removed; no AMap key needed.
