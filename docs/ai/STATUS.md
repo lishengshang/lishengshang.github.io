@@ -10,10 +10,13 @@
 
 ## 当前进度
 
-- 无进行中的会话工作（2026-08-22 定制 + 安全修复 + 性能优化会话已收尾，成果在 `feat/custom-homepage` 分支，未合并 main、未推送远端）。
+- 无进行中的会话工作（2026-09-03 部署链路合并会话已收尾，全部成果已合并并推送 main）。
 
 ## 已完成
 
+- 2026-09-03 仓库更名为 `lishengshang.github.io`（原站点仓库自动改名 `lishengshang.github.io-old`，观察期后归档/删除），部署链路收敛为本仓库 `deploy.yml`（push main → 构建 → deploy-pages），删除 `dispatch.yml` 与 `PUBLISH_TOKEN` 依赖，Pages 由 legacy 切回 workflow 模式，线上验证 200 且产物为最新构建（ADR-0004），提交：`bb757e7`。
+- 2026-09-03 全面 review 修复并合并 main：外部接口 5s 超时降级（ADR-0003 约束补齐）、静音音量刷新回退修复、空格键焦点过滤、APlayer 空值守卫、欢迎提示移除 HTML 渲染、社交链接 noopener/alt、无效 CORS meta 清理、cursor 改 addEventListener（提交 `d21b09b`..`4b7b1cc`，合并 `64d9174`）。
+- 2026-09-03 vite.config.js → vite.config.ts 迁移，提交：`6ef783e`。
 - v5.0.0 重构基线（原作者遗留），提交：`73dab32`。
 - 自 v5.0.0 以来的提交清单：
   - `352165e docs: 补充 AI 协作脚手架（AGENTS/CLAUDE/Cursor/Copilot/docs-ai 模板与入口）`
