@@ -55,7 +55,8 @@ class Cursor {
   }
 
   init(): void {
-    document.onmousemove = (e: MouseEvent) => {
+    // 使用 addEventListener，避免 onmousemove 属性赋值覆盖页面其他同事件处理
+    document.addEventListener("mousemove", (e: MouseEvent) => {
       if (this.pos.curr == null) this.move(e.clientX - 8, e.clientY - 8);
       this.pos.curr = {
         x: e.clientX - 8,
@@ -65,11 +66,11 @@ class Cursor {
       if (!this.rafId) {
         this.rafId = requestAnimationFrame(() => this.render());
       }
-    };
-    document.onmouseenter = () => this.cursor.classList.remove("hidden");
-    document.onmouseleave = () => this.cursor.classList.add("hidden");
-    document.onmousedown = () => this.cursor.classList.add("active");
-    document.onmouseup = () => this.cursor.classList.remove("active");
+    });
+    document.addEventListener("mouseenter", () => this.cursor.classList.remove("hidden"));
+    document.addEventListener("mouseleave", () => this.cursor.classList.add("hidden"));
+    document.addEventListener("mousedown", () => this.cursor.classList.add("active"));
+    document.addEventListener("mouseup", () => this.cursor.classList.remove("active"));
   }
 
   render(): void {

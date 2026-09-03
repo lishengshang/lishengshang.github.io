@@ -84,9 +84,9 @@ import { mainStore } from "@/store";
 const store = mainStore();
 type PlayerInstance = InstanceType<typeof Player>;
 
-// 音量条数据
+// 音量条数据（?? 保留 0 静音值，未持久化过才回退默认）
 const volumeShow = ref(false);
-const volumeNum = ref(store.musicVolume ? store.musicVolume : 0.7);
+const volumeNum = ref(store.musicVolume ?? 0.7);
 
 // 播放列表数据
 const musicListShow = ref(false);
@@ -142,6 +142,12 @@ const onKeyDown = (e: KeyboardEvent) => {
     return;
   }
   if (e.code === "Space") {
+    // 焦点在可交互元素上时不拦截，避免与组件默认空格行为重复触发
+    const target = e.target as HTMLElement | null;
+    if (target?.closest("button, a, input, textarea, select, [role='slider']")) {
+      return;
+    }
+    e.preventDefault();
     changePlayState();
   }
 };

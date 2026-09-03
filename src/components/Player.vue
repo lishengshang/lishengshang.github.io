@@ -140,7 +140,8 @@ const stripAuthorDash = () => {
 
 // 播放
 const onPlay = () => {
-  const playerInstance = player.value!;
+  const playerInstance = player.value;
+  if (!playerInstance) return;
   playIndex.value = playerInstance.aplayer.index;
   // 播放状态
   store.setPlayerState(playerInstance.audioRef.paused);
@@ -159,12 +160,14 @@ const onPlay = () => {
 
 // 暂停
 const onPause = () => {
-  store.setPlayerState(player.value!.audioRef.paused);
+  if (!player.value) return;
+  store.setPlayerState(player.value.audioRef.paused);
 };
 
 // 音频时间更新事件
 const onTimeUp = () => {
-  const playerInstance = player.value!;
+  const playerInstance = player.value;
+  if (!playerInstance) return;
   // 更新播放进度（供底栏进度条显示）
   store.setPlayerProgress(
     playerInstance.audioRef.currentTime,
@@ -186,19 +189,22 @@ const onTimeUp = () => {
 
 // 切换播放暂停事件
 const playToggle = () => {
-  player.value!.toggle();
+  if (!player.value) return;
+  player.value.toggle();
 };
 
 // 切换音量事件
 const changeVolume = (value: number) => {
-  player.value!.setVolume(value, false);
+  if (!player.value) return;
+  player.value.setVolume(value, false);
 };
 
 // 切换上下曲
 const changeSong = (type: number) => {
-  type === 0 ? player.value!.skipBack() : player.value!.skipForward();
+  if (!player.value) return;
+  type === 0 ? player.value.skipBack() : player.value.skipForward();
   nextTick(() => {
-    player.value!.play();
+    player.value?.play();
   });
 };
 
@@ -214,7 +220,6 @@ watch(
 
 // 加载音频错误
 const loadMusicError = () => {
-  const playerInstance = player.value!;
   let notice = "";
   if (playList.value.length > 1) {
     notice = "播放歌曲出现错误，播放器将在 2s 后进行下一首";
@@ -230,11 +235,11 @@ const loadMusicError = () => {
       duration: 2000,
     }),
   });
-  console.error(
-    "播放歌曲: " +
-      playerInstance.aplayer.audio[playerInstance.aplayer.index].name +
-      " 出现错误",
-  );
+  const playerInstance = player.value;
+  const currentSong = playerInstance?.aplayer.audio[playerInstance.aplayer.index];
+  if (currentSong) {
+    console.error("播放歌曲: " + currentSong.name + " 出现错误");
+  }
 };
 
 // 暴露子组件方法
