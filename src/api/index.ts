@@ -5,6 +5,17 @@
 // 默认歌曲 API 地址（未配置 VITE_SONG_API 时使用，建议自行部署 Meting-API）
 const SONG_API = import.meta.env.VITE_SONG_API || "https://api.injahow.cn/meting/";
 
+// 带超时的 fetch：外部接口超时降级，避免请求悬挂（默认 5s）
+const fetchWithTimeout = async (url: string, timeout = 5000): Promise<Response> => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
 interface PlayerApiItem {
   readonly name: string;
   readonly title: string;
@@ -46,7 +57,7 @@ export const getPlayerList = async (
   type: string,
   id: string,
 ): Promise<PlayerItem[]> => {
-  const res = await fetch(`${SONG_API}?server=${server}&type=${type}&id=${id}`);
+  const res = await fetchWithTimeout(`${SONG_API}?server=${server}&type=${type}&id=${id}`);
   if (!res.ok) throw new Error("音乐播放列表获取失败");
   const data: PlayerApiItem[] = await res.json();
   if (!Array.isArray(data) || data.length === 0) {
@@ -87,7 +98,7 @@ export const getPlayerList = async (
 
 // 获取一言数据
 export const getHitokoto = async (): Promise<HitokotoResponse> => {
-  const res = await fetch("https://v1.hitokoto.cn");
+  const res = await fetchWithTimeout("https://v1.hitokoto.cn");
   if (!res.ok) throw new Error("一言获取失败");
   return await res.json();
 };
