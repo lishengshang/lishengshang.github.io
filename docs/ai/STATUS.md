@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-09-09 测试基建会话已完成并验证（Vitest 单测 + CI lint/test 门禁），待提交/推送。
+- 2026-09-09 测试基建会话已完成并验证（Vitest 单测 + CI lint/test 门禁），提交 `f0bf17b`..`5e31525`，待推送。
 
 ## 已完成
 
@@ -215,6 +215,7 @@
 - `src/utils/debounce.test.ts`、`src/utils/getTime.test.ts`、`src/api/index.test.ts`、`src/composables/useSiteUrl.test.ts`：新增，共 20 个用例（含 API 5s 超时中止路径、`VITE_SONG_API` 覆盖需 resetModules 动态导入）。
 - `.github/workflows/build.yml`：Install 后依次插入 Lint Check（`pnpm lint:check`）与 Unit Test（`pnpm test`）两步。
 - `CHANGELOG.md`：[Unreleased] 补记。
+- 提交：`f0bf17b`（chore 依赖）、`0c4510f`（test 配置与用例）、`0d4545f`（ci 门禁）、`5e31525`（docs 进度），待推送。
 
 ##### 验证
 
