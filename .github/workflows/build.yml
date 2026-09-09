@@ -45,6 +45,14 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      # 静态检查（不带 --fix，仅校验）
+      - name: Lint Check
+        run: pnpm lint:check
+
+      # 单元测试
+      - name: Unit Test
+        run: pnpm test
+
       # 类型检查
       - name: Type Check
         run: pnpm typecheck
