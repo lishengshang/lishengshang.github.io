@@ -10,10 +10,11 @@
 
 ## 当前进度
 
-- 无进行中的会话工作（2026-09-03 部署链路合并会话已收尾，全部成果已合并并推送 main）。
+- 2026-09-09 测试基建会话已完成并验证（Vitest 单测 + CI lint/test 门禁），待提交/推送。
 
 ## 已完成
 
+- 2026-09-09 测试基建：引入 Vitest 5 + @vue/test-utils + jsdom，新增 `vitest.config.ts`、`pnpm test` / `pnpm lint:check` 脚本，新增 utils/api/composables 4 个测试文件 20 个用例（含 API 超时降级中止路径）；CI（build.yml）新增 lint（无 --fix）与 unit test 门禁；CHANGELOG [Unreleased] 补记。
 - 2026-09-03 仓库更名为 `lishengshang.github.io`（原站点仓库自动改名 `lishengshang.github.io-old`，观察期后归档/删除），部署链路收敛为本仓库 `deploy.yml`（push main → 构建 → deploy-pages），删除 `dispatch.yml` 与 `PUBLISH_TOKEN` 依赖，Pages 由 legacy 切回 workflow 模式，线上验证 200 且产物为最新构建（ADR-0004），提交：`bb757e7`。
 - 2026-09-03 全面 review 修复并合并 main：外部接口 5s 超时降级（ADR-0003 约束补齐）、静音音量刷新回退修复、空格键焦点过滤、APlayer 空值守卫、欢迎提示移除 HTML 渲染、社交链接 noopener/alt、无效 CORS meta 清理、cursor 改 addEventListener（提交 `d21b09b`..`4b7b1cc`，合并 `64d9174`）。
 - 2026-09-03 vite.config.js → vite.config.ts 迁移，提交：`6ef783e`。
@@ -44,13 +45,12 @@
 
 ## 下一步
 
-评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项已于 2026-08-22 完成）：
+评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项已于 2026-08-22、可靠性已于 2026-09-03、测试基建与 lint 门禁已于 2026-09-09 完成）：
 
-1. **可靠性**：外部 API（一言/壁纸/Meting）统一超时 + 失败降级；Sakura 的 `visibilitychange` 匿名监听在卸载时移除。
-2. **工程化**：引入 Vitest + Vue Test Utils（`utils/`、`api/`、composable 单测）；CI 增加 `pnpm lint`（无 `--fix`）门禁；重写 Dockerfile（Node 22 + pnpm + 静态镜像）；`vite.config.js` 迁移 `vite.config.ts`；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
-3. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）。
-4. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
-5. **分支收尾**：`feat/custom-homepage` 预览确认壁纸与图标效果后合并 main 并推送，触发部署链同步。
+1. **工程化**：重写 Dockerfile（Node 22 + pnpm + 静态镜像，当前 Node 18 + npm 与基线冲突）；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
+2. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）；可消除 `pnpm audit --prod` 遗留漏洞。
+3. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
+4. **小杂项**：`npx update-browserslist-db@latest`（caniuse-lite 过期提示）。
 
 ## 会话记录
 
@@ -199,3 +199,34 @@
 ##### 下一步
 
 - 用户预览确认；后续可做路线图剩余项（外部 API 超时降级、Vitest、Dockerfile、依赖升级）。
+
+### 2026-09-09
+
+#### 测试基建：Vitest 单测 + CI lint/test 门禁
+
+##### 摘要
+
+按路线图「工程化」项落地测试基建：引入 Vitest 5 + @vue/test-utils + jsdom，为 `utils/`、`api/`、`composables/` 补首批单测，CI（build.yml）新增 lint（无 `--fix`）与 unit test 门禁。源码零改动，纯增量。
+
+##### 涉及文件
+
+- `package.json` / `pnpm-lock.yaml`：dev 依赖 vitest@5、@vue/test-utils、jsdom；新增 `test`、`lint:check` 脚本。
+- `vitest.config.ts`：新增（vue 插件 + AutoImport + `@` 别名 + jsdom 环境）。
+- `src/utils/debounce.test.ts`、`src/utils/getTime.test.ts`、`src/api/index.test.ts`、`src/composables/useSiteUrl.test.ts`：新增，共 20 个用例（含 API 5s 超时中止路径、`VITE_SONG_API` 覆盖需 resetModules 动态导入）。
+- `.github/workflows/build.yml`：Install 后依次插入 Lint Check（`pnpm lint:check`）与 Unit Test（`pnpm test`）两步。
+- `CHANGELOG.md`：[Unreleased] 补记。
+
+##### 验证
+
+- `pnpm test`：4 文件 20 用例全过。
+- `pnpm lint:check` / `pnpm typecheck` / `pnpm build`：均 exit 0（precache 22 entries / 552.93 KiB）。
+
+##### 风险与缺口
+
+- 测试文件位于 `src/` 内并纳入 vue-tsc 与 ESLint 范围（显式 import vitest API，未用 globals）。
+- @vue/test-utils 已安装但组件级测试尚未覆盖（本批仅纯函数/composable）。
+- `VITE_SONG_API` 覆盖测试依赖 `vi.resetModules()`，若后续将 SONG_API 改为函数内求值需同步调整。
+
+##### 下一步
+
+- 见上文 `## 下一步`（建议：Dockerfile 重写或依赖升级）。

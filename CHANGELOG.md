@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### 工程化
+- 引入 Vitest 5 + @vue/test-utils + jsdom，新增 `pnpm test` 与 utils/api/composables 共 20 个单测（覆盖防抖、时钟/时光胶囊/建站统计、音乐列表与一言 API 超时降级、站点链接 composable）
+- CI（Build）新增 lint（无 `--fix`）与 unit test 门禁
+- 新增 `pnpm lint:check` 脚本供 CI 校验使用
+
 ## [5.3.0] - 2026-08-22
 
 ### 性能
