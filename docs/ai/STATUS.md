@@ -10,11 +10,12 @@
 
 ## 当前进度
 
-- 2026-09-09 测试基建会话已完成并验证（Vitest 单测 + CI lint/test 门禁），提交 `f0bf17b`..`5e31525`，待推送。
+- 2026-09-09 依赖升级会话已完成（feat/dep-upgrade 分支，ADR-0005，提交 `0332cf0`..`7f0d104`），验证全过，待用户确认后合并 main 并推送。
 
 ## 已完成
 
-- 2026-09-09 测试基建：引入 Vitest 5 + @vue/test-utils + jsdom，新增 `vitest.config.ts`、`pnpm test` / `pnpm lint:check` 脚本，新增 utils/api/composables 4 个测试文件 20 个用例（含 API 超时降级中止路径）；CI（build.yml）新增 lint（无 --fix）与 unit test 门禁；CHANGELOG [Unreleased] 补记。
+- 2026-09-09 依赖升级（分支 feat/dep-upgrade，ADR-0005）：Vue 3.5.42 / Pinia 3.0.4（persistedstate v4 `paths`→`pick`）/ Vite 7.3.6 / Element Plus **2.13.0（锁定，2.14.0 起按需导入 tree-shaking 失效）** / swiper 12.1.2 / nanoid override（pnpm-workspace.yaml）；`pnpm audit --prod` 15 漏洞（1 critical）→ 0；产物 44 文件字节级一致、9 chunk 同拓扑重建，precache 552.93→590.46 KiB；版本 5.2.0→5.4.0（补正 5.3.0 未落包号的不一致）。
+- 2026-09-09 测试基建：引入 Vitest 5 + @vue/test-utils + jsdom，新增 `vitest.config.ts`、`pnpm test` / `pnpm lint:check` 脚本，新增 utils/api/composables 4 个测试文件 20 个用例（含 API 超时降级中止路径）；CI（build.yml）新增 lint (无 --fix) 与 unit test 门禁；CHANGELOG [Unreleased] 补记。
 - 2026-09-03 仓库更名为 `lishengshang.github.io`（原站点仓库自动改名 `lishengshang.github.io-old`，观察期后归档/删除），部署链路收敛为本仓库 `deploy.yml`（push main → 构建 → deploy-pages），删除 `dispatch.yml` 与 `PUBLISH_TOKEN` 依赖，Pages 由 legacy 切回 workflow 模式，线上验证 200 且产物为最新构建（ADR-0004），提交：`bb757e7`。
 - 2026-09-03 全面 review 修复并合并 main：外部接口 5s 超时降级（ADR-0003 约束补齐）、静音音量刷新回退修复、空格键焦点过滤、APlayer 空值守卫、欢迎提示移除 HTML 渲染、社交链接 noopener/alt、无效 CORS meta 清理、cursor 改 addEventListener（提交 `d21b09b`..`4b7b1cc`，合并 `64d9174`）。
 - 2026-09-03 vite.config.js → vite.config.ts 迁移，提交：`6ef783e`。
@@ -45,12 +46,12 @@
 
 ## 下一步
 
-评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项已于 2026-08-22、可靠性已于 2026-09-03、测试基建与 lint 门禁已于 2026-09-09 完成）：
+评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项 2026-08-22、可靠性 2026-09-03、测试基建与 lint 门禁 2026-09-09、依赖升级 2026-09-09 均已完成；工程化已达合理上限，流程类项冻结）：
 
-1. **工程化**：重写 Dockerfile（Node 22 + pnpm + 静态镜像，当前 Node 18 + npm 与基线冲突）；评估 simple-git-hooks + lint-staged 提交门禁与 release-please 自动发版（Renovate 与 Dependabot 勿同跑）。
-2. **依赖升级**：Vue 3.4→3.5、Pinia 2→3、Element Plus 2.7→2.11+、Vite 6→7（评估 rolldown-vite 与插件兼容，需 ADR）；可消除 `pnpm audit --prod` 遗留漏洞。
-3. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
-4. **小杂项**：`npx update-browserslist-db@latest`（caniuse-lite 过期提示）。
+1. **跟进项**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；重写 Dockerfile（Node 22 + pnpm + 静态镜像，当前 Node 18 + npm 与基线冲突）。
+2. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
+3. **路由（条件触发）**：当前单屏应用无需 vue-router（视图切换走 Pinia + Transition，`/blog/` 为独立子站）。仅当出现需要 URL 身份的独立页面（如独立的友链页 `xxx/links`、搜索聚合页）时再引入，届时同步评估 PWA `navigateFallbackDenylist` 范围。
+4. **小杂项**：`npx update-browserslist-db@latest` 定期执行。
 
 ## 会话记录
 
@@ -231,3 +232,34 @@
 ##### 下一步
 
 - 见上文 `## 下一步`（建议：Dockerfile 重写或依赖升级）。
+
+### 2026-09-09（第二场）
+
+#### 依赖升级 5.4.0（分支 feat/dep-upgrade，ADR-0005）
+
+##### 摘要
+
+按路线图完成核心依赖大版本升级：Vue 3.5 / Pinia 3 / Vite 7 / EP 2.13 / swiper 12.1.2 + nanoid override，消除全部生产审计漏洞；含产物哈希对比验证与 EP 2.14 tree-shaking 回归的发现与决策。
+
+##### 涉及文件
+
+- `package.json` / `pnpm-lock.yaml` / `pnpm-workspace.yaml`（overrides，pnpm 11 从此处读取而非 package.json `pnpm.overrides`）。
+- `src/store/index.ts`：persistedstate v4 `paths` → `pick`（唯一源码改动）。
+- `docs/ai/decisions/0005-dependency-upgrade.md`：新增 ADR（含 EP 2.14.0+ 摇树失效实测数据与决策）。
+- `CHANGELOG.md` / `docs/ai/STATUS.md` / `package.json` 版本 5.2.0 → 5.4.0（补正 5.3.0 未落包号的不一致）。
+
+##### 验证
+
+- `pnpm lint:check` / `pnpm typecheck` / `pnpm test`（20 用例）/ `pnpm build`：均通过。
+- `pnpm audit --prod`：15（1 critical）→ 0。
+- 产物对比：44 文件字节级一致；9 个 JS/CSS chunk 同拓扑重建（无增减）；index.html/sw.js 引用更新。precache 552.93 → 590.46 KiB。
+
+##### 风险与缺口
+
+- EP 锁定 2.13.0：2.14.0 起按需导入全量打包（+730 KiB），根因未深究，待上游修复后跟进。
+- swiper 11 → 12 跨大版本，仅 Links 页轮播使用，构建验证通过但未做浏览器实测。
+- Pinia 3 语义与 Pinia 2 在本项目用法下无差异（options store + persist），未发现行为变化。
+
+##### 下一步
+
+- 用户确认后合并 feat/dep-upgrade 至 main 并推送（触发部署）；建议线上冒烟壁纸切换、设置持久化、Links 轮播。

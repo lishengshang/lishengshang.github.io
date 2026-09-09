@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+### 依赖升级（5.4.0，ADR-0005）
+- Vue 3.4 → 3.5.42、Pinia 2 → 3.0.4（persistedstate v4，`paths` → `pick`）、Vite 6 → 7.3.6（插件链配套升级）
+- Element Plus 2.7 → **2.13.0**：实测 2.14.0 起按需导入的 tree-shaking 失效（产物 +730 KiB 全量打包），故锁定 2.13.0 待上游修复
+- swiper 11 → 12.1.2（消除原型污染 critical）；nanoid override ≥3.3.18（pnpm 11 overrides 迁至 `pnpm-workspace.yaml`）
+- `pnpm audit --prod`：15 个漏洞（1 critical）→ **0**
+- caniuse-lite 更新；产物同拓扑重建，precache 552.93 → 590.46 KiB
+
 ### 工程化
 - 引入 Vitest 5 + @vue/test-utils + jsdom，新增 `pnpm test` 与 utils/api/composables 共 20 个单测（覆盖防抖、时钟/时光胶囊/建站统计、音乐列表与一言 API 超时降级、站点链接 composable）
 - CI（Build）新增 lint（无 `--fix`）与 unit test 门禁
