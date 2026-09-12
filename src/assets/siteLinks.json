@@ -8,5 +8,10 @@
     "icon": "Image",
     "name": "图床",
     "link": "https://img.remio.workers.dev/"
+  },
+  {
+    "icon": "Envelope",
+    "name": "邮箱",
+    "link": "https://mail.lishengshang.dpdns.org/"
   }
 ]

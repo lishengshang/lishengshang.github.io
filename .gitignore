@@ -26,3 +26,6 @@ dist-ssr
 
 # AI Agent runtime
 .omo/
+.trae/
+.workbuddy/
+.zcode/
