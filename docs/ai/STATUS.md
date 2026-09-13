@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-09-13 站名艺术字按用户反馈二次调整为 "liremio'"（同日第二笔提交），本地构建与产物核验通过，线上待 Deploy 部署后验证；`VITE_SITE_NAME`（title/manifest）保持 "liremio の主页" 不变。
+- 2026-09-13（第三场）线上验证闭环：Deploy #8（da431f1）生效，浏览器实测艺术字 "liremio'"（Pacifico、桌面 .long 56px）与 `<title>` "liremio の主页" 均正确；9-09 遗留三项冒烟（壁纸切换/设置持久化/Links 轮播）全部通过。Dockerfile 重写落地（ADR-0006：Node 22-alpine + pnpm 多阶段 + nginx:alpine），四门禁全绿；本机无 Docker，镜像构建验证遗留。
 
 ## 已完成
 
@@ -315,3 +315,48 @@
 
 - "liremio'" 为 8 字符，仍触发 `.long` 缩字号样式（≥6 即触发），若希望恢复 5rem 大字需调整 `Message.vue` 的 `long` 阈值或样式。
 - 标题是否同步改短未获用户明确指示，按「仅改艺术字」理解执行；如需 title 一并改短另行处理。
+
+### 2026-09-13（第三场）
+
+#### 线上验证闭环 + 三项冒烟 + Dockerfile 重写（ADR-0006）
+
+##### 摘要
+
+浏览器完成 9-13 艺术字线上验证与 9-09 依赖升级遗留的三项冒烟（壁纸切换/设置持久化/Links 轮播），全部通过；随后按路线图落地 Dockerfile 重写（ADR-0006）。源码零改动。
+
+##### 冒烟结果与发现
+
+- 艺术字：线上 bundle `index-De2AHlo-.js` 含 "liremio'"（Message/Right 两处），`<title>`/加载页/控制台输出为 "liremio の主页"；实测渲染 Pacifico 字体、计算字号 56px（桌面 `.long` 3.5rem 生效，8 字符触发阈值为预期行为）。
+- 壁纸切换：radio → store.coverType → watch → img.src 链路正常，toast「壁纸更换成功」与 localStorage 持久化正确，已恢复默认值。发现：api.dujin.org 与 api.vvhan.com 两个外部壁纸源在本环境均无法出图（页面内 Image 探针 error，服务端问题），首次失败按设计回退本地图并提示；**Background.vue `@error.once` 只保护首次错误**——首次回退后监听器即移除，再次切到坏源时第二个 error 无处理、背景静默空白（既有边界缺陷，本次未修）。
+- 设置持久化：siteStartShow 开 → localStorage `data.siteStartShow=true` → 刷新后 store 恢复（v-if 渲染生效）→ 时光胶囊建站日期条显示「本站已经苟活了 1 年 3 月 5 天」，persistedstate v4 `pick` 链路验证通过，已恢复默认 false。附带发现：TimeCapsule.vue `startDateText` 仅由 60s interval 首次赋值（onMounted 未先算一次），开关打开后文本最长延迟 60s 出现（既有小瑕疵，本次未修）。
+- Links 轮播：swiper 12 初始化成功（`.swiper-initialized`），单 slide 含博客/图床/邮箱 3 卡、bullet 1 个，无异常（当前 siteLinks 仅 3 条，翻页无从触发属预期）。
+- 其他：SW active(controller)、PWA「站点已更新」提示正常、一言 API 降级与恢复均实测、设置页版本号 v5.4.0 正确。
+
+##### 涉及文件
+
+- `Dockerfile`（重写：node:22-alpine + corepack pnpm 多阶段构建 + nginx:alpine 静态运行时，EXPOSE 80）
+- `nginx.conf`（新增：gzip_static、/assets/ 长缓存、index.html/sw.js/manifest no-cache、try_files 兜底）
+- `.dockerignore`（补 `.env` 硬排除与 `!.env.example`、docs/screenshots，清理过时条目）
+- `docker-compose.yml`（端口 `12445:80`，移除废弃 version 字段）
+- `README.md`（Docker 运行命令同步 `-p 12445:80`）
+- `docs/ai/decisions/0006-dockerfile-rewrite.md`（新增 ADR）
+- `CHANGELOG.md`（[Unreleased] 增补 Docker 小节）
+
+##### 验证
+
+- `pnpm lint:check` / `pnpm typecheck` / `pnpm test`（4 文件 20 用例）/ `pnpm build`：均 exit 0（precache 22 entries / 591.27 KiB）。
+- `docker build`：本机无 Docker（command not found），未能构建验证。遗留：有 Docker 环境时执行 `docker build -t home . && docker run -p 12445:80 -d home` 后 curl 校验首页与静态资源。
+- 冒烟过程备注：Playwright 语义定位对 el-radio/el-switch 点击不稳定（actionability 判定超时、无遮挡），改用坐标点击完成，不影响结论。
+
+##### 风险与缺口
+
+- Docker 镜像未实际构建运行，nginx.conf 未经运行时检验（已人工复核，构建中曾发现并修正 nginx.conf 误入 .dockerignore 的冲突）。
+- 外部壁纸源不可用 + `@error.once` 缺陷组合：选「每日一图/随机风景/随机动漫」的用户可能遇到回退本地图（首次）或空白背景（同会话再次失败）。建议后续小修：`@error.once` → `@error`，并评估更换壁纸源。
+- TimeCapsule 建站日期文本延迟 60s 小瑕疵待修（onMounted 先赋值一次即可）。
+- build 输出 caniuse-lite 过期提醒，对应路线图小杂项（`npx update-browserslist-db@latest`）。
+
+##### 下一步
+
+- 有 Docker 环境时补镜像构建验证。
+- 小修 PR：Background.vue `@error.once`、TimeCapsule 首次赋值时机。
+- 功能项：设置页补全（樱花/动画开关、壁纸模糊度等）、更新日志自动读取 CHANGELOG。
