@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-09-09 依赖升级已合并推送并上线（merge `7fda330`，Build/Deploy 工作流双绿），线上 200 且产物哈希与升级后构建一致（bundle 内版本 5.4.0）。
+- 2026-09-13 站名艺术字修复已提交推送（`VITE_SITE_LOGO_TEXT`/`VITE_SITE_NAME` 统一为 "liremio の主页"），本地构建与产物核验通过，线上待 Deploy 工作流部署后验证。
 
 ## 已完成
 
@@ -264,3 +264,32 @@
 
 - 已合并 main（merge `7fda330`）并推送，Build/Deploy 双绿；线上验证 200、资产哈希为升级后构建、bundle 版本 5.4.0。
 - 待办：浏览器冒烟壁纸切换、设置持久化（localStorage `data` key）、Links 轮播（swiper 12 唯一未实测点）。
+
+### 2026-09-13
+
+#### 站名艺术字修复（统一为 liremio の主页）
+
+##### 摘要
+
+用户发现线上站名艺术字（Message.vue 左侧 logo 区 `<span class="bg">`，XPath `body/div[1]/main/div/section/div[1]/div[1]/div[1]/div/span`）仍显示 "lishengshang"。根因：该元素读取 `VITE_SITE_LOGO_TEXT || siteUrl[0]`（域名首段回退），而 commit `26011bc` 仅改了 `VITE_SITE_NAME`（只影响 `<title>`、加载页与 PWA manifest），未触及艺术字取值链，属配置链路认知偏差而非部署故障（部署本身正常，线上 title 已是 "liremio 的主页"）。修复：将 `VITE_SITE_NAME` 与 `VITE_SITE_LOGO_TEXT` 统一为 "liremio の主页"（"の" 与 App.vue 控制台输出、用户预期一致）。
+
+##### 涉及文件
+
+- `.env.example`：`VITE_SITE_NAME` "liremio 的主页" → "liremio の主页"；`VITE_SITE_LOGO_TEXT` `""` → "liremio の主页"（CI `cp .env.example .env` 后随构建生效；该变量由 e0596d1 为自定义艺术字而引入，此为首次赋值）。
+- `.env`（gitignore，未入库）：同步以上两值。
+- `docs/ai/STATUS.md`：本记录。源码零改动。
+
+##### 验证
+
+- `pnpm build`：通过（19.27s，precache 22 entries / 591.28 KiB）。
+- 产物核验：`dist/index.html` title 为 "liremio の主页"；`dist/assets/index-*.js` 与 `dist/manifest.webmanifest` 均含该字符串（env 构建期静态替换）。
+- 提交推送触发 Deploy 工作流，线上待部署完成后浏览器验证。
+
+##### 风险与缺口
+
+- "liremio の主页" 共 10 字符，触发 `logoText.length >= 6` 的 `.long` 缩字号样式（桌面 5rem→3.5rem，移动 4.5rem→3rem），显示效果待浏览器确认。
+- 本机无系统级 Node/pnpm（`where node` 不可见），本次经 fnm 安装的 Node 24.19.0 + corepack pnpm 11.20.0 执行构建；后续会话需同样显式加入 PATH 或先修复环境。
+
+##### 下一步
+
+- Deploy 双绿后浏览器验证艺术字、`<title>`、加载页与 PWA manifest 均为 "liremio の主页"。
