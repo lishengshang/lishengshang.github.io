@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-09-13 站名艺术字修复已提交推送（`VITE_SITE_LOGO_TEXT`/`VITE_SITE_NAME` 统一为 "liremio の主页"），本地构建与产物核验通过，线上待 Deploy 工作流部署后验证。
+- 2026-09-13 站名艺术字按用户反馈二次调整为 "liremio'"（同日第二笔提交），本地构建与产物核验通过，线上待 Deploy 部署后验证；`VITE_SITE_NAME`（title/manifest）保持 "liremio の主页" 不变。
 
 ## 已完成
 
@@ -293,3 +293,25 @@
 ##### 下一步
 
 - Deploy 双绿后浏览器验证艺术字、`<title>`、加载页与 PWA manifest 均为 "liremio の主页"。
+
+#### 站名艺术字二次调整（liremio'，同日追补）
+
+##### 摘要
+
+用户看过线上效果后要求把艺术字 "liremio の主页" 改为 "liremio'"（延续 5.3.0 前 `li'remio` 的撇号品牌样式）。仅改 `VITE_SITE_LOGO_TEXT`；`VITE_SITE_NAME` 保持 "liremio の主页"（标签页 title/加载页/manifest 为完整站名，页面艺术字为短样式，与原项目「完整站名做标题、短艺术字上页面」模式一致）。`.env` 本地同步，未入库。
+
+##### 涉及文件
+
+- `.env.example`：`VITE_SITE_LOGO_TEXT` "liremio の主页" → "liremio'"。
+- `docs/ai/STATUS.md`：本追补记录。源码零改动。
+
+##### 验证
+
+- `pnpm build`：通过（31.73s）。
+- 产物核验：`dist/index-*.js` 含 "liremio'"；`dist/index.html` title 保持 "liremio の主页"。
+- 提交推送触发 Deploy，线上待验证。
+
+##### 风险与缺口
+
+- "liremio'" 为 8 字符，仍触发 `.long` 缩字号样式（≥6 即触发），若希望恢复 5rem 大字需调整 `Message.vue` 的 `long` 阈值或样式。
+- 标题是否同步改短未获用户明确指示，按「仅改艺术字」理解执行；如需 title 一并改短另行处理。
