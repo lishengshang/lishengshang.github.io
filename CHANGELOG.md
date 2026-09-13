@@ -16,6 +16,11 @@
 - CI（Build）新增 lint（无 `--fix`）与 unit test 门禁
 - 新增 `pnpm lint:check` 脚本供 CI 校验使用
 
+### Docker（ADR-0006）
+- 重写 Dockerfile：Node 18 + npm + http-server → Node 22-alpine + corepack pnpm（锁文件生效）多阶段构建，运行时换 nginx:alpine 静态镜像（对外端口仍为 12445）
+- 新增 nginx.conf：预压缩产物直出、`/assets/` 长缓存、`index.html`/`sw.js`/`manifest.webmanifest` 不缓存
+- `.dockerignore` 排除 `.env` 与冗余目录，消除密钥进入 build context 的风险
+
 ## [5.3.0] - 2026-08-22
 
 ### 性能

@@ -7,9 +7,12 @@ docker-compose*
 .github
 .gitignore
 README.md
+README_EN.md
 LICENSE
 .vscode
 dist
-build
-images
-script
+docs
+screenshots
+.env
+.env.*
+!.env.example

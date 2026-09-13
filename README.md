@@ -92,8 +92,8 @@ pnpm build
 ```bash
 # 构建
 docker build -t home .
-# 运行
-docker run -p 12445:12445 -d home
+# 运行（容器内为 nginx 监听 80，外部端口可按需调整）
+docker run -p 12445:80 -d home
 ```
 
 ### ⚙️ Vercel 部署

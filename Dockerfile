@@ -1,17 +1,16 @@
-# 构建应用
-FROM node:18 AS builder
+# 构建阶段：Node 22 + pnpm（版本取自 package.json 的 packageManager 字段）
+FROM node:22-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+RUN corepack enable
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN [ ! -e ".env" ] && cp .env.example .env || true
-RUN npm run build
+RUN cp .env.example .env && pnpm build
 
-# 最小化镜像
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app/dist ./dist
-RUN npm install -g http-server
+# 运行阶段：nginx 静态镜像
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-EXPOSE 12445
-CMD ["http-server", "dist", "-p", "12445"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
