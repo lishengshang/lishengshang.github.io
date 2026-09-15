@@ -10,7 +10,8 @@
 
 ## 当前进度
 
-- 2026-09-13（第四场）按路线图顺序开发：main 落地两个冒烟小修（`@error.once`、建站日期延迟）与外部壁纸源更换（t.alcy.cc，每日一图下线）；`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Build/Deploy 已触发，线上待部署后验证设置页新功能。艺术字保持 3.5rem（用户确认）。
+- 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
+- 2026-09-16（第三场）全仓复审：落版本号 5.5.0（CHANGELOG 定稿）、修正本文件误标的会话日期（本对话发生于 09-16）、README API 致谢更新、路线图重写。
 
 ## 已完成
 
@@ -46,12 +47,12 @@
 
 ## 下一步
 
-评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项 2026-08-22、可靠性 2026-09-03、测试基建与 lint 门禁 2026-09-09、依赖升级 2026-09-09 均已完成；工程化已达合理上限，流程类项冻结）：
+评审后拟定路线图（2026-09-16 复审重写；历史评审：2026-08-13 全仓评审，安全/可靠性/测试基建/依赖升级/设置页功能均已落地）：
 
-1. **跟进项**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；~~重写 Dockerfile~~（已完成，ADR-0006，2026-09-13；镜像构建验证待有 Docker 环境）。
-2. **功能**：~~设置页补全~~、~~更新日志自动读取 CHANGELOG~~（已完成，`feat/settings-enhance` 分支待合并）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
-3. **路由（条件触发）**：当前单屏应用无需 vue-router（视图切换走 Pinia + Transition，`/blog/` 为独立子站）。仅当出现需要 URL 身份的独立页面（如独立的友链页 `xxx/links`、搜索聚合页）时再引入，届时同步评估 PWA `navigateFallbackDenylist` 范围。
-4. **小杂项**：`npx update-browserslist-db@latest` 定期执行（caniuse-lite 过期提醒见 2026-09-13 build 输出）。
+1. **短期待办**：线上部署后完整 UI 冒烟（设置页四项新控件、版本号显示 v5.5.0、更新日志卡片回落显示 [5.5.0] 段）。
+2. **功能候选（经评审后分批落地）**：搜索聚合、多语言、暗色模式、友链页面（出现需 URL 身份的独立页面时引入 vue-router，并同步评估 PWA `navigateFallbackDenylist` 范围）。
+3. **工程跟进（条件触发）**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；Docker 镜像构建补验证（`docker build -t home . && docker run -p 12445:80 -d home`，需有 Docker 环境）；`npx update-browserslist-db@latest` 定期执行。
+4. **质量增强候选**：组件级测试补位（@vue/test-utils 已装未用，优先 Set.vue/MoreSet 交互）；壁纸源配置化（迁移到 `.env` 注入，避免硬编码源再失效）；Meting 公共实例（音乐 API）可靠性观察。
 
 ## 会话记录
 
@@ -316,7 +317,7 @@
 - "liremio'" 为 8 字符，仍触发 `.long` 缩字号样式（≥6 即触发），若希望恢复 5rem 大字需调整 `Message.vue` 的 `long` 阈值或样式。
 - 标题是否同步改短未获用户明确指示，按「仅改艺术字」理解执行；如需 title 一并改短另行处理。
 
-### 2026-09-13（第三场）
+### 2026-09-16（第一场）
 
 #### 线上验证闭环 + 三项冒烟 + Dockerfile 重写（ADR-0006）
 
@@ -361,7 +362,7 @@
 - 小修 PR：Background.vue `@error.once`、TimeCapsule 首次赋值时机。
 - 功能项：设置页补全（樱花/动画开关、壁纸模糊度等）、更新日志自动读取 CHANGELOG。
 
-### 2026-09-13（第四场）
+### 2026-09-16（第二场）
 
 #### 按序开发：小修 + 壁纸源更换（main）+ 设置页补全（feat/settings-enhance）
 
@@ -404,3 +405,29 @@
 - `feat/settings-enhance` 经 gh CLI 创建 PR #1（标题：feat: 设置页补全（樱花/动画/降低动态/壁纸模糊度）与更新日志自动读取 CHANGELOG）并按仓库惯例以 merge commit 合并：`983f239`，本地 main 已同步。
 - 合并触发 Build/Deploy，线上部署完成后可在站点设置页直接验证：更新日志卡片显示真实 CHANGELOG、个性化调整四项新控件、其他设置降低动态主开关。
 - 风险：设置页新增 store 字段已入 persist pick，老用户 localStorage 的 `data` 缺失字段自动取默认值，无迁移问题。
+
+### 2026-09-16（第三场）
+
+#### 全仓复审与 5.5.0 发布
+
+##### 摘要
+
+应用户要求整体复审并更新记忆。处理四项：①本对话实际发生于 2026-09-16，此前第一/二场记录误标 09-13，已重校（09-13 的两场为历史会话，保留不动）；②设置页补全与更新日志自动化为功能变更，按仓库惯例落版本号 5.4.0→5.5.0，CHANGELOG [Unreleased] 定稿为 [5.5.0] - 2026-09-16（更新日志组件回落逻辑将自动显示 [5.5.0] 段）；③README API 致谢仍列已失效的 vvhan 与未使用的搏天 API，更新为实际使用的 Alcy/Hitokoto；④路线图重写（见 `## 下一步`）。
+
+##### 复审结论
+
+- `pnpm audit --prod`：0 漏洞；无 TODO/FIXME 残留；版本号无硬编码（MoreSet/控制台均动态取 package.json）。
+- 上一轮复审的关键遗留（外部壁纸源失效、@error.once、建站日期延迟、更新日志硬编码、Dockerfile 基线冲突）已全部在本日第一/二场处理完毕。
+- 遗留缺口不变：Docker 镜像构建未实测（本机无 Docker）、组件级测试未覆盖、EP 2.14+ 受上游阻塞。
+
+##### 涉及文件
+
+- `package.json`（5.5.0）、`CHANGELOG.md`（[Unreleased] → [5.5.0] - 2026-09-16）、`README.md`（API 致谢）、`src/components/Background.vue`（注释日期修正）、`docs/ai/decisions/0006-dockerfile-rewrite.md`（日期修正）、`docs/ai/STATUS.md`（日期重校 + 本记录 + 路线图重写）。源码零逻辑改动。
+
+##### 验证
+
+- `pnpm lint:check` / `typecheck` / `test`（24 用例）/ `build`：通过；`pnpm audit --prod`：0 漏洞。
+
+##### 下一步
+
+- 见上文 `## 下一步`（2026-09-16 复审版）。
