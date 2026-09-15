@@ -34,6 +34,7 @@ export default defineConfig([
         reactive: "readonly",
         computed: "readonly",
         watch: "readonly",
+        watchEffect: "readonly",
         provide: "readonly",
         inject: "readonly",
         defineComponent: "readonly",

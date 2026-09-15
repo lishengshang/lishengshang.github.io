@@ -27,6 +27,10 @@ type MainState = {
   playerTime: number;
   playerDuration: number;
   playerSeekTo: number | null;
+  sakuraShow: boolean;
+  animationShow: boolean;
+  reduceMotion: boolean;
+  wallpaperBlur: number;
 };
 
 export const mainStore = defineStore("main", {
@@ -58,6 +62,10 @@ export const mainStore = defineStore("main", {
       playerTime: 0, // 当前播放位置（秒）
       playerDuration: 0, // 当前歌曲总时长（秒）
       playerSeekTo: null, // 进度条跳转请求（Player 消费后置回 null）
+      sakuraShow: true, // 樱花飘落开关
+      animationShow: true, // 页面动画开关（入场/过渡动画）
+      reduceMotion: false, // 降低动态效果主开关（同时关闭樱花、波纹、自定义光标与页面动画）
+      wallpaperBlur: 0, // 壁纸模糊度（px，0~40，0 为清晰；入场动画从 blur(20px) 过渡到该值）
     };
   },
   actions: {
@@ -113,6 +121,10 @@ export const mainStore = defineStore("main", {
       "playerAutoplay",
       "playerLoop",
       "playerOrder",
+      "sakuraShow",
+      "animationShow",
+      "reduceMotion",
+      "wallpaperBlur",
     ],
   },
 });
