@@ -6,7 +6,7 @@
       class="bg"
       alt="cover"
       @load="imgLoadComplete"
-      @error.once="imgLoadError"
+      @error="imgLoadError"
       @animationend="imgAnimationEnd"
     />
     <div :class="store.backgroundShow ? 'gray hidden' : 'gray'" />
