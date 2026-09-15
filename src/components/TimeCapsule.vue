@@ -38,11 +38,16 @@ const startDate = ref(import.meta.env.VITE_SITE_START);
 const startDateText = ref<string | null>(null);
 const timeInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
+// 刷新进度条与建站日期文本
+const updateCapsule = () => {
+  timeData.value = getTimeCapsule();
+  if (startDate.value) startDateText.value = siteDateStatistics(new Date(startDate.value));
+};
+
 onMounted(() => {
-  timeInterval.value = setInterval(() => {
-    timeData.value = getTimeCapsule();
-    if (startDate.value) startDateText.value = siteDateStatistics(new Date(startDate.value));
-  }, 60000);
+  // 立即计算一次，避免建站日期等文本等待首个 60s 周期才出现
+  updateCapsule();
+  timeInterval.value = setInterval(updateCapsule, 60000);
 });
 
 onBeforeUnmount(() => {
