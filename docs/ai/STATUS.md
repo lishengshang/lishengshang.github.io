@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-09-13（第四场）按路线图顺序开发：main 落地两个冒烟小修（`@error.once`、建站日期延迟）与外部壁纸源更换（t.alcy.cc，每日一图下线）；`feat/settings-enhance` 分支完成设置页补全四项（樱花/动画/降低动态/模糊度）与更新日志自动读取 CHANGELOG，已推送待审阅合并。艺术字保持 3.5rem（用户确认）。
+- 2026-09-13（第四场）按路线图顺序开发：main 落地两个冒烟小修（`@error.once`、建站日期延迟）与外部壁纸源更换（t.alcy.cc，每日一图下线）；`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Build/Deploy 已触发，线上待部署后验证设置页新功能。艺术字保持 3.5rem（用户确认）。
 
 ## 已完成
 
@@ -398,3 +398,9 @@
 
 - 用户审阅 `feat/settings-enhance`（GitHub 提示 PR 链接：`lishengshang.github.io/pull/new/feat/settings-enhance`）后合并 main 部署。
 - 路线图剩余：候选新功能评审（搜索聚合/多语言/暗色模式/友链页）、EP 2.14+ 等上游、Docker 构建补验证、caniuse-lite 更新。
+
+#### PR #1 合并追补
+
+- `feat/settings-enhance` 经 gh CLI 创建 PR #1（标题：feat: 设置页补全（樱花/动画/降低动态/壁纸模糊度）与更新日志自动读取 CHANGELOG）并按仓库惯例以 merge commit 合并：`983f239`，本地 main 已同步。
+- 合并触发 Build/Deploy，线上部署完成后可在站点设置页直接验证：更新日志卡片显示真实 CHANGELOG、个性化调整四项新控件、其他设置降低动态主开关。
+- 风险：设置页新增 store 字段已入 persist pick，老用户 localStorage 的 `data` 缺失字段自动取默认值，无迁移问题。
