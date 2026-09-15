@@ -1,8 +1,11 @@
 // 全局点击波纹指令 v-ripple
 // 用法：在任意元素上添加 v-ripple 即可触发点击波纹效果
 // 原理：监听 click 事件，在点击位置生成一个扩散的圆形元素，动画结束后移除
+import { mainStore } from "@/store";
 
 const createRipple = (event: MouseEvent): void => {
+  // 降低动态效果开启时不生成波纹
+  if (mainStore().reduceMotion) return;
   const target = event.currentTarget as HTMLElement;
   const rect = target.getBoundingClientRect();
   const size = Math.max(rect.width, rect.height);

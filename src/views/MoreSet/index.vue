@@ -57,6 +57,8 @@ import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
 import Set from "@/components/Set.vue";
 import config from "@/../package.json";
+import { parseChangelog } from "@/utils/changelog";
+import changelogRaw from "@/../CHANGELOG.md?raw";
 
 const store = mainStore();
 const closeShow = ref(false);
@@ -64,20 +66,8 @@ const closeShow = ref(false);
 // 站点链接
 const { siteUrl } = useSiteUrl();
 
-// 更新日志
-const upData = reactive({
-  new: [
-    "站点图标与壁纸个人化定制",
-    "樱花飘落、入场动画与点击波纹动效",
-    "工程化升级：Vite 6、ESLint 9、TypeScript",
-  ],
-  fix: [
-    "修复音乐播放器加载失败",
-    "修复 PWA 拦截博客跳转",
-    "修复歌词渲染 XSS 风险与图标路径 404",
-    "移除失效的天气功能",
-  ],
-});
+// 更新日志：构建期读取仓库 CHANGELOG（?raw 打包进产物），与变更记录保持同源
+const upData = parseChangelog(changelogRaw);
 
 // 跳转源代码仓库
 const jumpTo = (url: string): void => {

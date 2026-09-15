@@ -2,9 +2,9 @@
   <!-- 加载 -->
   <Loading />
   <!-- 壁纸 -->
-  <Background @loadComplete="loadComplete" />
+  <Background />
   <!-- 樱花飘落动效 -->
-  <Sakura />
+  <Sakura v-if="showSakura" />
   <!-- 主界面 -->
   <Transition name="fade" mode="out-in">
     <main id="main" v-if="store.imgLoadStatus">
@@ -55,6 +55,15 @@ const MoreSet = defineAsyncComponent(() => import("@/views/MoreSet/index.vue"));
 
 const store = mainStore();
 
+// 樱花显示：单独开关 + 降低动态效果主开关
+const showSakura = computed(() => store.sakuraShow && !store.reduceMotion);
+
+// 页面动画开关：关闭时在根元素挂 no-motion 全局禁用动画与过渡
+const animationEnabled = computed(() => store.animationShow && !store.reduceMotion);
+watchEffect(() => {
+  document.documentElement.classList.toggle("no-motion", !animationEnabled.value);
+});
+
 // 页面宽度
 const getWidth = () => {
   store.setInnerWidth(window.innerWidth);
@@ -81,15 +90,35 @@ const onContextMenu = () => {
   return false;
 };
 
-// 加载完成事件
-const loadComplete = () => {
-  nextTick(() => {
-    // 欢迎提示
-    helloInit();
-    // 默哀模式
-    checkDays();
-  });
-};
+// 自定义光标：随"降低动态效果"开关即时创建/销毁
+let cursorInstance: ReturnType<typeof cursorInit> | null = null;
+watch(
+  () => store.reduceMotion,
+  (value) => {
+    if (value && cursorInstance) {
+      cursorInstance.destroy();
+      cursorInstance = null;
+    } else if (!value && !cursorInstance) {
+      cursorInstance = cursorInit();
+    }
+  },
+  { immediate: true },
+);
+
+// 壁纸加载完成后初始化欢迎提示与默哀模式
+// （原先挂在壁纸入场动画的 animationend 上，关闭动画时不会触发，故改为状态监听）
+watch(
+  () => store.imgLoadStatus,
+  (value) => {
+    if (!value) return;
+    nextTick(() => {
+      // 欢迎提示
+      helloInit();
+      // 默哀模式
+      checkDays();
+    });
+  },
+);
 
 // 监听宽度变化
 watch(
@@ -103,9 +132,6 @@ watch(
 );
 
 onMounted(() => {
-  // 自定义鼠标
-  cursorInit();
-
   // 屏蔽右键
   document.addEventListener("contextmenu", onContextMenu);
 

@@ -5,9 +5,9 @@
       :src="bgUrl as never"
       class="bg"
       alt="cover"
+      :style="{ filter: `blur(${store.wallpaperBlur}px)` }"
       @load="imgLoadComplete"
       @error="imgLoadError"
-      @animationend="imgAnimationEnd"
     />
     <div :class="store.backgroundShow ? 'gray hidden' : 'gray'" />
     <Transition name="fade" mode="out-in">
@@ -30,7 +30,6 @@ import { Error } from "@icon-park/vue-next";
 const store = mainStore();
 const bgUrl = ref<string | null>(null);
 const imgTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-const emit = defineEmits<{ loadComplete: [] }>();
 
 // 壁纸随机数
 // 请依据文件夹内的图片个数修改 Math.random() 后面的第一个数字
@@ -57,12 +56,6 @@ const imgLoadComplete = () => {
     },
     Math.floor(Math.random() * (600 - 300 + 1)) + 300,
   );
-};
-
-// 图片动画完成
-const imgAnimationEnd = () => {
-  // 加载完成事件
-  emit("loadComplete");
 };
 
 // 图片显示失败
@@ -118,7 +111,7 @@ onBeforeUnmount(() => {
     height: 100%;
     object-fit: cover;
     backface-visibility: hidden;
-    filter: blur(20px) brightness(0.3);
+    // 模糊度由 store.wallpaperBlur 动态控制（内联样式），此处仅保留过渡
     transition:
       filter 0.3s,
       transform 0.3s;

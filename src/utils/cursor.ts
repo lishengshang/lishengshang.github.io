@@ -55,23 +55,56 @@ class Cursor {
   }
 
   init(): void {
-    // 使用 addEventListener，避免 onmousemove 属性赋值覆盖页面其他同事件处理
-    document.addEventListener("mousemove", (e: MouseEvent) => {
-      if (this.pos.curr == null) this.move(e.clientX - 8, e.clientY - 8);
-      this.pos.curr = {
-        x: e.clientX - 8,
-        y: e.clientY - 8,
-      };
-      this.cursor.classList.remove("hidden");
-      if (!this.rafId) {
-        this.rafId = requestAnimationFrame(() => this.render());
-      }
-    });
-    document.addEventListener("mouseenter", () => this.cursor.classList.remove("hidden"));
-    document.addEventListener("mouseleave", () => this.cursor.classList.add("hidden"));
-    document.addEventListener("mousedown", () => this.cursor.classList.add("active"));
-    document.addEventListener("mouseup", () => this.cursor.classList.remove("active"));
+    document.addEventListener("mousemove", this.onMouseMove);
+    document.addEventListener("mouseenter", this.onMouseEnter);
+    document.addEventListener("mouseleave", this.onMouseLeave);
+    document.addEventListener("mousedown", this.onMouseDown);
+    document.addEventListener("mouseup", this.onMouseUp);
   }
+
+  // 移除自定义光标并还原系统光标（供"降低动态效果"运行时切换）
+  destroy(): void {
+    document.removeEventListener("mousemove", this.onMouseMove);
+    document.removeEventListener("mouseenter", this.onMouseEnter);
+    document.removeEventListener("mouseleave", this.onMouseLeave);
+    document.removeEventListener("mousedown", this.onMouseDown);
+    document.removeEventListener("mouseup", this.onMouseUp);
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    this.scr?.remove();
+    this.cursor?.remove();
+  }
+
+  // 使用 addEventListener，避免 onmousemove 属性赋值覆盖页面其他同事件处理
+  onMouseMove = (e: MouseEvent): void => {
+    if (this.pos.curr == null) this.move(e.clientX - 8, e.clientY - 8);
+    this.pos.curr = {
+      x: e.clientX - 8,
+      y: e.clientY - 8,
+    };
+    this.cursor.classList.remove("hidden");
+    if (!this.rafId) {
+      this.rafId = requestAnimationFrame(() => this.render());
+    }
+  };
+
+  onMouseEnter = (): void => {
+    this.cursor.classList.remove("hidden");
+  };
+
+  onMouseLeave = (): void => {
+    this.cursor.classList.add("hidden");
+  };
+
+  onMouseDown = (): void => {
+    this.cursor.classList.add("active");
+  };
+
+  onMouseUp = (): void => {
+    this.cursor.classList.remove("active");
+  };
 
   render(): void {
     this.rafId = null;

@@ -173,7 +173,6 @@ a:hover {
     transform: scale(1.6);
   }
   to {
-    filter: blur(0) brightness(1);
     transform: scale(1);
   }
 }
@@ -284,5 +283,20 @@ scrollbar-thumb {
   to {
     transform: scale(2.5);
     opacity: 0;
+  }
+}
+
+// 关闭页面动画（"页面动画"开关或"降低动态效果"主开关，由 App.vue 在根元素挂 no-motion 类）
+// 全局禁用动画与过渡，并修正依赖动画填充的 .enter 初始透明度，否则内容会停留在 opacity:0
+.no-motion {
+  &,
+  & *,
+  & *::before,
+  & *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .enter {
+    opacity: 1;
   }
 }

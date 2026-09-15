@@ -47,6 +47,34 @@
             :inactive-icon="CloseSmall"
           />
         </div>
+        <div class="item">
+          <span class="text">樱花飘落</span>
+          <el-switch
+            v-model="sakuraShow"
+            inline-prompt
+            :active-icon="CheckSmall"
+            :inactive-icon="CloseSmall"
+          />
+        </div>
+        <div class="item">
+          <span class="text">页面动画</span>
+          <el-switch
+            v-model="animationShow"
+            inline-prompt
+            :active-icon="CheckSmall"
+            :inactive-icon="CloseSmall"
+          />
+        </div>
+        <div class="item">
+          <span class="text">壁纸模糊度</span>
+          <el-slider
+            v-model="wallpaperBlur"
+            class="blur-slider"
+            :min="0"
+            :max="40"
+            :format-tooltip="(value: number) => `${value}px`"
+          />
+        </div>
       </el-collapse-item>
       <el-collapse-item title="播放器配置" name="3">
         <div class="item">
@@ -79,7 +107,16 @@
         </div>
       </el-collapse-item>
       <el-collapse-item title="其他设置" name="4">
-        <div>设置内容待增加</div>
+        <div class="item">
+          <span class="text">降低动态效果</span>
+          <el-switch
+            v-model="reduceMotion"
+            inline-prompt
+            :active-icon="CheckSmall"
+            :inactive-icon="CloseSmall"
+          />
+        </div>
+        <div class="tip">开启后将同时关闭樱花飘落、点击波纹、自定义光标与页面动画</div>
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -100,6 +137,10 @@ const {
   playerAutoplay,
   playerOrder,
   playerLoop,
+  sakuraShow,
+  animationShow,
+  reduceMotion,
+  wallpaperBlur,
 } = storeToRefs(store);
 
 // 默认选中项
@@ -158,6 +199,27 @@ const radioChange = () => {
               }
             }
           }
+          // 壁纸模糊度滑杆
+          .blur-slider {
+            width: 140px;
+            margin-left: 16px;
+
+            :deep(.el-slider__runway) {
+              background-color: #ffffff30;
+            }
+            :deep(.el-slider__bar) {
+              background-color: #ffffff60;
+            }
+            :deep(.el-slider__button) {
+              border-color: #fff;
+              background-color: #ffffff30;
+            }
+          }
+        }
+        .tip {
+          font-size: 12px;
+          opacity: 0.6;
+          margin-top: 12px;
         }
         .el-radio-group {
           justify-content: space-between;
