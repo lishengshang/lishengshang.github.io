@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-09-13（第三场）线上验证闭环：Deploy #8（da431f1）生效，浏览器实测艺术字 "liremio'"（Pacifico、桌面 .long 56px）与 `<title>` "liremio の主页" 均正确；9-09 遗留三项冒烟（壁纸切换/设置持久化/Links 轮播）全部通过。Dockerfile 重写落地（ADR-0006：Node 22-alpine + pnpm 多阶段 + nginx:alpine），四门禁全绿；本机无 Docker，镜像构建验证遗留。
+- 2026-09-13（第四场）按路线图顺序开发：main 落地两个冒烟小修（`@error.once`、建站日期延迟）与外部壁纸源更换（t.alcy.cc，每日一图下线）；`feat/settings-enhance` 分支完成设置页补全四项（樱花/动画/降低动态/模糊度）与更新日志自动读取 CHANGELOG，已推送待审阅合并。艺术字保持 3.5rem（用户确认）。
 
 ## 已完成
 
@@ -48,10 +48,10 @@
 
 评审后拟定路线图（优先级从高到低，详见 2026-08-13 评审会话记录；安全项 2026-08-22、可靠性 2026-09-03、测试基建与 lint 门禁 2026-09-09、依赖升级 2026-09-09 均已完成；工程化已达合理上限，流程类项冻结）：
 
-1. **跟进项**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；重写 Dockerfile（Node 22 + pnpm + 静态镜像，当前 Node 18 + npm 与基线冲突）。
-2. **功能**：设置页补全（樱花开关、动画开关、降低动态效果、壁纸模糊度等）；硬编码更新日志改为自动读取 CHANGELOG（当前为手动维护）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
+1. **跟进项**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；~~重写 Dockerfile~~（已完成，ADR-0006，2026-09-13；镜像构建验证待有 Docker 环境）。
+2. **功能**：~~设置页补全~~、~~更新日志自动读取 CHANGELOG~~（已完成，`feat/settings-enhance` 分支待合并）；候选新功能（搜索聚合、多语言、暗色模式、友链页面等）经 PR 评审后分批落地。
 3. **路由（条件触发）**：当前单屏应用无需 vue-router（视图切换走 Pinia + Transition，`/blog/` 为独立子站）。仅当出现需要 URL 身份的独立页面（如独立的友链页 `xxx/links`、搜索聚合页）时再引入，届时同步评估 PWA `navigateFallbackDenylist` 范围。
-4. **小杂项**：`npx update-browserslist-db@latest` 定期执行。
+4. **小杂项**：`npx update-browserslist-db@latest` 定期执行（caniuse-lite 过期提醒见 2026-09-13 build 输出）。
 
 ## 会话记录
 
@@ -360,3 +360,41 @@
 - 有 Docker 环境时补镜像构建验证。
 - 小修 PR：Background.vue `@error.once`、TimeCapsule 首次赋值时机。
 - 功能项：设置页补全（樱花/动画开关、壁纸模糊度等）、更新日志自动读取 CHANGELOG。
+
+### 2026-09-13（第四场）
+
+#### 按序开发：小修 + 壁纸源更换（main）+ 设置页补全（feat/settings-enhance）
+
+##### 摘要
+
+按用户指示按路线图顺序开发，技术取舍经四组选框确认：壁纸源换可用源并删每日一图、艺术字保持 3.5rem、更新日志走构建期 `?raw`、设置页四项全做并单独起分支。main 三笔（两 fix + 一壁纸源），分支三笔（更新日志自动化 + 设置页补全 + CHANGELOG 补记），均已推送。
+
+##### main 涉及文件与提交
+
+- `088c586`：`src/components/Background.vue` `@error.once` → `@error`（每次失败均回退本地图）。
+- `ffa1282`：`src/components/TimeCapsule.vue` 抽出 `updateCapsule()` 并挂载时立即调用（建站日期文本不再延迟 60s）。
+- `44dffb5`：`Background.vue` 壁纸源更换（随机风景→`t.alcy.cc/fj`、随机动漫→`t.alcy.cc/ycy`，"1" 每日一图下线并按默认壁纸兼容旧持久化值）；`Set.vue` 移除每日一图 radio；CHANGELOG [Unreleased] 补「修复」小节。源选择依据：页面内 Image 探针实测 dujin/vvhan/必应类镜像源全部 error，t.alcy.cc 等五个源 OK。
+
+##### 分支 feat/settings-enhance 涉及文件与提交
+
+- `f473c23` 更新日志自动化：`src/utils/changelog.ts`（解析 [Unreleased] 段、按小节「修复」归类 fix/其余 new、剥行内标记、条数上限、空段回退最近版本）+ 4 单测；`MoreSet/index.vue` 删硬编码改 `import ...?raw` + `parseChangelog`。
+- `a700dea` 设置页补全：`store/index.ts` 新增 `sakuraShow/animationShow/reduceMotion/wallpaperBlur` 并入 persist pick；`Set.vue` 个性化调整加樱花/动画开关与模糊度滑杆、其他设置加降低动态主开关（原「设置内容待增加」）；`App.vue` 樱花 `v-if`、光标随主开关运行时创建/销毁、根元素 `no-motion` 类、欢迎/默哀从壁纸 animationend 解耦为 `imgLoadStatus` 监听；`cursor.ts` 匿名监听器改具名并新增 `destroy()`；`ripple.ts` reduceMotion 门控；`style.scss` 新增 `.no-motion` 全局禁用动画规则并修正 `.enter` 初始透明度、`fade-blur-in` 关键帧 to 去除 filter（解除 forwards 填充对内联模糊的覆盖）；`eslint.config.js` globals 补 `watchEffect`。
+- `62cbfde`：CHANGELOG [Unreleased] 补「设置页」小节。
+
+##### 验证
+
+- main 三笔与分支：`pnpm lint:check` / `typecheck` / `test`（24 用例，含 changelog 4 个新用例）/ `build` 均通过。
+- dev 浏览器实测（localhost:3000）：更新日志卡片渲染真实 CHANGELOG（修复类归 bug 图标列表、`**`/反引号已剥离、new 上限 6 生效）；壁纸 radio 无每日一图、随机风景→`t.alcy.cc/fj` 加载成功；樱花开关画布即时移除/恢复 + 持久化；滑杆点击 75% → `blur(30px)` + 持久化 30、回 0 精确复位；页面动画关 → `html.no-motion` 生效、collapse 过渡归零、5 个 `.enter` 元素 opacity 保持 1；降低动态开 → 光标元素与全局样式移除、樱花消失、no-motion 生效，关 → 全部恢复。测后状态已恢复默认。
+- 设置页布局与更新日志截图已留档。
+
+##### 风险与缺口
+
+- 入场动画语义微调：`fade-blur-in` 终值不再钉死 blur(0)，改为过渡到用户设定模糊度（默认 0，观感与原先一致）；欢迎提示时机由入场动画结束提前到壁纸加载完成（约提前 0.8s），无实质影响。
+- CHANGELOG 解析依赖现有格式（`## [版本]` + `### 小节` + `- 条目`），格式大改需同步 `changelog.ts`。
+- 分支未合并 main，线上仍为设置页补全前的版本；合并后随 Deploy 上线。
+- 艺术字号维持 3.5rem 为用户确认的决策，非缺陷。
+
+##### 下一步
+
+- 用户审阅 `feat/settings-enhance`（GitHub 提示 PR 链接：`lishengshang.github.io/pull/new/feat/settings-enhance`）后合并 main 部署。
+- 路线图剩余：候选新功能评审（搜索聚合/多语言/暗色模式/友链页）、EP 2.14+ 等上游、Docker 构建补验证、caniuse-lite 更新。
