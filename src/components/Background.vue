@@ -36,7 +36,7 @@ const imgTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const bgRandom = Math.floor(Math.random() * 10 + 1);
 
 // 更换壁纸链接
-// 外部源实测（2026-09-13）：dujin 必应每日一图与 vvhan 两个接口均已失效，
+// 外部源实测（2026-09-16）：dujin 必应每日一图与 vvhan 两个接口均已失效，
 // 「随机风景/随机动漫」更换为 t.alcy.cc；"1" 为已下线的每日一图，按默认壁纸处理以兼容旧持久化数据
 const changeBg = (type: string | number) => {
   if (type == 2) {

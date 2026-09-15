@@ -2,7 +2,7 @@
 
 本仓库基于 [imsyy/home](https://github.com/imsyy/home) fork 维护。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [5.5.0] - 2026-09-16
 
 ### 依赖升级（5.4.0，ADR-0005）
 - Vue 3.4 → 3.5.42、Pinia 2 → 3.0.4（persistedstate v4，`paths` → `pick`）、Vite 6 → 7.3.6（插件链配套升级）

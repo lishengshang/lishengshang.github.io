@@ -4,7 +4,7 @@
   "github": "https://github.com/lishengshang/homepage",
   "home": "https://lishengshang.github.io",
   "private": true,
-  "version": "5.4.0",
+  "version": "5.5.0",
   "type": "module",
   "engines": {
     "node": ">=22"

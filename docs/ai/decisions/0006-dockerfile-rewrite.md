@@ -1,7 +1,7 @@
 # ADR-0006：重写 Dockerfile（Node 22 + pnpm 多阶段构建 + nginx 静态镜像）
 
 - 状态：accepted
-- 日期：2026-09-13
+- 日期：2026-09-16
 - 影响范围：`Dockerfile`、`nginx.conf`（新增）、`.dockerignore`、`docker-compose.yml`、`README.md`
 
 ## 背景
