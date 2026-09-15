@@ -16,6 +16,11 @@
 - CI（Build）新增 lint（无 `--fix`）与 unit test 门禁
 - 新增 `pnpm lint:check` 脚本供 CI 校验使用
 
+### 修复
+- 外部壁纸源更换：dujin 必应每日一图与 vvhan 两接口均已失效，「随机风景/随机动漫」改为 t.alcy.cc（实测可用），「每日一图」选项下线（旧持久化值按默认壁纸处理）
+- 壁纸加载失败回退不再受 `@error.once` 单次限制，每次失败均回退本地图并提示
+- 时光胶囊建站日期文本改为挂载后立即计算（原先最长延迟 60s 显示）
+
 ### Docker（ADR-0006）
 - 重写 Dockerfile：Node 18 + npm + http-server → Node 22-alpine + corepack pnpm（锁文件生效）多阶段构建，运行时换 nginx:alpine 静态镜像（对外端口仍为 12445）
 - 新增 nginx.conf：预压缩产物直出、`/assets/` 长缓存、`index.html`/`sw.js`/`manifest.webmanifest` 不缓存

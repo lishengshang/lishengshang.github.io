@@ -37,15 +37,15 @@ const emit = defineEmits<{ loadComplete: [] }>();
 const bgRandom = Math.floor(Math.random() * 10 + 1);
 
 // 更换壁纸链接
+// 外部源实测（2026-09-13）：dujin 必应每日一图与 vvhan 两个接口均已失效，
+// 「随机风景/随机动漫」更换为 t.alcy.cc；"1" 为已下线的每日一图，按默认壁纸处理以兼容旧持久化数据
 const changeBg = (type: string | number) => {
-  if (type == 0) {
-    bgUrl.value = `/images/background${bgRandom}.webp`;
-  } else if (type == 1) {
-    bgUrl.value = "https://api.dujin.org/bing/1920.php";
-  } else if (type == 2) {
-    bgUrl.value = "https://api.vvhan.com/api/wallpaper/views";
+  if (type == 2) {
+    bgUrl.value = "https://t.alcy.cc/fj"; // 随机风景
   } else if (type == 3) {
-    bgUrl.value = "https://api.vvhan.com/api/wallpaper/acg";
+    bgUrl.value = "https://t.alcy.cc/ycy"; // 随机动漫
+  } else {
+    bgUrl.value = `/images/background${bgRandom}.webp`; // 默认壁纸
   }
 };
 
