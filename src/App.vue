@@ -5,34 +5,38 @@
   <Background />
   <!-- 樱花飘落动效 -->
   <Sakura v-if="showSakura" />
-  <!-- 主界面 -->
-  <Transition name="fade" mode="out-in">
-    <main id="main" v-if="store.imgLoadStatus">
-      <div class="container" v-show="!store.backgroundShow">
-        <section class="all" v-show="!store.setOpenState">
-          <MainLeft />
-          <MainRight v-show="!store.boxOpenState" />
-          <Box v-if="store.boxOpenState" />
-        </section>
-        <section class="more" v-if="store.setOpenState" @click="store.setOpenState = false">
-          <MoreSet />
-        </section>
-      </div>
-      <!-- 移动端菜单按钮 -->
-      <Icon
-        class="menu"
-        size="24"
-        v-show="!store.backgroundShow"
-        @click="store.mobileOpenState = !store.mobileOpenState"
-      >
-        <component :is="store.mobileOpenState ? CloseSmall : HamburgerButton" />
-      </Icon>
-      <!-- 页脚 -->
-      <Transition name="fade" mode="out-in">
-        <Footer class="f-ter" v-show="!store.backgroundShow && !store.setOpenState" />
-      </Transition>
-    </main>
-  </Transition>
+    <!-- 主界面 -->
+    <Transition name="fade" mode="out-in">
+      <main id="main" v-if="store.imgLoadStatus">
+        <div class="container" v-show="!store.backgroundShow">
+          <section class="all" v-show="!store.setOpenState">
+            <MainLeft />
+            <MainRight v-show="!store.boxOpenState" />
+            <Box v-if="store.boxOpenState" />
+          </section>
+          <section class="more" v-if="store.setOpenState" @click="store.setOpenState = false">
+            <MoreSet />
+          </section>
+        </div>
+        <!-- 移动端菜单按钮 -->
+        <Icon
+          class="menu"
+          size="24"
+          v-show="!store.backgroundShow"
+          @click="store.mobileOpenState = !store.mobileOpenState"
+        >
+          <component :is="store.mobileOpenState ? CloseSmall : HamburgerButton" />
+        </Icon>
+        <!-- 页脚 -->
+        <Transition name="fade" mode="out-in">
+          <Footer class="f-ter" v-show="!store.backgroundShow && !store.setOpenState" />
+        </Transition>
+      </main>
+    </Transition>
+    <!-- 友链页面（#/friends） -->
+    <Transition name="fade">
+      <Friends v-if="store.friendsOpenState" />
+    </Transition>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +56,7 @@ import config from "@/../package.json";
 // 非首屏组件懒加载
 const Box = defineAsyncComponent(() => import("@/views/Box/index.vue"));
 const MoreSet = defineAsyncComponent(() => import("@/views/MoreSet/index.vue"));
+const Friends = defineAsyncComponent(() => import("@/views/Friends/index.vue"));
 
 const store = mainStore();
 
@@ -68,6 +73,20 @@ watchEffect(() => {
 const getWidth = () => {
   store.setInnerWidth(window.innerWidth);
 };
+
+// 友链页面与 #/friends hash 双向同步（URL 身份 + 浏览器前进后退可用）
+const applyFriendsHash = () => {
+  store.friendsOpenState = window.location.hash === "#/friends";
+};
+watch(
+  () => store.friendsOpenState,
+  (value) => {
+    const expected = value ? "#/friends" : "#";
+    if (window.location.hash !== expected) {
+      window.location.hash = expected;
+    }
+  },
+);
 
 // 鼠标中键事件
 const onMouseDown = (event: MouseEvent) => {
@@ -142,6 +161,10 @@ onMounted(() => {
   getWidth();
   window.addEventListener("resize", getWidth);
 
+  // 友链页面 hash 初始化与监听
+  applyFriendsHash();
+  window.addEventListener("hashchange", applyFriendsHash);
+
   // 控制台输出
   const styleTitle1 = "font-size: 20px;font-weight: 600;color: rgb(244,167,89);";
   const styleTitle2 = "font-size:12px;color: rgb(244,167,89);";
@@ -160,6 +183,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener("resize", getWidth);
   window.removeEventListener("mousedown", onMouseDown);
+  window.removeEventListener("hashchange", applyFriendsHash);
   document.removeEventListener("contextmenu", onContextMenu);
 });
 </script>

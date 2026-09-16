@@ -32,6 +32,7 @@ type MainState = {
   reduceMotion: boolean;
   wallpaperBlur: number;
   nightMode: boolean;
+  friendsOpenState: boolean;
 };
 
 export const mainStore = defineStore("main", {
@@ -68,6 +69,7 @@ export const mainStore = defineStore("main", {
       reduceMotion: false, // 降低动态效果主开关（同时关闭樱花、波纹、自定义光标与页面动画）
       wallpaperBlur: 0, // 壁纸模糊度（px，0~40，0 为清晰；入场动画从 blur(20px) 过渡到该值）
       nightMode: false, // 暗色模式（加深卡片背景与壁纸，适合夜间）
+      friendsOpenState: false, // 友链页面开启状态（同步 #/friends hash）
     };
   },
   actions: {

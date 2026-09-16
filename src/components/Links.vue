@@ -5,6 +5,13 @@
         <Link />
       </Icon>
       <span class="title">网站列表</span>
+      <div class="actions">
+        <el-tooltip content="友链页面" placement="top" :show-arrow="false">
+          <Icon size="18" class="entry" @click="store.friendsOpenState = true">
+            <UserFriends />
+          </Icon>
+        </el-tooltip>
+      </div>
     </div>
     <!-- 网站列表 -->
     <Swiper
@@ -44,7 +51,7 @@
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
 // 可前往 https://www.xicons.org 自行挑选并在此处引入
-import { Link, Blog, CompactDisc, Cloud, Compass, Book, Fire, LaptopCode, Image, Envelope } from "@vicons/fa"; // 注意使用正确的类别
+import { Link, Blog, CompactDisc, Cloud, Compass, Book, Fire, LaptopCode, Image, Envelope, UserFriends } from "@vicons/fa"; // 注意使用正确的类别
 import { mainStore } from "@/store";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Mousewheel } from "swiper/modules";
@@ -99,6 +106,23 @@ const jumpLink = (data: SiteLink): void => {
       margin-left: 8px;
       font-size: 1.15rem;
       text-shadow: 0 0 5px #00000050;
+    }
+    .actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .entry {
+        display: flex;
+        cursor: pointer;
+        opacity: 0.85;
+        transition: transform 0.3s;
+
+        &:hover {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
     }
   }
   .swiper {
