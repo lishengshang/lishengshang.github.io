@@ -300,3 +300,20 @@ scrollbar-thumb {
     opacity: 1;
   }
 }
+
+// 暗色模式：加深全局玻璃卡片、消息弹窗与设置面板背景，壁纸降亮由 Background.vue 内联 filter 处理
+html.night-mode {
+  .cards {
+    background-color: #00000090;
+  }
+  .el-message {
+    --el-message-bg-color: #00000090 !important;
+  }
+  .set {
+    background: rgb(0 0 0 / 45%);
+  }
+  ::-webkit-scrollbar-thumb,
+  scrollbar-thumb {
+    background-color: #999999;
+  }
+}

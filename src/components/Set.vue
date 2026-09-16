@@ -66,6 +66,15 @@
           />
         </div>
         <div class="item">
+          <span class="text">暗色模式</span>
+          <el-switch
+            v-model="nightMode"
+            inline-prompt
+            :active-icon="CheckSmall"
+            :inactive-icon="CloseSmall"
+          />
+        </div>
+        <div class="item">
           <span class="text">壁纸模糊度</span>
           <el-slider
             v-model="wallpaperBlur"
@@ -141,6 +150,7 @@ const {
   animationShow,
   reduceMotion,
   wallpaperBlur,
+  nightMode,
 } = storeToRefs(store);
 
 // 默认选中项

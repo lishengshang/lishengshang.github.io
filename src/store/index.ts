@@ -31,6 +31,7 @@ type MainState = {
   animationShow: boolean;
   reduceMotion: boolean;
   wallpaperBlur: number;
+  nightMode: boolean;
 };
 
 export const mainStore = defineStore("main", {
@@ -66,6 +67,7 @@ export const mainStore = defineStore("main", {
       animationShow: true, // 页面动画开关（入场/过渡动画）
       reduceMotion: false, // 降低动态效果主开关（同时关闭樱花、波纹、自定义光标与页面动画）
       wallpaperBlur: 0, // 壁纸模糊度（px，0~40，0 为清晰；入场动画从 blur(20px) 过渡到该值）
+      nightMode: false, // 暗色模式（加深卡片背景与壁纸，适合夜间）
     };
   },
   actions: {
@@ -125,6 +127,7 @@ export const mainStore = defineStore("main", {
       "animationShow",
       "reduceMotion",
       "wallpaperBlur",
+      "nightMode",
     ],
   },
 });

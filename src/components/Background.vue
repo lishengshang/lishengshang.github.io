@@ -5,7 +5,7 @@
       :src="bgUrl as never"
       class="bg"
       alt="cover"
-      :style="{ filter: `blur(${store.wallpaperBlur}px)` }"
+      :style="{ filter: `blur(${store.wallpaperBlur}px) brightness(${store.nightMode ? 0.55 : 1})` }"
       @load="imgLoadComplete"
       @error="imgLoadError"
     />
