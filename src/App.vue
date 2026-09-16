@@ -74,6 +74,11 @@ watchEffect(() => {
   document.documentElement.classList.toggle("no-motion", !animationEnabled.value);
 });
 
+// 暗色模式：根元素挂 night-mode，全局样式加深卡片、弹窗与设置面板
+watchEffect(() => {
+  document.documentElement.classList.toggle("night-mode", store.nightMode);
+});
+
 // 页面宽度
 const getWidth = () => {
   store.setInnerWidth(window.innerWidth);
