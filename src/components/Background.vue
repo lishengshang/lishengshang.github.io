@@ -36,13 +36,15 @@ const imgTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 const bgRandom = Math.floor(Math.random() * 10 + 1);
 
 // 更换壁纸链接
-// 外部源实测（2026-09-16）：dujin 必应每日一图与 vvhan 两个接口均已失效，
-// 「随机风景/随机动漫」更换为 t.alcy.cc；"1" 为已下线的每日一图，按默认壁纸处理以兼容旧持久化数据
+// 外部壁纸源从环境变量读取（.env 的 VITE_WALLPAPER_VIEWS / VITE_WALLPAPER_ACG，留空走内置默认），
+// 接口失效时更换 .env 即可；"1" 为已下线的每日一图，按默认壁纸处理以兼容旧持久化数据
+const WALLPAPER_VIEWS = import.meta.env.VITE_WALLPAPER_VIEWS || "https://t.alcy.cc/fj";
+const WALLPAPER_ACG = import.meta.env.VITE_WALLPAPER_ACG || "https://t.alcy.cc/ycy";
 const changeBg = (type: string | number) => {
   if (type == 2) {
-    bgUrl.value = "https://t.alcy.cc/fj"; // 随机风景
+    bgUrl.value = WALLPAPER_VIEWS; // 随机风景
   } else if (type == 3) {
-    bgUrl.value = "https://t.alcy.cc/ycy"; // 随机动漫
+    bgUrl.value = WALLPAPER_ACG; // 随机动漫
   } else {
     bgUrl.value = `/images/background${bgRandom}.webp`; // 默认壁纸
   }

@@ -2,6 +2,12 @@
 
 本仓库基于 [imsyy/home](https://github.com/imsyy/home) fork 维护。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [Unreleased]
+
+### 工程
+- 外部壁纸源迁移到 `.env` 配置（`VITE_WALLPAPER_VIEWS` / `VITE_WALLPAPER_ACG`，留空走内置默认），接口失效时无需改代码
+- 新增 TimeCapsule 组件测试（@vue/test-utils 首次投入使用），覆盖建站日期「挂载后立即可见」回归点
+
 ## [5.5.0] - 2026-09-16
 
 ### 依赖升级（5.4.0，ADR-0005）

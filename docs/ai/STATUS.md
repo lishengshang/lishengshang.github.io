@@ -12,6 +12,7 @@
 
 - 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
 - 2026-09-16（第三场）全仓复审：落版本号 5.5.0（CHANGELOG 定稿）、修正本文件误标的会话日期（本对话发生于 09-16）、README API 致谢更新、路线图重写。
+- 2026-09-16（第四场）按路线图顺序执行：线上 5.5.0 UI 冒烟全过（版本号/更新日志回落/新控件/樱花开关抽查）；caniuse-lite override 至 1.0.30001810；质量项落地（壁纸源 .env 配置化 + TimeCapsule 组件测试，@vue/test-utils 首次投用）。待用户选框决定功能候选后继续。
 
 ## 已完成
 
@@ -49,10 +50,11 @@
 
 评审后拟定路线图（2026-09-16 复审重写；历史评审：2026-08-13 全仓评审，安全/可靠性/测试基建/依赖升级/设置页功能均已落地）：
 
-1. **短期待办**：线上部署后完整 UI 冒烟（设置页四项新控件、版本号显示 v5.5.0、更新日志卡片回落显示 [5.5.0] 段）。
+1. ~~短期待办：线上部署后完整 UI 冒烟~~（已完成，2026-09-16 第四场：版本号 v5.5.0、更新日志卡片回落显示 [5.5.0] 段 9 条、壁纸选项无每日一图、四项新控件在位、樱花开关抽查通过）。
 2. **功能候选（经评审后分批落地）**：搜索聚合、多语言、暗色模式、友链页面（出现需 URL 身份的独立页面时引入 vue-router，并同步评估 PWA `navigateFallbackDenylist` 范围）。
-3. **工程跟进（条件触发）**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；Docker 镜像构建补验证（`docker build -t home . && docker run -p 12445:80 -d home`，需有 Docker 环境）；`npx update-browserslist-db@latest` 定期执行。
-4. **质量增强候选**：组件级测试补位（@vue/test-utils 已装未用，优先 Set.vue/MoreSet 交互）；壁纸源配置化（迁移到 `.env` 注入，避免硬编码源再失效）；Meting 公共实例（音乐 API）可靠性观察。
+3. **工程跟进（条件触发）**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；Docker 镜像构建补验证（`docker build -t home . && docker run -p 12445:80 -d home`，需有 Docker 环境）；~~caniuse-lite 更新~~（已完成，override 至 1.0.30001810，`b7a0736`）。
+4. ~~质量增强候选~~（部分完成，2026-09-16 第四场）：~~壁纸源配置化~~（已完成，`.env` 注入）；~~组件级测试补位~~（已起步，TimeCapsule 3 用例；后续可继续补 Set/MoreSet 交互）；Meting 公共实例（音乐 API）可靠性观察。
+5. **观察项（2026-09-16 冒烟发现）**：PWA 版本切换竞态——旧标签页在 SW 更新提示出现期间点击进入 Box/设置时，懒加载 chunk 可能因新旧构建交替加载失败（表现为状态切换但视图空白，强刷后恢复，非必现）。后续可评估 vite-plugin-pwa 的 `registerType: "prompt"` 模式或懒加载失败重试。
 
 ## 会话记录
 
@@ -431,3 +433,33 @@
 ##### 下一步
 
 - 见上文 `## 下一步`（2026-09-16 复审版）。
+
+### 2026-09-16（第四场）
+
+#### 路线图顺序执行：线上冒烟 + caniuse-lite + 质量增强两项
+
+##### 摘要
+
+按复审路线图顺序动手：①线上 5.5.0 完整 UI 冒烟；②caniuse-lite 更新（override 方式）；③壁纸源 `.env` 配置化；④TimeCapsule 组件测试（@vue/test-utils 首次投用）。
+
+##### 线上冒烟结果
+
+- 强刷后核验：设置页版本号 `v 5.5.0`；更新日志卡片回落显示 [5.5.0] 段共 9 条（Unreleased 定稿后自动回落，解析器新小节「设置页」「修复」归类正确）；壁纸 radio 仅 默认/随机风景/随机动漫；个性化调整含 樱花飘落/页面动画/壁纸模糊度（滑杆在位）；其他设置含 降低动态效果；樱花开关开/关抽查画布即时增删。
+- 状态已恢复默认（设置页与 Box 关闭）。
+- 发现（非缺陷）：旧标签页在 SW 更新提示期间点开 Box 时懒加载 chunk 加载失败（视图空白、文案已切 Oops），强刷恢复，非必现。记入路线图观察项。
+
+##### 涉及文件
+
+- `pnpm-workspace.yaml` / `pnpm-lock.yaml`：overrides 增加 `caniuse-lite: ^1.0.30001810`（update-browserslist-db 的 pnpm 子进程在 corepack 环境不可用，且 caniuse-lite 为传递依赖普通 up 不生效，沿用 nanoid 的 override 模式），提交 `b7a0736`。
+- `.env.example`：新增 `VITE_WALLPAPER_VIEWS` / `VITE_WALLPAPER_ACG`（默认 t.alcy.cc）。
+- `src/components/Background.vue`：壁纸源改读环境变量（留空回退内置默认）。
+- `src/components/TimeCapsule.test.ts`：新增组件测试 3 用例（四进度条渲染；siteStartShow=true 时建站日期文本挂载后立即可见——本日修复的回归点；false 时不渲染 .start 条目）。el-progress 用透传 stub，pinia 真实例。
+- `CHANGELOG.md`：[Unreleased] 增「工程」小节；`docs/ai/STATUS.md`：本记录。
+
+##### 验证
+
+- `pnpm lint:check` / `typecheck` / `test`（6 文件 27 用例）/ `build`：全过；build 输出 caniuse-lite 过期提醒消失（precache 601.93 KiB，较 5.5.0 的 591 KiB 增量为设置页功能代码，与 caniuse 无关）。
+
+##### 下一步
+
+- 功能候选（搜索聚合/多语言/暗色模式/友链页）经用户选框决定后分批落地。
