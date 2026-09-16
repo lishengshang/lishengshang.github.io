@@ -12,7 +12,8 @@
 
 - 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
 - 2026-09-16（第三场）全仓复审：落版本号 5.5.0（CHANGELOG 定稿）、修正本文件误标的会话日期（本对话发生于 09-16）、README API 致谢更新、路线图重写。
-- 2026-09-16（第四场）按路线图顺序执行：线上 5.5.0 UI 冒烟全过（版本号/更新日志回落/新控件/樱花开关抽查）；caniuse-lite override 至 1.0.30001810；质量项落地（壁纸源 .env 配置化 + TimeCapsule 组件测试，@vue/test-utils 首次投用）。待用户选框决定功能候选后继续。
+- 2026-09-16（第四场）按路线图顺序执行：线上 5.5.0 UI 冒烟全过（版本号/更新日志回落/新控件/樱花开关抽查）；caniuse-lite override 至 1.0.30001810；质量项落地（壁纸源 .env 配置化 + TimeCapsule 组件测试，@vue/test-utils 首次投用）。
+- 2026-09-16（第五场）分支 `feat/search-dark-links`（基于 4f30001，待验收合并）：PWA prompt 修复 + 暗色模式 + 友链页面（ADR-0007）+ 搜索聚合，四项全部通过 dev 验收；验收中抓到并修复 night-mode 根类缺失缺陷。
 
 ## 已完成
 
@@ -51,10 +52,10 @@
 评审后拟定路线图（2026-09-16 复审重写；历史评审：2026-08-13 全仓评审，安全/可靠性/测试基建/依赖升级/设置页功能均已落地）：
 
 1. ~~短期待办：线上部署后完整 UI 冒烟~~（已完成，2026-09-16 第四场：版本号 v5.5.0、更新日志卡片回落显示 [5.5.0] 段 9 条、壁纸选项无每日一图、四项新控件在位、樱花开关抽查通过）。
-2. **功能候选（经评审后分批落地）**：搜索聚合、多语言、暗色模式、友链页面（出现需 URL 身份的独立页面时引入 vue-router，并同步评估 PWA `navigateFallbackDenylist` 范围）。
+2. **功能候选**：~~搜索聚合~~、~~暗色模式~~、~~友链页面~~（已完成，`feat/search-dark-links` 分支待验收合并）；多语言 i18n（未启动，用户未选）。
 3. **工程跟进（条件触发）**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；Docker 镜像构建补验证（`docker build -t home . && docker run -p 12445:80 -d home`，需有 Docker 环境）；~~caniuse-lite 更新~~（已完成，override 至 1.0.30001810，`b7a0736`）。
-4. ~~质量增强候选~~（部分完成，2026-09-16 第四场）：~~壁纸源配置化~~（已完成，`.env` 注入）；~~组件级测试补位~~（已起步，TimeCapsule 3 用例；后续可继续补 Set/MoreSet 交互）；Meting 公共实例（音乐 API）可靠性观察。
-5. **观察项（2026-09-16 冒烟发现）**：PWA 版本切换竞态——旧标签页在 SW 更新提示出现期间点击进入 Box/设置时，懒加载 chunk 可能因新旧构建交替加载失败（表现为状态切换但视图空白，强刷后恢复，非必现）。后续可评估 vite-plugin-pwa 的 `registerType: "prompt"` 模式或懒加载失败重试。
+4. ~~质量增强候选~~（部分完成，2026-09-16 第四/五场）：~~壁纸源配置化~~（已完成）；~~组件级测试补位~~（已起步，TimeCapsule 3 + search 4 用例；后续可继续补 Set/MoreSet 交互）；Meting 公共实例（音乐 API）可靠性观察。
+5. ~~观察项：PWA 更新竞态~~（已修复，2026-09-16 第五场，prompt 模式 `c4a5a12`；线上行为待合并部署后验证）。
 
 ## 会话记录
 
@@ -463,3 +464,38 @@
 ##### 下一步
 
 - 功能候选（搜索聚合/多语言/暗色模式/友链页）经用户选框决定后分批落地。
+
+### 2026-09-16（第五场）
+
+#### 功能三连：PWA prompt 修复 + 暗色模式 + 友链页面 + 搜索聚合（分支 feat/search-dark-links）
+
+##### 摘要
+
+用户选框决定：启动搜索聚合、暗色模式、友链页面三项功能（单独分支验收），PWA 更新竞态一并修复。分支 5 笔提交，全部通过四门禁与 dev 浏览器验收。
+
+##### 分支提交与实现
+
+- `c4a5a12` PWA prompt：`vite.config.ts` registerType autoUpdate→prompt（移除 skipWaiting/clientsClaim）；`main.ts` 改用 `virtual:pwa-register` 的 `onNeedRefresh` 弹 `ElNotification`（点击刷新，duration 0）；新增 devDependency `workbox-window@^7.3.0`（pnpm 严格布局下 prompt 模式虚拟模块需要）；env.d.ts 补 vite-plugin-pwa/client 引用。
+- `e8ad42d` 暗色模式：store `nightMode`（persist pick）；Set.vue 个性化调整开关；Background.vue 壁纸内联 filter 加 `brightness(0.55)`；style.scss `html.night-mode` 加深 .cards/.el-message/.set 与滚动条。
+- `6ad9237` 修复：验收发现 night-mode 根类无任何挂载逻辑（样式永不激活），App.vue 补 watchEffect 切换。
+- `0c904c9` 友链页面：`friendLinks.json`（首条上游 imsyy/home）；`views/Friends/index.vue` 全屏视图（懒加载）；App.vue `friendsOpenState` 与 `#/friends` hash 双向同步（URL 身份 + 前进后退）；Links 标题栏入口图标；ADR-0007（hash 路由 vs vue-router 决策）。
+- `b7567ce` 搜索聚合：`utils/search.ts`（聚合索引 + 过滤 + 4 引擎）+ 4 单测；`SearchOverlay.vue`（Ctrl/Cmd+K 或标题栏图标唤起，回车开首项，Esc 关闭）；store `searchOpenState`。
+
+##### dev 验收结果
+
+- 暗色模式：开 → html.night-mode + 壁纸 brightness(0.55) + .cards 背景 0.25→0.565 透明度加深 + localStorage true；关 → 全部复原。**验收抓到并修复根类缺失缺陷（6ad9237）**。
+- 友链：入口图标开 → 视图渲染 + hash `#/friends`；直接访问 `#/friends`（含刷新后）直达；关闭 → store 复位 + hash 回落。
+- 搜索：Ctrl+K 唤起并自动聚焦；空关键词 7 项（3 站点链接 + 1 友链 + 3 功能视图）；输入「友链」过滤出友链条目、友链页视图与 4 个外部引擎；回车开首项（外链新标签）；Esc 关闭。效果图已留档。
+- PWA prompt：dev 模式不注册 SW，行为待线上验证；构建产物确认 sw.js 生成 + registerSW 进 bundle。
+
+##### 环境干扰记录（非应用缺陷）
+
+自动化浏览器面板在工具单元格间可见性切换会触发窗口 resize（innerWidth 短暂 <721 时 watch 关闭设置页/Box）与 CSS 过渡中断（Vue Transition 离场钩子等不到 transitionend，元素滞留 DOM，如 `.friends` 卡在 fade-enter-from+leave-from+leave-active）。已用单单元格批次 + DOM click 降级规避；不影响真实用户。
+
+##### 验证
+
+- `pnpm lint:check` / `typecheck` / `test`（7 文件 31 用例）/ `build` 全绿；precache 26 entries / 630.61 KiB（Friends 与 SearchOverlay 懒加载 chunk 入列）。
+
+##### 下一步
+
+- 分支推送后由用户验收（PR 或本地 pnpm dev）；验收通过合并 main 部署。
