@@ -3,3 +3,4 @@ allowBuilds:
   vue-demi: true
 overrides:
   nanoid: ^3.3.18
+  caniuse-lite: ^1.0.30001810
