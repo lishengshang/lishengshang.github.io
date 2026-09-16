@@ -6,6 +6,11 @@
       </Icon>
       <span class="title">网站列表</span>
       <div class="actions">
+        <el-tooltip content="搜索（Ctrl+K）" placement="top" :show-arrow="false">
+          <Icon size="18" class="entry" @click="store.searchOpenState = true">
+            <Search />
+          </Icon>
+        </el-tooltip>
         <el-tooltip content="友链页面" placement="top" :show-arrow="false">
           <Icon size="18" class="entry" @click="store.friendsOpenState = true">
             <UserFriends />
@@ -51,7 +56,7 @@
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
 // 可前往 https://www.xicons.org 自行挑选并在此处引入
-import { Link, Blog, CompactDisc, Cloud, Compass, Book, Fire, LaptopCode, Image, Envelope, UserFriends } from "@vicons/fa"; // 注意使用正确的类别
+import { Link, Blog, CompactDisc, Cloud, Compass, Book, Fire, LaptopCode, Image, Envelope, UserFriends, Search } from "@vicons/fa"; // 注意使用正确的类别
 import { mainStore } from "@/store";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Mousewheel } from "swiper/modules";

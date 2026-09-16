@@ -33,6 +33,7 @@ type MainState = {
   wallpaperBlur: number;
   nightMode: boolean;
   friendsOpenState: boolean;
+  searchOpenState: boolean;
 };
 
 export const mainStore = defineStore("main", {
@@ -70,6 +71,7 @@ export const mainStore = defineStore("main", {
       wallpaperBlur: 0, // 壁纸模糊度（px，0~40，0 为清晰；入场动画从 blur(20px) 过渡到该值）
       nightMode: false, // 暗色模式（加深卡片背景与壁纸，适合夜间）
       friendsOpenState: false, // 友链页面开启状态（同步 #/friends hash）
+      searchOpenState: false, // 搜索聚合浮层开启状态（Ctrl+K）
     };
   },
   actions: {

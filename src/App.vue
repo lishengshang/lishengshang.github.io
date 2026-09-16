@@ -37,6 +37,10 @@
     <Transition name="fade">
       <Friends v-if="store.friendsOpenState" />
     </Transition>
+    <!-- 搜索聚合浮层 -->
+    <Transition name="fade">
+      <SearchOverlay v-if="store.searchOpenState" />
+    </Transition>
 </template>
 
 <script setup lang="ts">
@@ -57,6 +61,7 @@ import config from "@/../package.json";
 const Box = defineAsyncComponent(() => import("@/views/Box/index.vue"));
 const MoreSet = defineAsyncComponent(() => import("@/views/MoreSet/index.vue"));
 const Friends = defineAsyncComponent(() => import("@/views/Friends/index.vue"));
+const SearchOverlay = defineAsyncComponent(() => import("@/components/SearchOverlay.vue"));
 
 const store = mainStore();
 
@@ -150,6 +155,14 @@ watch(
   },
 );
 
+// Ctrl/Cmd + K 打开搜索聚合浮层
+const onKeyDown = (event: KeyboardEvent) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    store.searchOpenState = !store.searchOpenState;
+  }
+};
+
 onMounted(() => {
   // 屏蔽右键
   document.addEventListener("contextmenu", onContextMenu);
@@ -164,6 +177,9 @@ onMounted(() => {
   // 友链页面 hash 初始化与监听
   applyFriendsHash();
   window.addEventListener("hashchange", applyFriendsHash);
+
+  // 搜索聚合快捷键
+  window.addEventListener("keydown", onKeyDown);
 
   // 控制台输出
   const styleTitle1 = "font-size: 20px;font-weight: 600;color: rgb(244,167,89);";
@@ -184,6 +200,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", getWidth);
   window.removeEventListener("mousedown", onMouseDown);
   window.removeEventListener("hashchange", applyFriendsHash);
+  window.removeEventListener("keydown", onKeyDown);
   document.removeEventListener("contextmenu", onContextMenu);
 });
 </script>

@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### 新功能
+- 新增搜索聚合浮层（网站列表标题栏入口图标或 Ctrl/Cmd+K 唤起）：聚合站点链接、友链、站内功能（设置/友链页/音乐列表）与 Bing/Google/百度/GitHub 外部搜索，回车直达第一项，Esc 关闭
 - 新增友链页面：网站列表标题栏入口图标打开，`#/friends` hash 直达并支持浏览器前进后退（ADR-0007，未引入 vue-router）；友链数据在 `src/assets/friendLinks.json` 维护
 
 ### 设置页
