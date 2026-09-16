@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### 修复
+- PWA 更新改 prompt 模式：新版本就绪时弹出可点击通知，用户确认后刷新，消除新旧构建交替期间懒加载 chunk 失败的竞态
+
 ### 工程
 - 外部壁纸源迁移到 `.env` 配置（`VITE_WALLPAPER_VIEWS` / `VITE_WALLPAPER_ACG`，留空走内置默认），接口失效时无需改代码
 - 新增 TimeCapsule 组件测试（@vue/test-utils 首次投入使用），覆盖建站日期「挂载后立即可见」回归点

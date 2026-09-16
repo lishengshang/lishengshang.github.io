@@ -44,6 +44,7 @@ export default defineConfig([
         onBeforeUnmount: "readonly",
         nextTick: "readonly",
         ElMessage: "readonly",
+        ElNotification: "readonly",
         $openList: "readonly",
       },
     },

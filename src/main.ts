@@ -8,6 +8,8 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import "swiper/css";
 // 点击波纹指令
 import { ripple } from "@/utils/ripple";
+// PWA 更新注册（prompt 模式）
+import { registerSW } from "virtual:pwa-register";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -18,10 +20,19 @@ app.use(pinia);
 app.directive("ripple", ripple);
 app.mount("#app");
 
-// PWA
+// PWA：新版本就绪时提示，用户点击后刷新生效（避免自动切换导致懒加载 chunk 失败）
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    // 弹出更新提醒
-    ElMessage("站点已更新，刷新后生效");
+  registerSW({
+    onNeedRefresh() {
+      ElNotification({
+        title: "站点已更新",
+        message: "点击此通知刷新页面以应用新版本",
+        duration: 0,
+        showClose: true,
+        onClick: () => {
+          window.location.reload();
+        },
+      });
+    },
   });
 }

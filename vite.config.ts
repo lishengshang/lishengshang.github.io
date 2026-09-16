@@ -19,10 +19,9 @@ export default defineConfig(({ mode }) => ({
       resolvers: [ElementPlusResolver()],
     }),
     VitePWA({
-      registerType: "autoUpdate",
+      // prompt 模式：新版本就绪时由应用提示用户手动刷新，避免新旧构建交替期间懒加载 chunk 失败
+      registerType: "prompt",
       workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
         // 导航兜底不拦截 /blog/ 子站点，避免访问博客时被渲染为首页
         navigateFallbackDenylist: [/^\/blog(?:\/|$)/],
         runtimeCaching: [
