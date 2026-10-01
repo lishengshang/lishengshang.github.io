@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-01（第六场）双会话融合并上线 **5.6.0**（Build/Deploy 双绿，线上 bundle 版本与主题令牌已核验）：本地（本机 09-29/09-30 会话）与远端（09-16 另一设备会话）对同一路线图并行开发产生大量重复实现，经用户选 B 方案逐项融合——基线取远端 main + `feat/search-dark-links`（友链页/搜索浮层/PWA prompt 修复），主题系统换装本机三态实现（浅色/暗色/跟随系统）并融合远端壁纸降亮；`feat/search-dark-links` 至此验收合并。本机旧实现完整保留于 feat/settings-extras、feat/changelog-auto、feat/dark-mode、fix/wallpaper-fallback 分支作备份。
 - 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
 - 2026-09-16（第三场）全仓复审：落版本号 5.5.0（CHANGELOG 定稿）、修正本文件误标的会话日期（本对话发生于 09-16）、README API 致谢更新、路线图重写。
 - 2026-09-16（第四场）按路线图顺序执行：线上 5.5.0 UI 冒烟全过（版本号/更新日志回落/新控件/樱花开关抽查）；caniuse-lite override 至 1.0.30001810；质量项落地（壁纸源 .env 配置化 + TimeCapsule 组件测试，@vue/test-utils 首次投用）。
@@ -17,6 +18,7 @@
 
 ## 已完成
 
+- 2026-10-01 双会话融合 5.6.0（分支 integrate/dual-session）：主题三态（utils/theme resolveDark + useDarkMode 单例组合式 + 界面玻璃令牌 --glass-panel/--surface-1..4/--popup-text* + EP 官方 dark 变量）替换 nightMode 二元开关，Set.vue 暗色开关升级为外观主题 radio，暗色壁纸降亮（brightness 0.55）依 isDark 响应式；融合中实测抓到壁纸入场动画 forwards 填充锁死 filter 的缺陷（暗色降亮切不回），改 backwards 修复；壁纸失败 toast 加 grouping；ADR-0005 补 EP 2.14.6 复测记录（仍未修复，继续锁 2.13.0）；caniuse-lite override 至 1.0.30001813。门禁 8 文件 33 用例全绿，precache 26 entries / 635 KiB。
 - 2026-09-09 依赖升级（分支 feat/dep-upgrade，ADR-0005）：Vue 3.5.42 / Pinia 3.0.4（persistedstate v4 `paths`→`pick`）/ Vite 7.3.6 / Element Plus **2.13.0（锁定，2.14.0 起按需导入 tree-shaking 失效）** / swiper 12.1.2 / nanoid override（pnpm-workspace.yaml）；`pnpm audit --prod` 15 漏洞（1 critical）→ 0；产物 44 文件字节级一致、9 chunk 同拓扑重建，precache 552.93→590.46 KiB；版本 5.2.0→5.4.0（补正 5.3.0 未落包号的不一致）。
 - 2026-09-09 测试基建：引入 Vitest 5 + @vue/test-utils + jsdom，新增 `vitest.config.ts`、`pnpm test` / `pnpm lint:check` 脚本，新增 utils/api/composables 4 个测试文件 20 个用例（含 API 超时降级中止路径）；CI（build.yml）新增 lint (无 --fix) 与 unit test 门禁；CHANGELOG [Unreleased] 补记。
 - 2026-09-03 仓库更名为 `lishengshang.github.io`（原站点仓库自动改名 `lishengshang.github.io-old`，观察期后归档/删除），部署链路收敛为本仓库 `deploy.yml`（push main → 构建 → deploy-pages），删除 `dispatch.yml` 与 `PUBLISH_TOKEN` 依赖，Pages 由 legacy 切回 workflow 模式，线上验证 200 且产物为最新构建（ADR-0004），提交：`bb757e7`。
@@ -499,3 +501,35 @@
 ##### 下一步
 
 - 分支推送后由用户验收（PR 或本地 pnpm dev）；验收通过合并 main 部署。
+
+### 2026-10-01（第六场）
+
+#### 双会话融合与 5.6.0 上线
+
+##### 背景
+
+推送时发现远端 main 领先本地 20 提交（09-16 另一设备会话推送，含与本机会话重复的设置页补全/日志自动化/壁纸修复/Dockerfile/caniuse，及壁纸源 t.alcy.cc 迁移、TimeCapsule 修复与测试），且 `feat/search-dark-links` 分支已实现暗色/友链/搜索待验收。经用户拍板 B 方案逐项融合后合并上线。
+
+##### 融合决策
+
+- 取远端：基线 main 全部（已上线）、feat/search-dark-links 全部（友链页 #/friends hash 路由 ADR-0007、搜索浮层 Ctrl+K、PWA prompt 修复、其 CHANGELOG/STATUS）、changelog.ts（小节归类 + Unreleased 空回退，优于本机 updateLog.ts）、Dockerfile（PWA 关键文件 no-cache 头，优于本机版）、caniuse/壁纸源等。
+- 取本机：主题三态系统整体替换 nightMode（resolveDark 纯函数 + useDarkMode 单例组合式 + 玻璃表面令牌 + EP dark 变量 + 外观主题 radio），并融合远端壁纸降亮思路（brightness 0.55 依 isDark 响应式）；ADR-0005 补 EP 2.14.6 复测记录；caniuse-lite 至 .1813；壁纸失败 toast grouping。
+- 融合实测抓到缺陷：远端版壁纸入场动画 forwards 填充锁死 filter，主题切换后壁纸亮度不更新——改 backwards 修复（与本机暗色会话的结论一致）。
+- 本机重复实现弃用于 main，完整保留在 feat/settings-extras / feat/changelog-auto / feat/dark-mode / fix/wallpaper-fallback 分支。
+
+##### 验证
+
+- `pnpm lint:check` / `typecheck` / `test`（8 文件 33 用例）/ `build`：全绿；precache 26 entries / 635 KiB。
+- 浏览器冒烟（preview，绕过 SW 预缓存后干净加载）：外观主题三态切换（浅色白玻璃/暗色黑玻璃/跟随系统解析正确）、壁纸亮度 1↔0.55 联动、友链页 #/friends 渲染、搜索浮层 Ctrl+K 唤起与关键词过滤（博客 + Bing/Google/百度）、Esc/再按关闭（浮层 DOM 常驻 v-show，以截图与可见性判定）。
+- 上线：push `4f30001..4613eb8`，Build/Deploy 双绿；线上 HTTP 200，bundle 含 5.6.0 版本串，线上 CSS 含 --glass-panel/--surface-*/--popup-text 令牌（CI 与本地 Node 版本差异导致 chunk 哈希不同，属预期）。
+
+##### 风险与缺口
+
+- 教训：本机会话开工未先 `git fetch`，基于滞后本地状态并行开发造成重复工作；后续会话开工第一步应 fetch 并重读 STATUS。
+- 搜索浮层关闭的 DOM 存在性探测不可靠（v-show 常驻），以可见性/截图判定；Esc 关闭未单独复测（远端会话已验收）。
+- 本机备份分支（4 条）待确认无回溯价值后可删除。
+
+##### 下一步
+
+- 线上冒烟（可选）：真实浏览器抽查主题三态/友链/搜索。
+- 路线图剩余：多语言（候选）；EP 2.15+ 摇树复测（ADR-0005 判据）。
