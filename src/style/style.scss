@@ -125,7 +125,7 @@ a:hover {
 
 // Tooltip 样式
 .el-popper.is-dark {
-  background: #ffffff60 !important;
+  background: var(--surface-3) !important;
   border: 1px solid transparent !important;
 }
 
@@ -137,12 +137,12 @@ a:hover {
   .el-card__header {
     font-weight: bold;
     padding: 16px 20px !important;
-    background-color: #ffffff30 !important;
+    background-color: var(--surface-2) !important;
     border-bottom: 1px solid transparent !important;
   }
   .el-card__body {
     padding: 0 !important;
-    background-color: #ffffff10 !important;
+    background-color: var(--surface-1) !important;
   }
 }
 
@@ -301,16 +301,30 @@ scrollbar-thumb {
   }
 }
 
-// 暗色模式：加深全局玻璃卡片、消息弹窗与设置面板背景，壁纸降亮由 Background.vue 内联 filter 处理
-html.night-mode {
+// 界面玻璃表面令牌：浅色值即原硬编码值（现状），暗色在 html.dark 下切换
+// 主题由 store.themeMode 驱动（App.vue 经 useDarkMode 同步 html.dark），EP 组件跟随官方 dark 变量
+:root {
+  --glass-panel: rgb(255 255 255 / 40%); // 设置页大面板
+  --surface-1: #ffffff10; // 弱表面：卡片 body、折叠内容
+  --surface-2: #ffffff26; // 控件：radio、按钮、开关底
+  --surface-3: #ffffff55; // 悬停/强调（合并 4d/55/60）
+  --surface-4: #ffffff80; // 强玻璃：音乐列表弹层、播放条强悬停（合并 66/90）
+  --surface-cards: #00000040; // 主视图玻璃卡片（两主题均黑玻璃，暗色加深）
+  --popup-text: #1a1a1a; // 浅玻璃弹层主文字（播放器/列表）
+  --popup-text-2: #555; // 弹层次级文字（合并 444/555）
+  --popup-text-3: #777; // 弹层弱文字
+}
+
+html.dark {
+  --glass-panel: rgb(0 0 0 / 50%);
+  --surface-1: #00000040;
+  --surface-2: #00000059;
+  --surface-3: #00000080;
+  --surface-4: #000000b3;
+  --surface-cards: #00000090;
+
   .cards {
-    background-color: #00000090;
-  }
-  .el-message {
-    --el-message-bg-color: #00000090 !important;
-  }
-  .set {
-    background: rgb(0 0 0 / 45%);
+    background-color: var(--surface-cards);
   }
   ::-webkit-scrollbar-thumb,
   scrollbar-thumb {

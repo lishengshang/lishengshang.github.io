@@ -294,7 +294,7 @@ defineExpose({ playToggle, changeVolume, changeSong });
           display: block;
           font-size: 17px;
           font-weight: 500;
-          color: #1a1a1a;
+          color: var(--popup-text);
           margin: 0 0 4px;
           max-width: 100%;
           text-overflow: ellipsis;
@@ -303,7 +303,7 @@ defineExpose({ playToggle, changeVolume, changeSong });
         }
         .aplayer-author {
           display: block;
-          color: #555;
+          color: var(--popup-text-2);
           font-size: 13px;
           max-width: 100%;
           text-overflow: ellipsis;
@@ -345,11 +345,11 @@ defineExpose({ playToggle, changeVolume, changeSong });
         background-color: transparent;
       }
       &::-webkit-scrollbar-thumb {
-        background-color: #ffffff60;
+        background-color: var(--surface-3);
         border-radius: 3px;
       }
       &::-webkit-scrollbar-thumb:hover {
-        background-color: #ffffff90;
+        background-color: var(--surface-4);
       }
       li {
         position: relative;
@@ -365,7 +365,7 @@ defineExpose({ playToggle, changeVolume, changeSong });
           display: none !important;
         }
         &.aplayer-list-light {
-          background: #ffffff55;
+          background: var(--surface-3);
           // 蓝条画在 14px 指示区的中心：left: 12 与序号起点 24 之间留 10px
           &::before {
             content: "";
@@ -380,14 +380,14 @@ defineExpose({ playToggle, changeVolume, changeSong });
           }
         }
         &:hover {
-          background: #ffffff33 !important;
+          background: var(--surface-2) !important;
         }
         .aplayer-list-index,
         .aplayer-list-author {
-          color: #444;
+          color: var(--popup-text-2);
         }
         .aplayer-list-title {
-          color: #1a1a1a;
+          color: var(--popup-text);
           flex-shrink: 1;
           min-width: 0;
         }
@@ -397,7 +397,7 @@ defineExpose({ playToggle, changeVolume, changeSong });
           text-align: right;
         }
         .aplayer-list-duration {
-          color: #777;
+          color: var(--popup-text-3);
           font-size: 12px;
           flex-shrink: 0;
           margin-left: 8px;

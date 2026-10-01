@@ -188,7 +188,7 @@ watch(
     align-items: center;
     margin-bottom: 6px;
     span {
-      background: #ffffff26;
+      background: var(--surface-2);
       padding: 2px 8px;
       border-radius: 6px;
       margin: 0px 6px;
@@ -196,7 +196,7 @@ watch(
       overflow-x: hidden;
       white-space: nowrap;
       &:hover {
-        background: #ffffff4d;
+        background: var(--surface-3);
       }
     }
   }
@@ -224,7 +224,7 @@ watch(
       border-radius: 6px;
       transform: scale(1);
       &:hover {
-        background: #ffffff33;
+        background: var(--surface-2);
       }
       &:active {
         transform: scale(0.95);
@@ -266,7 +266,7 @@ watch(
       :deep(.el-slider) {
         margin-right: 12px;
         --el-slider-main-bg-color: #efefef;
-        --el-slider-runway-bg-color: rgba(255, 255, 255, 0.2);
+        --el-slider-runway-bg-color: var(--surface-2);
         --el-slider-button-size: 0px;
         --el-slider-button-border: none;
         --el-slider-button-bg-color: transparent;
@@ -317,7 +317,7 @@ watch(
     max-height: 90vh;
     padding: 56px 16px 16px;
     box-sizing: border-box;
-    background-color: #ffffff66;
+    background-color: var(--surface-4);
     border-radius: 8px;
     z-index: 999;
     display: flex;

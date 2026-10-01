@@ -5,7 +5,7 @@
       :src="bgUrl as never"
       class="bg"
       alt="cover"
-      :style="{ filter: `blur(${store.wallpaperBlur}px) brightness(${store.nightMode ? 0.55 : 1})` }"
+      :style="{ filter: `blur(${store.wallpaperBlur}px) brightness(${isDark ? 0.55 : 1})` }"
       @load="imgLoadComplete"
       @error="imgLoadError"
     />
@@ -25,9 +25,11 @@
 
 <script setup lang="ts">
 import { mainStore } from "@/store";
+import { useDarkMode } from "@/composables/useDarkMode";
 import { Error } from "@icon-park/vue-next";
 
 const store = mainStore();
+const { isDark } = useDarkMode();
 const bgUrl = ref<string | null>(null);
 const imgTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 
@@ -69,6 +71,7 @@ const imgLoadError = () => {
       theme: "filled",
       fill: "#efefef",
     }),
+    grouping: true,
   });
   bgUrl.value = `/images/background${bgRandom}.webp`;
 };
@@ -117,8 +120,9 @@ onBeforeUnmount(() => {
     transition:
       filter 0.3s,
       transform 0.3s;
-    animation: fade-blur-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    animation-delay: 0.45s;
+    // fill 用 backwards：延迟期保持 from 态，结束后交还内联样式（主题亮度/模糊度可平滑过渡），
+    // forwards 会把动画帧锁死导致主题切换后壁纸亮度不更新
+    animation: fade-blur-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s backwards;
   }
   .gray {
     opacity: 1;

@@ -6,6 +6,8 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 // swiper
 import "swiper/css";
+// Element Plus 暗色主题变量（html.dark 时生效，配合站点自定义暗色令牌）
+import "element-plus/theme-chalk/dark/css-vars.css";
 // 点击波纹指令
 import { ripple } from "@/utils/ripple";
 // PWA 更新注册（prompt 模式）

@@ -65,14 +65,13 @@
             :inactive-icon="CloseSmall"
           />
         </div>
-        <div class="item">
-          <span class="text">暗色模式</span>
-          <el-switch
-            v-model="nightMode"
-            inline-prompt
-            :active-icon="CheckSmall"
-            :inactive-icon="CloseSmall"
-          />
+        <div class="item theme-item">
+          <span class="text">外观主题</span>
+          <el-radio-group v-model="themeMode" size="small" text-color="#FFFFFF">
+            <el-radio value="light" border>浅色</el-radio>
+            <el-radio value="dark" border>暗色</el-radio>
+            <el-radio value="auto" border>跟随系统</el-radio>
+          </el-radio-group>
         </div>
         <div class="item">
           <span class="text">壁纸模糊度</span>
@@ -150,7 +149,7 @@ const {
   animationShow,
   reduceMotion,
   wallpaperBlur,
-  nightMode,
+  themeMode,
 } = storeToRefs(store);
 
 // 默认选中项
@@ -195,6 +194,9 @@ const radioChange = () => {
           justify-content: space-between;
           flex-wrap: wrap;
           font-size: 14px;
+          &.theme-item {
+            margin-bottom: 8px;
+          }
           .el-switch__core {
             border-color: transparent;
             background-color: #ffffff30;

@@ -32,6 +32,7 @@ declare module 'vue' {
     Music: typeof import('./src/components/Music.vue')['default']
     Player: typeof import('./src/components/Player.vue')['default']
     Sakura: typeof import('./src/components/Sakura.vue')['default']
+    SearchOverlay: typeof import('./src/components/SearchOverlay.vue')['default']
     Set: typeof import('./src/components/Set.vue')['default']
     SocialLinks: typeof import('./src/components/SocialLinks.vue')['default']
     TimeCapsule: typeof import('./src/components/TimeCapsule.vue')['default']

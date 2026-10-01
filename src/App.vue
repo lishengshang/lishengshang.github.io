@@ -47,6 +47,7 @@
 import { helloInit, checkDays } from "@/utils/getTime";
 import { HamburgerButton, CloseSmall } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
+import { useDarkMode } from "@/composables/useDarkMode";
 import { Icon } from "@vicons/utils";
 import Loading from "@/components/Loading.vue";
 import MainLeft from "@/views/Main/Left.vue";
@@ -74,9 +75,10 @@ watchEffect(() => {
   document.documentElement.classList.toggle("no-motion", !animationEnabled.value);
 });
 
-// 暗色模式：根元素挂 night-mode，全局样式加深卡片、弹窗与设置面板
+// 外观主题：html.dark 同步（浅色/暗色/跟随系统，auto 实时响应系统偏好变化）
+const { isDark } = useDarkMode();
 watchEffect(() => {
-  document.documentElement.classList.toggle("night-mode", store.nightMode);
+  document.documentElement.classList.toggle("dark", isDark.value);
 });
 
 // 页面宽度
