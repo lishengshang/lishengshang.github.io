@@ -1,0 +1,35 @@
+name: 友链申请
+description: 申请交换友情链接（本站会不定期查看并添加）
+body:
+  - type: input
+    id: site-name
+    validations:
+      required: true
+    attributes:
+      label: "站点名称"
+      placeholder: "例：liremio の主页"
+  - type: input
+    id: site-url
+    validations:
+      required: true
+    attributes:
+      label: "站点链接"
+      placeholder: "请填写你的站点链接（https://）"
+  - type: input
+    id: site-desc
+    validations:
+      required: true
+    attributes:
+      label: "站点描述"
+      placeholder: "一句话介绍你的站点（将显示在友链卡片上）"
+  - type: input
+    id: site-icon
+    attributes:
+      label: "图标链接"
+      description: "可选，不填默认取站点 favicon"
+      placeholder: "https://.../icon.png"
+  - type: textarea
+    id: other
+    attributes:
+      label: "补充信息"
+      description: "还需要说些什么吗"
