@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-02（第八场）一、二梯队批量落地（切分支 feat/small-batch，验证后合入 main）：分支清理（origin/dev + 6 条本地分支）、package.json 元信息 define 注入、搜索浮层 ↑↓ 键盘导航（+3 组件测试）、友链申请 issue 模板与页面入口、EP 2.14.7 实证复测（摇树仍未修复，继续锁 2.13.0）；Docker 本机无环境未实测。
 - 2026-10-02（第七场）全仓复审 + 小修包上线：复审确认 4 个问题（右键屏蔽失效 / PWA 缓存缺 webp / 友链面板令牌遗漏 / 外部壁纸重复选择不刷新）全部修复，README 字体说明失实与 .env.example 路径过时一并勘误；四门禁全绿，用户选框决策后推送上线。
 - 2026-10-01（第六场）双会话融合并上线 **5.6.0**（Build/Deploy 双绿，线上 bundle 版本与主题令牌已核验）：本地（本机 09-29/09-30 会话）与远端（09-16 另一设备会话）对同一路线图并行开发产生大量重复实现，经用户选 B 方案逐项融合——基线取远端 main + `feat/search-dark-links`（友链页/搜索浮层/PWA prompt 修复），主题系统换装本机三态实现（浅色/暗色/跟随系统）并融合远端壁纸降亮；`feat/search-dark-links` 至此验收合并。本机旧实现完整保留于 feat/settings-extras、feat/changelog-auto、feat/dark-mode、fix/wallpaper-fallback 分支作备份。
 - 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
@@ -52,15 +53,50 @@
 
 ## 下一步
 
-复审路线图（2026-10-02 第七场重写；复审方法：全源码通读 + 四门禁 + build 产物核验 + 浏览器实测）：
+复审路线图（2026-10-02 第八场更新）：
 
-1. ~~小修包：右键拦截 / PWA webp 缓存 / 友链面板令牌 / 外部壁纸刷新 / 文档勘误~~（已完成，2026-10-02 第七场，已上线）。
-2. **功能候选（经用户选框决定后分批落地）**：移动端设置入口（复审新发现：宽度 <721 强制关闭设置页且无直达入口，主题三态/暗色在手机基本不可达，推荐优先）；搜索浮层键盘导航（↑↓ 选择）；Box 内 MoreContent 内容化（现为占位文案）；友链生态（申请友链指引/issue 模板，现仅上游 1 条）；多语言 i18n（历史遗留候选）。
-3. **工程跟进（条件触发）**：Element Plus 2.15+ 上游修复 barrel tree-shaking 后跟进升级（判据见 ADR-0005）；Docker 镜像构建补验证（需 Docker 环境）；组件级测试补位（Set/MoreSet/SearchOverlay 交互）。
-4. **清理项**：origin/dev（0 独有提交）与本地 4 条双会话备份分支，确认无回溯价值后删除；package.json 整包入 bundle（仅用 version/home/github 3 字段）可改 define 注入。
-5. ~~观察项：PWA 更新竞态~~（已修复）；~~小修包诸项~~（已上线）。
+1. ~~小修包~~（第七场已上线）；~~分支清理 / define 注入 / 搜索键盘导航 / 友链生态 / EP 复测~~（第八场已完成）。
+2. **功能候选（经用户选框决定后落地）**：移动端设置入口（复审发现的功能缺口：宽度 <721 强制关闭设置页且无直达入口，主题三态/暗色在手机基本不可达，推荐优先）；Box 内 MoreContent 内容化（现为占位文案，先定内容方向）；多语言 i18n（历史候选，工作量最大，明确要做再排）。
+3. **工程跟进（条件触发）**：Element Plus 2.15+ 发布后按 ADR-0005 判据复测（EP JS chunk 应回 ~110 kB 水位，2.14.7 复测仍 778.59 kB）；Docker 镜像构建实测（本机无 Docker，需先备环境）；组件级测试补位（Set/MoreSet 交互）。
+4. ~~清理项~~（第八场已完成：origin/dev、4 条备份分支、2 条已合并分支均已删除）。
 
 ## 会话记录
+
+### 2026-10-02（第八场）
+
+#### 一、二梯队批量落地（feat/small-batch 分支，验证后合入 main）
+
+##### 摘要
+
+按用户指示完成一、二梯队全部项（切分支开发、验证、合并）：
+
+1. **分支清理**：删 origin/dev（0 独有提交）；本地 4 条双会话备份分支（tip 留档：feat/settings-extras `0061a4a` / feat/changelog-auto `5386260` / feat/dark-mode `423386b` / fix/wallpaper-fallback `d5627dd`）；另以安全模式 `-d` 删除已合并的 feat/dep-upgrade 与 integrate/dual-session；build.yml 移除 dev 分支触发器。
+2. **package.json 元信息 define 注入**：vite.config `define` 注入 `import.meta.env.VITE_APP_VERSION/HOME/GITHUB`（取自 package.json），App.vue 与 MoreSet 移除 `@/../package.json` 整包导入；实测产物不再含 devDependencies 字段、版本串正常；顺带修正 github 元信息为更名后仓库 `lishengshang.github.io`（原 homepage 旧名）。
+3. **搜索浮层 ↑↓ 键盘导航**：activeIndex 循环滚动（首尾回绕）、Enter 打开选中项（原为固定第一项）、鼠标悬停同步选中、关键词变化重置；新增 SearchOverlay 组件测试 3 用例（@vue/test-utils 组件交互测试补位）。
+4. **友链生态**：新增 `.github/ISSUE_TEMPLATE/friend-request.yml` 申请模板；友链页底部「提交 Issue 申请」入口（链接由 define 注入的仓库地址派生）。
+5. **EP 摇树复测**：npm 最新仅 2.14.7（2.15 未发布）；实证复测 element-plus chunk 778.59 kB / precache 1363.65 KiB（锁定版 2.13.0 为 ~115 kB / 635.67 KiB），回归幅度与 2.14.0-2.14.6 一致，判定仍未修复，继续锁定 2.13.0；ADR-0005 补复测记录，试验后已回退。
+6. **Docker**：本机无 docker（command not found），未实测，保持条件触发（需用户先备环境）。
+
+##### 涉及文件
+
+- `.github/workflows/build.yml`、`vite.config.ts`、`src/env.d.ts`、`src/App.vue`、`src/views/MoreSet/index.vue`、`package.json`
+- `src/components/SearchOverlay.vue`、`src/components/SearchOverlay.test.ts`（新增）
+- `src/views/Friends/index.vue`、`.github/ISSUE_TEMPLATE/friend-request.yml`（新增）
+- `docs/ai/decisions/0005-dependency-upgrade.md`、`CHANGELOG.md`、本文件
+
+##### 验证
+
+- 四门禁：`pnpm lint:check` / `typecheck` / `test`（9 文件 36 用例，新增 3）/ `build` 全绿；precache 26 entries / 635.25 KiB；产物核验 bundle 含版本串且无 devDependencies 泄漏。
+- dev 浏览器实测：设置页版本号 `v 5.6.0`（define 注入生效）；搜索浮层 ↓ 选中第二项、顶部 ↑ 回绕至末项「音乐列表」；友链页申请入口 href 正确指向 `lishengshang.github.io/issues/new?template=friend-request.yml`。
+
+##### 风险与缺口
+
+- 教训：EP 复测回退时 `git checkout package.json` 把同文件未提交的 github 字段修正一并回滚（apply 链接一度指向旧仓库名），复验时抓到并重改——试验性回退前应先提交或暂存无关改动。
+- Docker 镜像仍未实测；EP 2.15+ 发布后需按 ADR-0005 判据再复测。
+
+##### 下一步
+
+- 见上文 `## 下一步`：功能候选以移动端设置入口为推荐优先。
 
 ### 2026-10-02（第七场）
 

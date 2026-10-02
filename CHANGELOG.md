@@ -5,8 +5,9 @@
 ## [Unreleased]
 
 ### 新功能
-- 新增搜索聚合浮层（网站列表标题栏入口图标或 Ctrl/Cmd+K 唤起）：聚合站点链接、友链、站内功能（设置/友链页/音乐列表）与 Bing/Google/百度/GitHub 外部搜索，回车直达第一项，Esc 关闭
+- 新增搜索聚合浮层（网站列表标题栏入口图标或 Ctrl/Cmd+K 唤起）：聚合站点链接、友链、站内功能（设置/友链页/音乐列表）与 Bing/Google/百度/GitHub 外部搜索，↑↓ 循环选择、回车打开选中项，Esc 关闭
 - 新增友链页面：网站列表标题栏入口图标打开，`#/friends` hash 直达并支持浏览器前进后退（ADR-0007，未引入 vue-router）；友链数据在 `src/assets/friendLinks.json` 维护
+- 友链页新增「提交 Issue 申请」入口，配套 `.github/ISSUE_TEMPLATE/friend-request.yml` 申请模板
 
 ### 设置页
 - 「暗色模式」开关升级为「外观主题」三态选择（浅色 / 暗色 / 跟随系统，默认跟随 `prefers-color-scheme` 并实时响应系统变化），持久化且刷新首帧前挂类无闪白
@@ -20,6 +21,8 @@
 - PWA 更新改 prompt 模式：新版本就绪时弹出可点击通知，用户确认后刷新，消除新旧构建交替期间懒加载 chunk 失败的竞态
 
 ### 工程
+- 站点元信息（版本号/主页/仓库）改为构建期 `define` 注入（`import.meta.env.VITE_APP_*`），`package.json` 不再整包打入客户端 bundle；`github` 元信息同步修正为更名后的仓库地址
+- 清理分支：删除 origin/dev（0 独有提交）、本地 4 条双会话备份分支与 2 条已合并分支，build.yml 移除 dev 触发器
 - 外部壁纸源迁移到 `.env` 配置（`VITE_WALLPAPER_VIEWS` / `VITE_WALLPAPER_ACG`，留空走内置默认），接口失效时无需改代码
 - 新增 TimeCapsule 组件测试（@vue/test-utils 首次投入使用），覆盖建站日期「挂载后立即可见」回归点
 
