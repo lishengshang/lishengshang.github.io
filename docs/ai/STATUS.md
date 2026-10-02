@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-02（第七场）全仓复审 + 小修包上线：复审确认 4 个问题（右键屏蔽失效 / PWA 缓存缺 webp / 友链面板令牌遗漏 / 外部壁纸重复选择不刷新）全部修复，README 字体说明失实与 .env.example 路径过时一并勘误；四门禁全绿，用户选框决策后推送上线。
 - 2026-10-01（第六场）双会话融合并上线 **5.6.0**（Build/Deploy 双绿，线上 bundle 版本与主题令牌已核验）：本地（本机 09-29/09-30 会话）与远端（09-16 另一设备会话）对同一路线图并行开发产生大量重复实现，经用户选 B 方案逐项融合——基线取远端 main + `feat/search-dark-links`（友链页/搜索浮层/PWA prompt 修复），主题系统换装本机三态实现（浅色/暗色/跟随系统）并融合远端壁纸降亮；`feat/search-dark-links` 至此验收合并。本机旧实现完整保留于 feat/settings-extras、feat/changelog-auto、feat/dark-mode、fix/wallpaper-fallback 分支作备份。
 - 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
 - 2026-09-16（第三场）全仓复审：落版本号 5.5.0（CHANGELOG 定稿）、修正本文件误标的会话日期（本对话发生于 09-16）、README API 致谢更新、路线图重写。
@@ -51,15 +52,51 @@
 
 ## 下一步
 
-评审后拟定路线图（2026-09-16 复审重写；历史评审：2026-08-13 全仓评审，安全/可靠性/测试基建/依赖升级/设置页功能均已落地）：
+复审路线图（2026-10-02 第七场重写；复审方法：全源码通读 + 四门禁 + build 产物核验 + 浏览器实测）：
 
-1. ~~短期待办：线上部署后完整 UI 冒烟~~（已完成，2026-09-16 第四场：版本号 v5.5.0、更新日志卡片回落显示 [5.5.0] 段 9 条、壁纸选项无每日一图、四项新控件在位、樱花开关抽查通过）。
-2. **功能候选**：~~搜索聚合~~、~~暗色模式~~、~~友链页面~~（已完成，`feat/search-dark-links` 分支待验收合并）；多语言 i18n（未启动，用户未选）。
-3. **工程跟进（条件触发）**：Element Plus 2.14+ 上游修复 barrel tree-shaking 后跟进升级（验证标准：precache 应回 ~590 KiB 水位，详见 ADR-0005）；Docker 镜像构建补验证（`docker build -t home . && docker run -p 12445:80 -d home`，需有 Docker 环境）；~~caniuse-lite 更新~~（已完成，override 至 1.0.30001810，`b7a0736`）。
-4. ~~质量增强候选~~（部分完成，2026-09-16 第四/五场）：~~壁纸源配置化~~（已完成）；~~组件级测试补位~~（已起步，TimeCapsule 3 + search 4 用例；后续可继续补 Set/MoreSet 交互）；Meting 公共实例（音乐 API）可靠性观察。
-5. ~~观察项：PWA 更新竞态~~（已修复，2026-09-16 第五场，prompt 模式 `c4a5a12`；线上行为待合并部署后验证）。
+1. ~~小修包：右键拦截 / PWA webp 缓存 / 友链面板令牌 / 外部壁纸刷新 / 文档勘误~~（已完成，2026-10-02 第七场，已上线）。
+2. **功能候选（经用户选框决定后分批落地）**：移动端设置入口（复审新发现：宽度 <721 强制关闭设置页且无直达入口，主题三态/暗色在手机基本不可达，推荐优先）；搜索浮层键盘导航（↑↓ 选择）；Box 内 MoreContent 内容化（现为占位文案）；友链生态（申请友链指引/issue 模板，现仅上游 1 条）；多语言 i18n（历史遗留候选）。
+3. **工程跟进（条件触发）**：Element Plus 2.15+ 上游修复 barrel tree-shaking 后跟进升级（判据见 ADR-0005）；Docker 镜像构建补验证（需 Docker 环境）；组件级测试补位（Set/MoreSet/SearchOverlay 交互）。
+4. **清理项**：origin/dev（0 独有提交）与本地 4 条双会话备份分支，确认无回溯价值后删除；package.json 整包入 bundle（仅用 version/home/github 3 字段）可改 define 注入。
+5. ~~观察项：PWA 更新竞态~~（已修复）；~~小修包诸项~~（已上线）。
 
 ## 会话记录
+
+### 2026-10-02（第七场）
+
+#### 全仓复审 + 小修包（main，已上线）
+
+##### 摘要
+
+应用户要求全面 review 并修复确认问题。复审方法：全源码通读 + 四门禁 + build 产物核验（dist/sw.js）+ 浏览器实测。确认 4 个问题并全部修复（用户选框决策：真拦截右键 / PWA 仅补运行时缓存 / 推送上线）：
+
+1. **右键屏蔽失效**（App.vue）：`addEventListener` 监听器 `return false` 不取消默认行为且从未调用 `preventDefault`，实测 `defaultPrevented: false`——提示在弹、菜单照出。补显式 `preventDefault()` 后实测为 `true`。
+2. **PWA 图片缓存缺 webp**（vite.config.ts）：image-cache 正则不含 webp 且本地壁纸不入 precache（dist/sw.js 0 处 webp），离线时壁纸 404 误报「壁纸加载失败」。**5.3.0 会话记录「图片缓存正则已覆盖 webp」与现状不符，系历史重构丢失，本条为勘误**。补正则后 sw.js 已含 webp，precache 维持 635.67 KiB（用户选仅运行时缓存，不预缓存壁纸）。
+3. **友链面板令牌遗漏**（Friends/index.vue）：5.6.0 玻璃令牌化漏网——panel 硬编码白玻璃，暗色下白玻璃+白字。接入 `var(--glass-panel)`，实测暗色背景 rgba(0,0,0,0.5)。
+4. **外部壁纸重复选择不刷新**（Background.vue）：同源同值不触发重载且 302 结果被缓存。追加时间戳 bustCache（兼容源自带 query 的情况），实测两次选「随机风景」src 时间戳不同。
+
+另勘误文档：README 中英文「完整字体已内置 Pacifico-Regular-all.ttf」失实（该文件 5.3.0 已删，public/font/README.md 的说法才正确）；.env.example 注释中 `Links/index.vue` 过时路径。
+
+复审同时确认的未修事项（已记入路线图）：移动端设置不可达（功能缺口，列为候选优先）、package.json 整包入 bundle、搜索浮层无 ↑↓ 导航、origin/dev 与本地备份分支待清理。
+
+##### 涉及文件
+
+- `src/App.vue`、`vite.config.ts`、`src/views/Friends/index.vue`、`src/components/Background.vue`
+- `README.md`、`README_EN.md`、`.env.example`、`CHANGELOG.md`（[Unreleased] 修复 4 条）、本文件
+
+##### 验证
+
+- `pnpm lint:check` / `typecheck` / `test`（8 文件 33 用例）/ `build`：全绿；precache 26 entries / 635.67 KiB（与修复前一致，符合「仅运行时缓存」决策）；`dist/sw.js` 含 webp 正则。
+- dev 浏览器实测：右键 `defaultPrevented: true`；友链面板暗色背景 rgba(0,0,0,0.5)；随机风景两次选择 src 时间戳不同，测后还原默认壁纸与 auto 主题。
+
+##### 风险与缺口
+
+- 外部壁纸 URL 带 `?t=` 时间戳：「下载壁纸」链接同样带参（302 重定向后不影响出图）；若日后更换对 query 敏感的源需调整 `bustCache`。
+- 移动端设置不可达为设计缺口，本次未修（属功能开发，待用户选框）。
+
+##### 下一步
+
+- 见上文 `## 下一步`（2026-10-02 复审版）：功能候选以移动端设置入口为推荐优先。
 
 ### 2026-08-13
 
