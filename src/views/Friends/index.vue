@@ -112,7 +112,7 @@ const openFriend = (friend: FriendLink): void => {
     height: 80%;
     padding: 40px;
     border-radius: 6px;
-    background: rgb(255 255 255 / 40%);
+    background: var(--glass-panel);
     position: relative;
 
     .head {
