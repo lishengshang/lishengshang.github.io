@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => ({
             },
           },
           {
-            urlPattern: /(.*?)\.(png|jpe?g|svg|gif|bmp|psd|tiff|tga|eps)/, // 图片缓存
+            urlPattern: /(.*?)\.(png|jpe?g|webp|svg|gif|bmp|psd|tiff|tga|eps)/, // 图片缓存（含 webp 本地壁纸）
             handler: "CacheFirst",
             options: {
               cacheName: "image-cache",
