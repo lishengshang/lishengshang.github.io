@@ -111,14 +111,14 @@ const onMouseDown = (event: MouseEvent) => {
   }
 };
 
-// 屏蔽右键
-const onContextMenu = () => {
+// 屏蔽右键（addEventListener 的返回值不会取消默认行为，必须显式 preventDefault）
+const onContextMenu = (event: MouseEvent) => {
+  event.preventDefault();
   ElMessage({
     message: "为了浏览体验，本站禁用右键",
     grouping: true,
     duration: 2000,
   });
-  return false;
 };
 
 // 自定义光标：随"降低动态效果"开关即时创建/销毁
