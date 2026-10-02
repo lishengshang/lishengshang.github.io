@@ -56,7 +56,6 @@ import Background from "@/components/Background.vue";
 import Sakura from "@/components/Sakura.vue";
 import Footer from "@/components/Footer.vue";
 import cursorInit from "@/utils/cursor";
-import config from "@/../package.json";
 
 // 非首屏组件懒加载
 const Box = defineAsyncComponent(() => import("@/views/Box/index.vue"));
@@ -199,7 +198,7 @@ onMounted(() => {
  | |    | || |_) |  _| | |\\/| || | | | |
  | |___ | ||  _ <| |___| |  | || | |_| |
  |_____|___|_| \\_\\_____|_|  |_|___\\___/`;
-  const content = `\n\n版本: ${config.version}\n主页: ${config.home}\nGithub: ${config.github}`;
+  const content = `\n\n版本: ${import.meta.env.VITE_APP_VERSION}\n主页: ${import.meta.env.VITE_APP_HOME}\nGithub: ${import.meta.env.VITE_APP_GITHUB}`;
   console.info(`%c${title1} %c${title2} %c${content}`, styleTitle1, styleTitle2, styleContent);
 });
 
