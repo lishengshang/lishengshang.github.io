@@ -11,7 +11,7 @@
       />
     </transition>
     <el-row :gutter="40">
-      <el-col :span="12" class="left">
+      <el-col :span="12" :xs="24" class="left">
         <div class="logo text-hidden">
           <span class="bg">{{ siteUrl[0] }}</span>
           <span class="sm">.{{ siteUrl[1] }}</span>
@@ -40,7 +40,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="12" class="right">
+      <el-col :span="12" :xs="24" class="right">
         <div class="title">
           <setting-two theme="filled" size="28" fill="#ffffff60" />
           <span class="name">全局设置</span>
@@ -226,6 +226,74 @@ const jumpTo = (url: string): void => {
           width: 28px;
           height: 28px;
           margin-right: 6px;
+        }
+      }
+    }
+  }
+
+  // 移动端单列堆叠：与 el-col xs 断点对齐（<768px 上下两段，面板整体可滚动）
+  // （移动端入口为 Links 标题栏 ⚙，桌面端动线不变仍为盒子齿轮）
+  @media (max-width: 767px) {
+    width: 92%;
+    height: 90%;
+    padding: 20px 16px;
+    overflow-y: auto;
+
+    .el-row {
+      flex-wrap: wrap;
+      height: auto;
+
+      .left {
+        height: auto;
+        padding-left: 0 !important;
+        padding-bottom: 8px;
+        justify-content: flex-start;
+
+        .logo {
+          height: auto;
+          min-height: 0;
+          transform: none;
+          padding-left: 0;
+
+          .bg {
+            font-size: 2.2rem;
+          }
+
+          .sm {
+            font-size: 1.2rem;
+            margin-left: 2px;
+          }
+        }
+
+        .version {
+          .num {
+            font-size: 1.4rem;
+          }
+        }
+
+        .update {
+          margin-top: 12px;
+          height: auto;
+
+          :deep(.el-card__body) {
+            height: auto;
+
+            .upnote {
+              height: auto;
+              max-height: 36vh;
+              padding: 12px;
+            }
+          }
+        }
+      }
+
+      .right {
+        height: auto;
+        padding-right: 0 !important;
+        justify-content: flex-start;
+
+        .title {
+          margin-bottom: 8px;
         }
       }
     }

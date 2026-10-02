@@ -155,8 +155,8 @@ watch(
   () => store.innerWidth,
   (value) => {
     if (value !== null && value < 721) {
+      // 盒子布局不适配窄屏仍强制关闭；设置页已单列响应式，保持打开状态
       store.boxOpenState = false;
-      store.setOpenState = false;
     }
   },
 );
