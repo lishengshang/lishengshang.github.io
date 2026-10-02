@@ -42,11 +42,13 @@ const bgRandom = Math.floor(Math.random() * 10 + 1);
 // 接口失效时更换 .env 即可；"1" 为已下线的每日一图，按默认壁纸处理以兼容旧持久化数据
 const WALLPAPER_VIEWS = import.meta.env.VITE_WALLPAPER_VIEWS || "https://t.alcy.cc/fj";
 const WALLPAPER_ACG = import.meta.env.VITE_WALLPAPER_ACG || "https://t.alcy.cc/ycy";
+// 外部源为随机图接口，追加时间戳绕过缓存：同源重复选择时也能取到新的随机图
+const bustCache = (url: string) => `${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
 const changeBg = (type: string | number) => {
   if (type == 2) {
-    bgUrl.value = WALLPAPER_VIEWS; // 随机风景
+    bgUrl.value = bustCache(WALLPAPER_VIEWS); // 随机风景
   } else if (type == 3) {
-    bgUrl.value = WALLPAPER_ACG; // 随机动漫
+    bgUrl.value = bustCache(WALLPAPER_ACG); // 随机动漫
   } else {
     bgUrl.value = `/images/background${bgRandom}.webp`; // 默认壁纸
   }
