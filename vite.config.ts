@@ -6,9 +6,16 @@ import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { compression } from "vite-plugin-compression2";
+import pkg from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // 站点元信息构建期注入（取自 package.json，替代组件内整包 import）
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(pkg.version),
+    "import.meta.env.VITE_APP_HOME": JSON.stringify(pkg.home),
+    "import.meta.env.VITE_APP_GITHUB": JSON.stringify(pkg.github),
+  },
   plugins: [
     vue(),
     AutoImport({

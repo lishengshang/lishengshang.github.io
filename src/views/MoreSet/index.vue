@@ -17,9 +17,9 @@
           <span class="sm">.{{ siteUrl[1] }}</span>
         </div>
         <div class="version">
-          <div class="num">v&nbsp;{{ config.version }}</div>
+          <div class="num">v&nbsp;{{ appVersion }}</div>
           <el-tooltip content="Github 源代码仓库" placement="right" :show-arrow="false">
-            <github-one class="github" theme="outline" size="24" @click="jumpTo(config.github)" />
+            <github-one class="github" theme="outline" size="24" @click="jumpTo(appGithub)" />
           </el-tooltip>
         </div>
         <el-card class="update">
@@ -56,12 +56,15 @@ import { CloseOne, SettingTwo, GithubOne, AddOne, Bug } from "@icon-park/vue-nex
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
 import Set from "@/components/Set.vue";
-import config from "@/../package.json";
 import { parseChangelog } from "@/utils/changelog";
 import changelogRaw from "@/../CHANGELOG.md?raw";
 
 const store = mainStore();
 const closeShow = ref(false);
+
+// 站点元信息（构建期由 vite.config.ts define 注入，避免整包 import package.json）
+const appVersion = import.meta.env.VITE_APP_VERSION;
+const appGithub = import.meta.env.VITE_APP_GITHUB;
 
 // 站点链接
 const { siteUrl } = useSiteUrl();

@@ -10,19 +10,22 @@
           v-model="keyword"
           class="search-input"
           type="text"
-          placeholder="搜索站内内容，回车打开第一项，Esc 关闭"
-          @keydown.enter.prevent="openFirst"
+          placeholder="搜索站内内容，↑↓ 选择，回车打开，Esc 关闭"
+          @keydown.enter.prevent="openActive"
+          @keydown.up.prevent="moveActive(-1)"
+          @keydown.down.prevent="moveActive(1)"
           @keydown.esc.stop="close"
         />
       </div>
-      <div class="results">
+      <div class="results" ref="resultsRef">
         <template v-if="keyword.trim()">
           <div
-            v-for="(item, index) in filtered"
+            v-for="(item, idx) in filtered"
             :key="item.kind + item.name"
-            :class="{ result: true, active: index === 0 }"
+            :class="{ result: true, active: idx === activeIndex }"
             v-ripple
             @click="openItem(item)"
+            @mouseenter="activeIndex = idx"
           >
             <span class="name text-hidden">{{ item.name }}</span>
             <span class="tip text-hidden">{{ item.tip }}</span>
@@ -40,7 +43,14 @@
           <div v-if="!filtered.length" class="result empty">站内无匹配，可使用下方外部搜索</div>
         </template>
         <template v-else>
-          <div v-for="item in index" :key="item.kind + item.name" class="result" v-ripple @click="openItem(item)">
+          <div
+            v-for="(item, idx) in index"
+            :key="item.kind + item.name"
+            :class="{ result: true, active: idx === activeIndex }"
+            v-ripple
+            @click="openItem(item)"
+            @mouseenter="activeIndex = idx"
+          >
             <span class="name text-hidden">{{ item.name }}</span>
             <span class="tip text-hidden">{{ item.tip }}</span>
           </div>
@@ -65,8 +75,26 @@ import {
 const store = mainStore();
 const keyword = ref("");
 const inputRef = ref<HTMLInputElement | null>(null);
+const resultsRef = ref<HTMLElement | null>(null);
 const index = buildSearchIndex();
 const filtered = computed(() => filterSearchIndex(index, keyword.value));
+
+// 键盘导航的当前选中项（空关键词浏览全量索引，有关键词浏览过滤结果）
+const activeIndex = ref(0);
+const displayList = computed(() => (keyword.value.trim() ? filtered.value : index));
+watch(keyword, () => {
+  activeIndex.value = 0;
+});
+
+// 上下移动选中项（循环滚动），并保持选中项在可视区内
+const moveActive = (delta: number): void => {
+  const total = displayList.value.length;
+  if (!total) return;
+  activeIndex.value = (activeIndex.value + delta + total) % total;
+  nextTick(() => {
+    resultsRef.value?.querySelector(".result.active")?.scrollIntoView?.({ block: "nearest" });
+  });
+};
 
 onMounted(() => {
   inputRef.value?.focus();
@@ -94,9 +122,10 @@ const openItem = (item: SearchItem): void => {
   }
 };
 
-// 回车打开第一项
-const openFirst = (): void => {
-  if (filtered.value[0]) openItem(filtered.value[0]);
+// 回车打开当前选中项
+const openActive = (): void => {
+  const item = displayList.value[activeIndex.value];
+  if (item) openItem(item);
 };
 
 // 外部搜索引擎跳转

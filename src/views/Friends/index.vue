@@ -44,6 +44,9 @@
         </el-col>
       </el-row>
       <div v-if="!friendLinks[0]" class="empty cards">暂无友链，欢迎通过 Github 交换友链</div>
+      <a class="apply" :href="applyUrl" target="_blank" rel="noopener noreferrer">
+        想交换友链？提交 Issue 申请
+      </a>
     </div>
   </div>
 </template>
@@ -69,6 +72,9 @@ import type { Component } from "vue";
 
 const store = mainStore();
 const closeShow = ref(false);
+
+// 友链申请入口（issue 模板：.github/ISSUE_TEMPLATE/friend-request.yml）
+const applyUrl = `${import.meta.env.VITE_APP_GITHUB}/issues/new?template=friend-request.yml`;
 
 type FriendLink = (typeof friendLinks)[number];
 
@@ -189,6 +195,19 @@ const openFriend = (friend: FriendLink): void => {
       text-align: center;
       font-size: 14px;
       opacity: 0.8;
+    }
+
+    .apply {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.75;
+      transition: opacity 0.3s;
+
+      &:hover {
+        opacity: 1;
+      }
     }
 
     @media (max-width: 825px) {
