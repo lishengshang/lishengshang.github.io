@@ -23,7 +23,7 @@
 ![無名の主页](/screenshots/main.jpg)
 
 > 主页的 Logo 字体（Pacifico）已经过压缩，仅包含本站 Logo 所需字符，若使用其他字符会回退为默认字体。
-> 完整字体已随仓库内置（`public/font/Pacifico-Regular-all.ttf`），将其覆盖 `public/font/Pacifico-Regular.ttf` 即可支持全部字符。
+> 完整字体未随仓库内置（原 all 字体文件已移除）；如需全部字符，请自行下载 Pacifico 全量字体（约 315KB）覆盖 `public/font/Pacifico-Regular.ttf`，子集已覆盖本站所需 Latin 字符，详见 `public/font/README.md`。
 
 ### 🎉 功能
 

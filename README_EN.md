@@ -23,7 +23,7 @@ Simple little homepage, had enough of the original one and made a new one
 ![Homepage](/screenshots/main.jpg)
 
 > The logo font (Pacifico) on the home page has been compressed to only include the characters used by the logo; other characters will fall back to the default font.
-> The full font is bundled in the repository (`public/font/Pacifico-Regular-all.ttf`). Overwrite `public/font/Pacifico-Regular.ttf` with it to support all characters.
+> The full font is NOT bundled (the former all-character file was removed); to support all characters, download the full Pacifico font (~315KB) yourself and overwrite `public/font/Pacifico-Regular.ttf`. The subset already covers the Latin characters this site uses. See `public/font/README.md`.
 
 ### Features
 
