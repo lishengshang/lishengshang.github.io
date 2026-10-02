@@ -10,7 +10,7 @@
 
 ## 当前进度
 
-- 2026-10-02（第八场）一、二梯队批量落地（切分支 feat/small-batch，验证后合入 main）：分支清理（origin/dev + 6 条本地分支）、package.json 元信息 define 注入、搜索浮层 ↑↓ 键盘导航（+3 组件测试）、友链申请 issue 模板与页面入口、EP 2.14.7 实证复测（摇树仍未修复，继续锁 2.13.0）；Docker 本机无环境未实测。
+- 2026-10-02（第八场）一、二梯队批量落地（切分支 feat/small-batch，验证后合入 main）：分支清理（origin/dev + 6 条本地分支）、package.json 元信息 define 注入、搜索浮层 ↑↓ 键盘导航（+3 组件测试）、友链申请 issue 模板与页面入口、EP 2.14.7 实证复测（摇树仍未修复，继续锁 2.13.0）；Docker 本机无环境未实测。合并初版为 fast-forward，按用户要求 redo 为 --no-ff 合并提交（`3f9ec70`）并恢复分支引用。**持久约定：功能分支一律 --no-ff 合入 main（保留分支拓扑），分支引用本地与远端均保留不删。**
 - 2026-10-02（第七场）全仓复审 + 小修包上线：复审确认 4 个问题（右键屏蔽失效 / PWA 缓存缺 webp / 友链面板令牌遗漏 / 外部壁纸重复选择不刷新）全部修复，README 字体说明失实与 .env.example 路径过时一并勘误；四门禁全绿，用户选框决策后推送上线。
 - 2026-10-01（第六场）双会话融合并上线 **5.6.0**（Build/Deploy 双绿，线上 bundle 版本与主题令牌已核验）：本地（本机 09-29/09-30 会话）与远端（09-16 另一设备会话）对同一路线图并行开发产生大量重复实现，经用户选 B 方案逐项融合——基线取远端 main + `feat/search-dark-links`（友链页/搜索浮层/PWA prompt 修复），主题系统换装本机三态实现（浅色/暗色/跟随系统）并融合远端壁纸降亮；`feat/search-dark-links` 至此验收合并。本机旧实现完整保留于 feat/settings-extras、feat/changelog-auto、feat/dark-mode、fix/wallpaper-fallback 分支作备份。
 - 2026-09-16（第二场）`feat/settings-enhance` 经 PR #1 合并 main（merge `983f239`），Deploy 成功、线上 bundle 已核验含全部新功能；艺术字保持 3.5rem（用户确认）。
@@ -93,6 +93,7 @@
 
 - 教训：EP 复测回退时 `git checkout package.json` 把同文件未提交的 github 字段修正一并回滚（apply 链接一度指向旧仓库名），复验时抓到并重改——试验性回退前应先提交或暂存无关改动。
 - Docker 镜像仍未实测；EP 2.15+ 发布后需按 ADR-0005 判据再复测。
+- 合并方式返工：初版误用 fast-forward（抹平分支拓扑且删除分支），用户指正后 redo——以 `git branch <branch> <tip>` 恢复引用 → main `reset --hard` 回合并前 → `merge --no-ff` 生成合并提交 `3f9ec70` → 正常推送（远端旧 tip 是合并提交的父提交，无需 force），分支引用恢复并保留本地与远端。**后续合并一律沿用此方式。**
 
 ##### 下一步
 
