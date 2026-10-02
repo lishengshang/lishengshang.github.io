@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### 新功能
+- 设置页支持移动端：网站列表标题栏新增设置入口（⚙ 仅 <721px 显示，桌面端动线不变仍经盒子齿轮），窄屏不再强制关闭设置页，MoreSet 布局与 el-col xs 断点（<768px）对齐为单列堆叠并支持整体滚动
 - 新增搜索聚合浮层（网站列表标题栏入口图标或 Ctrl/Cmd+K 唤起）：聚合站点链接、友链、站内功能（设置/友链页/音乐列表）与 Bing/Google/百度/GitHub 外部搜索，↑↓ 循环选择、回车打开选中项，Esc 关闭
 - 新增友链页面：网站列表标题栏入口图标打开，`#/friends` hash 直达并支持浏览器前进后退（ADR-0007，未引入 vue-router）；友链数据在 `src/assets/friendLinks.json` 维护
 - 友链页新增「提交 Issue 申请」入口，配套 `.github/ISSUE_TEMPLATE/friend-request.yml` 申请模板
