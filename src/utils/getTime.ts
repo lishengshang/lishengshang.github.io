@@ -19,7 +19,7 @@ export type TimeDifference = {
   readonly total: number;
   readonly passed: number;
   readonly remaining: number;
-  readonly percentage: string;
+  readonly percentage: number;
 };
 
 export type TimeCapsule = {
@@ -84,7 +84,7 @@ export const getTimeCapsule = (): TimeCapsule => {
       total: total,
       passed: passed,
       remaining: remaining,
-      percentage: percentage.toFixed(2),
+      percentage: Number(percentage.toFixed(2)),
     };
   };
   return {

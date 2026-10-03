@@ -56,6 +56,7 @@ import Background from "@/components/Background.vue";
 import Sakura from "@/components/Sakura.vue";
 import Footer from "@/components/Footer.vue";
 import cursorInit from "@/utils/cursor";
+import debounce from "@/utils/debounce";
 
 // 非首屏组件懒加载
 const Box = defineAsyncComponent(() => import("@/views/Box/index.vue"));
@@ -80,10 +81,11 @@ watchEffect(() => {
   document.documentElement.classList.toggle("dark", isDark.value);
 });
 
-// 页面宽度
+// 页面宽度（resize 高频触发，防抖后写入 store；挂载时首次同步仍立即执行）
 const getWidth = () => {
   store.setInnerWidth(window.innerWidth);
 };
+const getWidthDebounced = debounce(getWidth, 100);
 
 // 友链页面与 #/friends hash 双向同步（URL 身份 + 浏览器前进后退可用）
 const applyFriendsHash = () => {
@@ -178,7 +180,7 @@ onMounted(() => {
 
   // 监听当前页面宽度
   getWidth();
-  window.addEventListener("resize", getWidth);
+  window.addEventListener("resize", getWidthDebounced);
 
   // 友链页面 hash 初始化与监听
   applyFriendsHash();
@@ -203,7 +205,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("resize", getWidth);
+  window.removeEventListener("resize", getWidthDebounced);
   window.removeEventListener("mousedown", onMouseDown);
   window.removeEventListener("hashchange", applyFriendsHash);
   window.removeEventListener("keydown", onKeyDown);

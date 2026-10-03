@@ -38,10 +38,8 @@ const store = mainStore();
 
 // 主页站点logo
 const siteLogo = import.meta.env.VITE_SITE_MAIN_LOGO;
-// 站点链接
-const { siteUrl } = useSiteUrl();
-// 站名艺术字（未配置时回退为域名第一段）
-const logoText = import.meta.env.VITE_SITE_LOGO_TEXT || siteUrl.value[0];
+// 站名艺术字（未配置时回退为域名第一段，useSiteUrl 内统一维护）
+const { logoText } = useSiteUrl();
 
 // 简介区域文字
 const descriptionText = reactive({

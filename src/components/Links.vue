@@ -26,14 +26,10 @@
     <!-- 网站列表 -->
     <Swiper
       v-if="siteLinks[0]"
-      :modules="[Pagination, Mousewheel]"
+      :modules="SWIPER_MODULES"
       :slides-per-view="1"
       :space-between="40"
-      :pagination="{
-        el: '.swiper-pagination',
-        clickable: true,
-        bulletElement: 'div',
-      }"
+      :pagination="SWIPER_PAGINATION"
       :mousewheel="true"
     >
       <SwiperSlide v-for="(site, idx) in siteLinksList" :key="idx">
@@ -46,7 +42,7 @@
               @click="jumpLink(item)"
             >
               <Icon size="26">
-                <component :is="siteIcon[item.icon]" />
+                <component :is="linkIcons[item.icon]" />
               </Icon>
               <span class="name text-hidden">{{ item.name }}</span>
             </div>
@@ -60,16 +56,25 @@
 
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
-// 可前往 https://www.xicons.org 自行挑选并在此处引入
-import { Link, Blog, CompactDisc, Cloud, Compass, Book, Fire, LaptopCode, Image, Envelope, UserFriends, Search, Cog } from "@vicons/fa"; // 注意使用正确的类别
+// 标题栏与模板内直接使用的图标；站点卡片图标经 utils/linkIcons 统一映射
+import { Link, UserFriends, Search, Cog } from "@vicons/fa";
 import { mainStore } from "@/store";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Mousewheel } from "swiper/modules";
+import "swiper/css";
 import siteLinks from "@/assets/siteLinks.json";
-import type { Component } from "vue";
+import { linkIcons } from "@/utils/linkIcons";
 
 const store = mainStore();
 type SiteLink = (typeof siteLinks)[number];
+
+// Swiper 配置常量：避免每次渲染生成新引用触发组件多余更新
+const SWIPER_MODULES = [Pagination, Mousewheel];
+const SWIPER_PAGINATION = {
+  el: ".swiper-pagination",
+  clickable: true,
+  bulletElement: "div",
+};
 
 // 计算网站链接
 const siteLinksList = computed<SiteLink[][]>(() => {
@@ -80,19 +85,6 @@ const siteLinksList = computed<SiteLink[][]>(() => {
   }
   return result;
 });
-
-// 网站链接图标
-const siteIcon: Record<string, Component> = {
-  Blog,
-  Cloud,
-  CompactDisc,
-  Compass,
-  Book,
-  Fire,
-  LaptopCode,
-  Image,
-  Envelope,
-};
 
 // 链接跳转
 const jumpLink = (data: SiteLink): void => {

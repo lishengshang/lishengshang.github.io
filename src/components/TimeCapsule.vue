@@ -5,7 +5,7 @@
       <span>时光胶囊</span>
     </div>
     <div v-if="timeData" class="all-capsule">
-      <div v-for="(item, tag, index) in timeData" :key="index" class="capsule-item">
+      <div v-for="(item, tag) in timeData" :key="tag" class="capsule-item">
         <div class="item-title">
           <span class="percentage">
             {{ item.name }}已度过
@@ -16,7 +16,7 @@
             剩余&nbsp;{{ item.remaining }}&nbsp;{{ tag === "day" ? "小时" : "天" }}
           </span>
         </div>
-        <el-progress :text-inside="true" :stroke-width="20" :percentage="parseFloat(item.percentage)" />
+        <el-progress :text-inside="true" :stroke-width="20" :percentage="item.percentage" />
       </div>
       <!-- 建站日期 -->
       <div v-if="store.siteStartShow" class="capsule-item start">
@@ -32,16 +32,16 @@ import { getTimeCapsule, siteDateStatistics } from "@/utils/getTime";
 import { mainStore } from "@/store";
 const store = mainStore();
 
-// 进度条数据
-const timeData = ref(getTimeCapsule());
-const startDate = ref(import.meta.env.VITE_SITE_START);
+// 进度条数据（整组替换，无需深度响应式）
+const timeData = shallowRef(getTimeCapsule());
+const startDate = import.meta.env.VITE_SITE_START;
 const startDateText = ref<string | null>(null);
 const timeInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 // 刷新进度条与建站日期文本
 const updateCapsule = () => {
   timeData.value = getTimeCapsule();
-  if (startDate.value) startDateText.value = siteDateStatistics(new Date(startDate.value));
+  if (startDate) startDateText.value = siteDateStatistics(new Date(startDate));
 };
 
 onMounted(() => {

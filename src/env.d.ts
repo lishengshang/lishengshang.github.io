@@ -9,13 +9,6 @@ interface ImportMetaEnv {
   readonly VITE_APP_GITHUB: string;
 }
 
-declare module "*.vue" {
-  import type { DefineComponent } from "vue";
-
-  const component: DefineComponent;
-  export default component;
-}
-
 declare module "fetch-jsonp" {
   const fetchJsonp: (url: string) => Promise<Response>;
   export default fetchJsonp;

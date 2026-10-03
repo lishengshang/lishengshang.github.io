@@ -88,10 +88,8 @@ watch(
   },
 );
 
-onMounted(() => {
-  // 加载壁纸
-  changeBg(store.coverType);
-});
+// 加载壁纸：setup 同步初始化，让浏览器在首帧渲染时即发起壁纸请求（LCP 提前）；后续切换仍由 watch 驱动
+changeBg(store.coverType);
 
 onBeforeUnmount(() => {
   if (imgTimeout.value !== null) clearTimeout(imgTimeout.value);
