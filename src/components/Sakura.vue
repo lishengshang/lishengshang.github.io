@@ -149,6 +149,10 @@ onMounted(() => {
     petals = Array.from({ length: COUNT }, () => new Petal(true));
     start();
   };
+  // 加载失败记录日志（与壁纸失败处理对齐，便于诊断资源缺失）
+  image.onerror = () => {
+    console.error("花瓣图加载失败:", image.src);
+  };
 
   window.addEventListener("resize", resize);
   document.addEventListener("visibilitychange", onVisibilityChange);
