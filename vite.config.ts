@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => ({
     AutoImport({
       imports: ["vue"],
       resolvers: [ElementPlusResolver()],
+      // 生成 .eslintrc-auto-import.json（提交进仓库），ESLint 全局变量改为自动同步
+      eslintrc: {
+        enabled: true,
+        globalsPropValue: "readonly",
+      },
     }),
     Components({
       resolvers: [ElementPlusResolver()],
@@ -37,6 +42,8 @@ export default defineConfig(({ mode }) => ({
             handler: "CacheFirst",
             options: {
               cacheName: "js-css-cache",
+              // 限制条目并在配额告急时自动清理，避免缓存随浏览无限累积
+              expiration: { maxEntries: 60, purgeOnQuotaError: true },
             },
           },
           {
@@ -44,6 +51,7 @@ export default defineConfig(({ mode }) => ({
             handler: "CacheFirst",
             options: {
               cacheName: "image-cache",
+              expiration: { maxEntries: 60, purgeOnQuotaError: true },
             },
           },
         ],

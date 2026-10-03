@@ -36,9 +36,9 @@
       }"
       :mousewheel="true"
     >
-      <SwiperSlide v-for="site in siteLinksList" :key="site as never">
+      <SwiperSlide v-for="(site, idx) in siteLinksList" :key="idx">
         <el-row class="link-all" :gutter="20">
-          <el-col v-for="(item, index) in site" :span="8" :key="item as never">
+          <el-col v-for="(item, index) in site" :span="8" :key="item.name">
             <div
               class="item cards enter"
               :style="[index < 3 ? 'margin-bottom: 20px' : null, { '--enter-delay': `${0.4 + index * 0.05}s` }]"

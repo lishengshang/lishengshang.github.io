@@ -13,6 +13,8 @@
     <meta name="author" content="%VITE_SITE_AUTHOR%" />
     <meta name="theme-color" content="#424242" />
     <title>%VITE_SITE_NAME%</title>
+    <!-- 字体 CDN 提前建连（DNS+TCP+TLS 与页面解析并行） -->
+    <link rel="preconnect" href="https://s1.hdslb.com" crossorigin />
     <!-- HarmonyOS Sans（非阻塞加载：先以系统字体渲染，字体就绪后替换） -->
     <link
       rel="preload"

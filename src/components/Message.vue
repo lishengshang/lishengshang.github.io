@@ -163,28 +163,5 @@ watch(
       pointer-events: none;
     }
   }
-  // @media (max-width: 390px) {
-  //   .logo {
-  //     flex-direction: column;
-  //     .logo-img {
-  //       display: none;
-  //     }
-  //     .name {
-  //       margin-left: 0;
-  //       height: auto;
-  //       transform: none;
-  //       text-align: center;
-  //       .bg {
-  //         font-size: 3.5rem;
-  //       }
-  //       .sm {
-  //         font-size: 1.4rem;
-  //       }
-  //     }
-  //   }
-  //   .description {
-  //     margin-top: 2.5rem;
-  //   }
-  // }
 }
 </style>

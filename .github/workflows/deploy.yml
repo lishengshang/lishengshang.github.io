@@ -46,6 +46,18 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      # 部署前门禁：静态检查（不带 --fix，仅校验）
+      - name: Lint Check
+        run: pnpm lint:check
+
+      # 部署前门禁：单元测试
+      - name: Unit Test
+        run: pnpm test
+
+      # 部署前门禁：类型检查
+      - name: Type Check
+        run: pnpm typecheck
+
       # 构建网站
       - name: Build Website
         run: pnpm build
