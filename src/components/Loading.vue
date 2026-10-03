@@ -113,6 +113,12 @@ const siteName = import.meta.env.VITE_SITE_NAME;
       transform 0.3s 1s ease-out,
       visibility 0.3s 1s ease-out;
     .loader {
+      // 加载完成不可见后暂停三组无限动画，避免动画计时空转
+      .loader-circle,
+      .loader-circle::before,
+      .loader-circle::after {
+        animation-play-state: paused;
+      }
       .loader-circle,
       .loader-text {
         opacity: 0;

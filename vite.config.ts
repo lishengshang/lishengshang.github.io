@@ -9,7 +9,9 @@ import { compression } from "vite-plugin-compression2";
 import pkg from "./package.json";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd());
+  return {
   // 站点元信息构建期注入（取自 package.json，替代组件内整包 import）
   define: {
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(pkg.version),
@@ -57,9 +59,9 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: loadEnv(mode, process.cwd()).VITE_SITE_NAME,
-        short_name: loadEnv(mode, process.cwd()).VITE_SITE_NAME,
-        description: loadEnv(mode, process.cwd()).VITE_SITE_DES,
+        name: env.VITE_SITE_NAME,
+        short_name: env.VITE_SITE_NAME,
+        description: env.VITE_SITE_DES,
         display: "standalone",
         start_url: "/",
         theme_color: "#424242",
@@ -144,4 +146,5 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-}));
+  };
+});
