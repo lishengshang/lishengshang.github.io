@@ -3,9 +3,13 @@
 // 原理：监听 click 事件，在点击位置生成一个扩散的圆形元素，动画结束后移除
 import { mainStore } from "@/store";
 
+// 波纹动画时长 0.6s，兜底清理延时略大于动画时长即可
+const RIPPLE_CLEANUP_DELAY = 800;
+
 const createRipple = (event: MouseEvent): void => {
-  // 降低动态效果开启时不生成波纹
-  if (mainStore().reduceMotion) return;
+  // 降低动态效果或页面动画关闭时不生成波纹（no-motion 下动画不会播放，只会产生不可见节点）
+  const { reduceMotion, animationShow } = mainStore();
+  if (reduceMotion || !animationShow) return;
   const target = event.currentTarget as HTMLElement;
   const rect = target.getBoundingClientRect();
   const size = Math.max(rect.width, rect.height);
@@ -20,6 +24,8 @@ const createRipple = (event: MouseEvent): void => {
 
   target.appendChild(ripple);
   ripple.addEventListener("animationend", () => ripple.remove());
+  // 兜底：动画被全局禁用（no-motion）时 animationend 不会触发，定时移除防止 DOM 累积
+  setTimeout(() => ripple.remove(), RIPPLE_CLEANUP_DELAY);
 };
 
 export const ripple = {
