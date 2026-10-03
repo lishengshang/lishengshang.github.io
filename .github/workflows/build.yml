@@ -1,10 +1,8 @@
-# 构建检查：PR 和 push 时都跑，确保构建不被破坏
+# 构建检查：PR 时跑，确保构建不被破坏
+# （push main 的构建与门禁由 Deploy 工作流承担，避免同一提交重复构建）
 name: Build
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -58,11 +56,3 @@ jobs:
       # 构建程序
       - name: Build Website
         run: pnpm build
-
-      # 上传构建产物（仅 push 时，PR 不需要）
-      - name: Upload artifacts
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v7
-        with:
-          name: Home
-          path: dist
