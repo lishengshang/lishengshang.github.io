@@ -3,6 +3,12 @@ import pluginVue from "eslint-plugin-vue";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
+import { readFileSync } from "node:fs";
+
+// unplugin-auto-import 生成的全局变量清单（vite.config.ts AutoImport.eslintrc 维护，依赖变化后重新生成并提交）
+const autoImportGlobals = JSON.parse(
+  readFileSync(new URL("./.eslintrc-auto-import.json", import.meta.url), "utf8"),
+).globals;
 
 const vueEssential = pluginVue.configs["flat/essential"];
 const vueEssentialRules = Array.isArray(vueEssential)
@@ -25,27 +31,11 @@ export default defineConfig([
       parserOptions: { parser: tseslint.parser },
       globals: {
         ...globals.browser,
+        ...autoImportGlobals,
+        // 编译宏不进 auto-import 清单，仅 .vue 编译期存在，需手工声明
         defineProps: "readonly",
         defineEmits: "readonly",
         withDefaults: "readonly",
-        h: "readonly",
-        vue: "readonly",
-        ref: "readonly",
-        reactive: "readonly",
-        computed: "readonly",
-        watch: "readonly",
-        watchEffect: "readonly",
-        provide: "readonly",
-        inject: "readonly",
-        defineComponent: "readonly",
-        defineAsyncComponent: "readonly",
-        onBeforeMount: "readonly",
-        onMounted: "readonly",
-        onBeforeUnmount: "readonly",
-        nextTick: "readonly",
-        ElMessage: "readonly",
-        ElNotification: "readonly",
-        $openList: "readonly",
       },
     },
     plugins: { vue: pluginVue },
