@@ -64,7 +64,7 @@ a:hover {
   z-index: 0;
 }
 
-// 卡片样式
+// 卡片样式（悬停浮起：scale + 上浮 + 阴影）
 .cards {
   border-radius: 6px;
   background-color: #00000040;
@@ -72,12 +72,14 @@ a:hover {
   transform: scale(1);
   transition:
     backdrop-filter 0.3s,
-    transform 0.3s;
+    transform 0.3s,
+    box-shadow 0.3s;
   &:hover {
-    transform: scale(1.01);
+    transform: scale(1.02) translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.98) translateY(0);
   }
 }
 
@@ -231,21 +233,6 @@ scrollbar-thumb {
 }
 
 /* ===== 动效增强 ===== */
-
-// 卡片悬停浮起：在原有 scale 基础上增加上浮 + 阴影
-.cards {
-  transition:
-    backdrop-filter 0.3s,
-    transform 0.3s,
-    box-shadow 0.3s;
-  &:hover {
-    transform: scale(1.02) translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  }
-  &:active {
-    transform: scale(0.98) translateY(0);
-  }
-}
 
 // 入场动画：从下方淡入上滑
 @keyframes enter-up {
