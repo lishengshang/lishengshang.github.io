@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-03（第十场）全仓优化三批落地（feat/perf-batch1/2/3，--no-ff 合入，未推送）：波纹 no-motion DOM 泄漏修复（+3 单测）、壁纸 fetchpriority/setup 提前与字体 preconnect（LCP）、字体 WOFF2 化 -64%、运行时防抖与 shallowRef 精简、一言竞态令牌、PWA 缓存配额、CI 消除 push main 双构建并前置部署门禁、ESLint 全局变量自动同步、配置文件入 typecheck、重复逻辑抽离、字体/加载动画/花瓣日志/loadEnv/nginx 安全头等共 26 项；版本 5.7.0。第二批经 dev 浏览器冒烟（首屏/波纹兜底/搜索浮层/设置页/胶囊四条进度）全过。
 - 2026-10-02（第九场）移动端设置入口落地（切分支 feat/mobile-settings，--no-ff 合入）：标题栏 ⚙ 入口（仅 <721px）、宽度 watch 不再强制关设置页、MoreSet 对齐 EP xs 断点单列堆叠；三视口（390/730/1280）详细验证，过程中抓到并修复媒体查询误嵌套与断点错位两个自产问题。
 - 2026-10-02（第八场）一、二梯队批量落地（切分支 feat/small-batch，验证后合入 main）：分支清理（origin/dev + 6 条本地分支）、package.json 元信息 define 注入、搜索浮层 ↑↓ 键盘导航（+3 组件测试）、友链申请 issue 模板与页面入口、EP 2.14.7 实证复测（摇树仍未修复，继续锁 2.13.0）；Docker 本机无环境未实测。合并初版为 fast-forward，按用户要求 redo 为 --no-ff 合并提交（`3f9ec70`）并恢复分支引用。**持久约定：功能分支一律 --no-ff 合入 main（保留分支拓扑），分支引用本地与远端均保留不删。**
 - 2026-10-02（第七场）全仓复审 + 小修包上线：复审确认 4 个问题（右键屏蔽失效 / PWA 缓存缺 webp / 友链面板令牌遗漏 / 外部壁纸重复选择不刷新）全部修复，README 字体说明失实与 .env.example 路径过时一并勘误；四门禁全绿，用户选框决策后推送上线。
@@ -54,13 +55,77 @@
 
 ## 下一步
 
-复审路线图（2026-10-02 第九场更新）：
+复审路线图（2026-10-03 第十场更新）：
 
-1. ~~小修包~~（第七场）；~~分支清理 / define 注入 / 搜索键盘导航 / 友链生态 / EP 复测~~（第八场）；~~移动端设置入口~~（第九场，均已上线）。
-2. **功能候选（经用户选框决定后落地）**：Box 内 MoreContent 内容化（现为占位文案，先定内容方向）；多语言 i18n（历史候选，工作量最大，明确要做再排）。
-3. **工程跟进（条件触发）**：Element Plus 2.15+ 发布后按 ADR-0005 判据复测（EP JS chunk 应回 ~110 kB 水位，2.14.7 复测仍 778.59 kB）；Docker 镜像构建实测（本机无 Docker，需先备环境）；组件级测试补位（Set/MoreSet 交互——MoreSet 响应式落地后更可测）。
+1. ~~历次小修与功能批~~（第七~九场）；~~全仓优化三批 26 项~~（第十场，已合入 main 待推送上线）。
+2. **待办**：推送 main 上线 5.7.0（触发 Deploy，推送后核验线上版本串/woff2 字体/sw.js 配额）。
+3. **功能候选（经用户选框决定后落地）**：Box 内 MoreContent 内容化（现为占位文案，先定内容方向）；多语言 i18n（历史候选，工作量最大，明确要做再排）。
+4. **工程跟进（条件触发）**：Element Plus 2.15+ 发布后按 ADR-0005 判据复测（EP JS chunk 应回 ~110 kB 水位，2.14.7 复测仍 778.59 kB）；Docker 镜像构建实测（本机无 Docker，需先备环境；nginx 安全头未经运行时检验）；组件级测试补位（Set/MoreSet 交互）。
+5. **需拍板的备选项**（见第十场记录「未落地项」）：esbuild minify / manualChunks 细分 / 字体自托管 / Sakura dpr 封顶 / robots.txt / og: meta / store 字面量联合。
 
 ## 会话记录
+
+### 2026-10-03（第十场）
+
+#### 全仓优化三批（feat/perf-batch1/2/3，--no-ff 合入 main，未推送）
+
+##### 摘要
+
+应用户「不改变任何内容与外观、不引入 bug 的优化」要求做全量复审（Explore agent 通读 src/ 全源码 + 工程化核查），产出分层方案后按批次落地三批共 26 项。全程未改任何功能语义、文案与外观（`.cards` 死样式合并以级联终值保留；Footer startYear 常量化保持模板既有比较语义的 any 形态）。
+
+##### 第一批（feat/perf-batch1，7 提交）
+
+1. 波纹指令修复（`utils/ripple.ts`）：守卫补 `!animationShow`（no-motion 下点击不再生成不可见节点）+ 800ms 兜底移除（`animationend` 不触发场景防 DOM 累积），新增 `ripple.test.ts` 3 用例。
+2. 壁纸 `img` 加 `fetchpriority="high"` + `decoding="async"`；index.html 字体 CDN preconnect。
+3. 一言请求令牌防乱序（`Hitokoto.vue`）；Player author 清理定时器卸载回收。
+4. Links v-for key 修正（SwiperSlide 改 idx、el-col 改 `item.name`），消除 `as never`。
+5. style.scss 两处 `.cards` 合并（以级联生效的悬停浮起值为准）；Message.vue 注释死样式删除。
+6. PWA runtimeCaching 两条 CacheFirst 加 `expiration: { maxEntries: 60, purgeOnQuotaError: true }`（dist/sw.js 核验 2 处生效）。
+7. CI：build.yml 改仅 PR 触发并移除 push artifact 上传；deploy.yml 构建前插入 lint/test/typecheck 门禁——push main 从「双构建、部署无门禁」变为「单构建、部署前门禁」。
+8. ESLint 全局变量：AutoImport 开 `eslintrc.enabled`（globalsPropValue: readonly），生成 `.eslintrc-auto-import.json` 入库（含 resolver 的 ElMessage/ElNotification），eslint.config.js 改读文件，保留三个编译宏手工声明，删除死配置 `vue`/`$openList`。
+
+##### 第二批（feat/perf-batch2，2 提交）
+
+1. `Background.vue` 壁纸 URL 从 onMounted 提前到 setup 同步（首帧渲染即发起壁纸请求，LCP；watch 切换链路不变）。
+2. `App.vue` resize 防抖 100ms（复用 `utils/debounce`，首次同步保留立即执行，add/remove 同引用）。
+3. `Music.vue` 音量持久化 300ms 防抖（播放器 `changeVolume` 仍即时）、`playerData` 静态 env 去 reactive。
+4. `Player.vue` 歌单改 `shallowRef`；`Footer.vue` 静态 env 去 ref + 版权区 `v-once`；`TimeCapsule.vue` timeData shallowRef/startDate 去 ref/key 改 tag/百分比数据源直接产出 number（`getTime.ts` percentage: string → number，保留两位小数精度）；`Func/index.vue` currentTime shallowRef。
+5. `MoreSet/index.vue` 改双 script 块，`parseChangelog` 模块级解析一次（挂载不再重复解析）。
+6. `Links.vue` Swiper modules/pagination 提为模块常量；新增 `utils/linkIcons.ts` 统一站点/友链图标映射（Links 与 Friends 复用）；`useSiteUrl` 新增 `logoText`（Right/Message 去重复表达式）；`SearchOverlay.vue` 双分支模板合并为 `displayList` 单循环（DOM 输出一致）；`main.ts` 的 `swiper/css` 移至唯一使用方 Links.vue。
+7. `env.d.ts` 删除 `declare module "*.vue"` shim（模板 ref 类型恢复精确，typecheck 通过）；`api/index.ts` QQ 分支补畸形 URL 守卫；tsconfig include 增加 vite.config.ts / vitest.config.ts（纳入 typecheck，无存量报错、无需 @types/node）。
+8. **搁置项**：store 字面量联合类型（coverType/playerLoop/playerOrder）——Set.vue 的 el-radio-group v-model 写回宽类型会产生类型摩擦，收益低风险升，主动放弃。
+
+##### 第三批（feat/perf-batch3，1 提交）
+
+1. 字体 WOFF2 化：fontTools + brotli 转换（本机 pip 安装），Pacifico 12.9→6.7KB、UnidreamLED 31.6→9.1KB（-64%），删除旧 ttf，@font-face 切 woff2。
+2. Loading 组件 `.loaded` 下三组 spin 动画 `animation-play-state: paused`。
+3. Sakura 花瓣图补 `onerror` 日志（与壁纸失败处理对齐）。
+4. vite.config `loadEnv` 三次调用合并为一次（函数体形式）。
+5. nginx.conf 增加 `X-Content-Type-Options`/`X-Frame-Options`/`Referrer-Policy`（add_header 继承以块为单位，4 个含 add_header 的 location 内重复声明）；**仅 Docker 链路生效，GitHub Pages 无法自定义响应头**。
+
+##### 验证
+
+- 每批四门禁 `lint:check` / `typecheck` / `test` / `build` 全绿；测试 10 文件 39 用例（+3 波纹）。
+- 第二批 dev 浏览器实测（1280 视口）：壁纸 img 属性（fetchpriority=high/decoding=async）与本地壁纸加载 ✓；艺术字 "li'remio"+long 类（logoText 抽离回归）✓；时钟走秒（shallowRef）✓；版权区渲染（v-once）✓；樱花 canvas ✓；波纹点击生成 1 个、900ms 后兜底移除 ✓；时光胶囊 4 项 4 进度条（percentage number 化回归）✓；搜索浮层 Ctrl+K 唤起、空关键词 7 项、过滤「友」出友链条目+4 引擎（模板合并回归）✓、Esc 关闭（overlay 卸载，注意 fixed 元素 offsetParent 恒 null 不可作可见性判据）✓；设置页经盒子齿轮打开、版本 v 5.6.0、更新日志 11 条（双 script 块回归）✓；测后恢复默认，localStorage 持久化未污染。
+- 第三批 preview 实测：`/font/*.woff2` 200；`document.fonts.check` 两字体 true；艺术字 computed font-family 为 Pacifico-Regular ✓。
+- dist 核验：sw.js 含 2 处 maxEntries:60 + purgeOnQuotaError；CSS 0 处 ttf 引用；字体产物仅 woff2。
+
+##### 风险与缺口
+
+- **未推送**：main 本地领先 origin/main 3 个合并提交，推送即触发 Deploy（新版上线），待用户确认。
+- IAB setViewportSize 不派发 resize 事件（既有环境限制），resize 防抖链路以代码审查确认（add/remove 同一防抖引用、首次立即同步保留），未做浏览器验证。
+- 音量持久化防抖：极端情况下最后一次步进的落盘延迟 ≤300ms；拖动中关闭标签页可能丢失最后一小段音量记录（与即时生效无关，仅持久化）。
+- 版本号 5.7.0 已落 package.json 与 CHANGELOG，本地 dist 仍为 5.6.0 构建（版本串构建期注入，随下次 CI 构建生效）。
+- CHANGELOG 补记时发现 5.6.0 上线后 [Unreleased] 未定稿的历史疏漏，本次一并定稿为 `[5.6.0] - 2026-10-01`。
+
+##### 未落地项（需拍板，未做）
+
+- esbuild 替代 terser minify（构建提速，产物哈希/体积微变）；manualChunks 细分（vue/pinia 与 swiper/dayjs 分 chunk）；HarmonyOS Sans 自托管（消除 B 站 CDN 单点）；Sakura canvas devicePixelRatio 封顶 2（3x 屏省填充率，花瓣清晰度微变）；robots.txt 与 og: meta（接近内容增强）；store 字面量联合（第二批搁置）。
+
+##### 下一步
+
+- 用户确认后推送 main（触发 Build 通知与 Deploy 上线 5.7.0），推送后浏览器核验线上版本串、woff2 字体、sw.js 配额配置。
+- 见上文 `## 下一步`：功能候选（Box 内容化 / i18n）、条件触发项（EP 2.15+ 复测 / Docker 实测 / Set 与 MoreSet 组件测试补位）不变。
 
 ### 2026-10-02（第九场）
 

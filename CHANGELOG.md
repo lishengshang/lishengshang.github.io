@@ -4,6 +4,29 @@
 
 ## [Unreleased]
 
+### 性能优化
+- 壁纸 `img` 增加 `fetchpriority="high"` 与 `decoding="async"`,壁纸 URL 提前至组件 setup 同步初始化,浏览器首帧即可发起壁纸请求(LCP 提前);字体 CDN 增加 preconnect 提前建连
+- 本地字体 TTF → WOFF2(44.6 KB → 15.9 KB,-64%),`@font-face` 同步切换
+- 运行时精简:歌单/时钟/时光胶囊数据改 `shallowRef`,永不变化的 env 配置去除响应式包装;resize 写入 store 与音量持久化增加防抖;Loading 动画完成后暂停三组无限旋转动画
+- 页面动画关闭时波纹节点改为不生成并增加兜底移除(原先 `animationend` 不触发导致不可见节点随点击无限累积)
+- PWA 运行时缓存(js/css 与图片)增加条目上限(`maxEntries: 60`)与配额告急自动清理
+
+### 修复
+- 一言请求增加令牌防护:防抖间隙外的慢响应后到时不再覆盖新文本
+- 播放器 author 前缀清理定时器在组件卸载时回收,不再触碰已卸载 DOM
+
+### 工程
+- CI 消除 push main 双构建:Build 检查改为仅 PR 触发,部署流水线前置 lint/test/typecheck 门禁(同一提交构建一次且门禁覆盖部署)
+- ESLint 全局变量改由 unplugin-auto-import 自动生成清单(`.eslintrc-auto-import.json` 入库)同步,移除手工维护与死配置(`$openList`/`vue`)
+- `vite.config.ts` / `vitest.config.ts` 纳入 typecheck 范围
+- 重复逻辑抽离:站点/友链图标映射统一到 `utils/linkIcons.ts`,艺术字文本并入 `useSiteUrl.logoText`;搜索浮层两分支模板合并(输出逐字节一致);合并重复的 `.cards` 样式定义并清理注释死样式
+- v-for key 修正:网站列表改用索引/名称、时光胶囊改用标签名,消除 `as never` 断言;时光胶囊百分比改为数据源直接产出数值
+- QQ 音乐链接解析增加格式守卫(畸形 URL 显式报错);花瓣图加载失败补日志
+- nginx 增加 `X-Content-Type-Options` / `X-Frame-Options` / `Referrer-Policy` 安全响应头(仅 Docker 部署链路)
+- 新增波纹指令单测 3 例(双守卫与兜底清理回归),测试 10 文件 39 用例
+
+## [5.6.0] - 2026-10-01
+
 ### 新功能
 - 设置页支持移动端：网站列表标题栏新增设置入口（⚙ 仅 <721px 显示，桌面端动线不变仍经盒子齿轮），窄屏不再强制关闭设置页，MoreSet 布局与 el-col xs 断点（<768px）对齐为单列堆叠并支持整体滚动
 - 新增搜索聚合浮层（网站列表标题栏入口图标或 Ctrl/Cmd+K 唤起）：聚合站点链接、友链、站内功能（设置/友链页/音乐列表）与 Bing/Google/百度/GitHub 外部搜索，↑↓ 循环选择、回车打开选中项，Esc 关闭
