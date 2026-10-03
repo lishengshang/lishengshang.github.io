@@ -52,6 +52,9 @@ const player = ref<APlayerInstance | null>(null);
 // 歌曲播放列表
 const playList = ref<PlayerItem[]>([]);
 
+// author 前缀清理定时器（卸载时清理，避免触碰已卸载组件的 DOM）
+const stripTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+
 // 歌曲播放项
 const playIndex = ref(0);
 
@@ -111,7 +114,7 @@ onMounted(() => {
       // 生成歌单
       playList.value = res;
       // 初始渲染后清理 author 行的 " - " 前缀（未自动播放时不会触发 onPlay）
-      setTimeout(stripAuthorDash, 50);
+      stripTimeout.value = setTimeout(stripAuthorDash, 50);
     } catch (err) {
       console.error(err);
       store.musicIsOk = false;
@@ -244,6 +247,10 @@ const loadMusicError = () => {
 
 // 暴露子组件方法
 defineExpose({ playToggle, changeVolume, changeSong });
+
+onBeforeUnmount(() => {
+  if (stripTimeout.value !== null) clearTimeout(stripTimeout.value);
+});
 </script>
 
 <style lang="scss" scoped>

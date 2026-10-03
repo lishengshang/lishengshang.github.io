@@ -47,13 +47,19 @@ const hitokotoData = reactive({
   from: "未知",
 });
 
+// 请求令牌：防抖间隙外的慢响应可能后到，仅采纳最新一次请求的结果
+let hitokotoToken = 0;
+
 // 获取一言数据
 const getHitokotoData = async () => {
+  const token = ++hitokotoToken;
   try {
     const result = await getHitokoto();
+    if (token !== hitokotoToken) return;
     hitokotoData.text = result.hitokoto;
     hitokotoData.from = result.from;
   } catch (error) {
+    if (token !== hitokotoToken) return;
     ElMessage({
       message: "一言获取失败",
       icon: h(Error, {
