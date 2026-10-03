@@ -36,8 +36,8 @@ import Hitokoto from "@/components/Hitokoto.vue";
 
 const store = mainStore();
 
-// 当前时间
-const currentTime = ref<Partial<CurrentTime>>({});
+// 当前时间（每秒整对象替换，无需深度响应式）
+const currentTime = shallowRef<Partial<CurrentTime>>({});
 const timeInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 // 播放器 id

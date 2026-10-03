@@ -1,7 +1,7 @@
 <template>
   <footer id="footer" :class="store.footerBlur ? 'blur' : null">
     <Transition name="fade" mode="out-in">
-      <div v-if="!store.playerState || !store.playerLrcShow" class="power">
+      <div v-if="!store.playerState || !store.playerLrcShow" class="power" v-once>
         <span>
           <span :class="startYear < fullYear ? 'c-hidden' : 'hidden'">Copyright&nbsp;</span>
           &copy;
@@ -62,14 +62,11 @@ import { useSiteUrl } from "@/composables/useSiteUrl";
 const store = mainStore();
 const fullYear = new Date().getFullYear();
 
-// 加载配置数据
-// const siteStartDate = ref(import.meta.env.VITE_SITE_START);
-const startYear = ref(
-  import.meta.env.VITE_SITE_START?.length >= 4 ?
-  import.meta.env.VITE_SITE_START.substring(0, 4) : null
-);
-const siteIcp = ref(import.meta.env.VITE_SITE_ICP);
-const siteAuthor = ref(import.meta.env.VITE_SITE_AUTHOR);
+// 加载配置数据（构建期 env 常量，无需响应式）
+const startYear = import.meta.env.VITE_SITE_START?.length >= 4 ?
+  import.meta.env.VITE_SITE_START.substring(0, 4) : null;
+const siteIcp = import.meta.env.VITE_SITE_ICP;
+const siteAuthor = import.meta.env.VITE_SITE_AUTHOR;
 const { siteUrlFull: siteUrl } = useSiteUrl();
 
 // 歌曲进度条

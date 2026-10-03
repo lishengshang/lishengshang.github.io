@@ -51,13 +51,19 @@
   </div>
 </template>
 
+<script lang="ts">
+import { parseChangelog } from "@/utils/changelog";
+import changelogRaw from "@/../CHANGELOG.md?raw";
+
+// 更新日志：构建期读取仓库 CHANGELOG（?raw 打包进产物），模块级解析一次，设置页每次挂载不重复解析
+const upData = parseChangelog(changelogRaw);
+</script>
+
 <script setup lang="ts">
 import { CloseOne, SettingTwo, GithubOne, AddOne, Bug } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
 import Set from "@/components/Set.vue";
-import { parseChangelog } from "@/utils/changelog";
-import changelogRaw from "@/../CHANGELOG.md?raw";
 
 const store = mainStore();
 const closeShow = ref(false);
@@ -68,9 +74,6 @@ const appGithub = import.meta.env.VITE_APP_GITHUB;
 
 // 站点链接
 const { siteUrl } = useSiteUrl();
-
-// 更新日志：构建期读取仓库 CHANGELOG（?raw 打包进产物），与变更记录保持同源
-const upData = parseChangelog(changelogRaw);
 
 // 跳转源代码仓库
 const jumpTo = (url: string): void => {

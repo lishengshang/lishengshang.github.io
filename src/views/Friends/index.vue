@@ -53,21 +53,11 @@
 
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
-import {
-  Compass,
-  UserFriends,
-  Blog,
-  Cloud,
-  CompactDisc,
-  Book,
-  Fire,
-  LaptopCode,
-  Image,
-  Envelope,
-} from "@vicons/fa";
+import { Compass, UserFriends } from "@vicons/fa";
 import { CloseOne } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import friendLinks from "@/assets/friendLinks.json";
+import { linkIcons } from "@/utils/linkIcons";
 import type { Component } from "vue";
 
 const store = mainStore();
@@ -78,19 +68,8 @@ const applyUrl = `${import.meta.env.VITE_APP_GITHUB}/issues/new?template=friend-
 
 type FriendLink = (typeof friendLinks)[number];
 
-// 友链图标（与 siteLinks 共用 xicons 图标集，未识别时回退指南针）
-const friendIcon: Record<string, Component> = {
-  Blog,
-  Cloud,
-  CompactDisc,
-  Compass,
-  Book,
-  Fire,
-  LaptopCode,
-  Image,
-  Envelope,
-  UserFriends,
-};
+// 友链图标（复用站点列表映射并附加 UserFriends，未识别时回退指南针）
+const friendIcon: Record<string, Component> = { ...linkIcons, UserFriends };
 
 // 打开友链
 const openFriend = (friend: FriendLink): void => {

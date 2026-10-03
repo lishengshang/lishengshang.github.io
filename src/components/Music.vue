@@ -81,6 +81,7 @@ import {
 } from "@icon-park/vue-next";
 import Player from "@/components/Player.vue";
 import { mainStore } from "@/store";
+import debounce from "@/utils/debounce";
 const store = mainStore();
 type PlayerInstance = InstanceType<typeof Player>;
 
@@ -92,11 +93,12 @@ const volumeNum = ref(store.musicVolume ?? 0.7);
 const musicListShow = ref(false);
 const listMounted = ref(false);
 const playerRef = ref<PlayerInstance | null>(null);
-const playerData = reactive({
+// 播放器配置（构建期 env 常量，永不变化，无需响应式）
+const playerData = {
   server: import.meta.env.VITE_SONG_SERVER,
   type: import.meta.env.VITE_SONG_TYPE,
   id: import.meta.env.VITE_SONG_ID,
-});
+};
 
 // 开启播放列表
 const openMusicList = () => {
@@ -160,12 +162,17 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", onKeyDown);
 });
 
-// 监听音量变化
+// 音量持久化防抖：拖动滑条时避免每个步进都同步写 localStorage
+const persistVolume = debounce((value: number) => {
+  store.musicVolume = value;
+}, 300);
+
+// 监听音量变化（播放器即时生效，持久化防抖）
 watch(
   () => volumeNum.value,
   (value) => {
-    store.musicVolume = value;
-    playerRef.value?.changeVolume(store.musicVolume);
+    persistVolume(value);
+    playerRef.value?.changeVolume(value);
   },
 );
 </script>

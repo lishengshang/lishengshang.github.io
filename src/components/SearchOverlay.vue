@@ -18,18 +18,18 @@
         />
       </div>
       <div class="results" ref="resultsRef">
+        <div
+          v-for="(item, idx) in displayList"
+          :key="item.kind + item.name"
+          :class="{ result: true, active: idx === activeIndex }"
+          v-ripple
+          @click="openItem(item)"
+          @mouseenter="activeIndex = idx"
+        >
+          <span class="name text-hidden">{{ item.name }}</span>
+          <span class="tip text-hidden">{{ item.tip }}</span>
+        </div>
         <template v-if="keyword.trim()">
-          <div
-            v-for="(item, idx) in filtered"
-            :key="item.kind + item.name"
-            :class="{ result: true, active: idx === activeIndex }"
-            v-ripple
-            @click="openItem(item)"
-            @mouseenter="activeIndex = idx"
-          >
-            <span class="name text-hidden">{{ item.name }}</span>
-            <span class="tip text-hidden">{{ item.tip }}</span>
-          </div>
           <div
             v-for="engine in searchEngines"
             :key="engine.name"
@@ -40,20 +40,7 @@
             <span class="name text-hidden">使用 {{ engine.name }} 搜索「{{ keyword.trim() }}」</span>
             <span class="tip">外部搜索</span>
           </div>
-          <div v-if="!filtered.length" class="result empty">站内无匹配，可使用下方外部搜索</div>
-        </template>
-        <template v-else>
-          <div
-            v-for="(item, idx) in index"
-            :key="item.kind + item.name"
-            :class="{ result: true, active: idx === activeIndex }"
-            v-ripple
-            @click="openItem(item)"
-            @mouseenter="activeIndex = idx"
-          >
-            <span class="name text-hidden">{{ item.name }}</span>
-            <span class="tip text-hidden">{{ item.tip }}</span>
-          </div>
+          <div v-if="!displayList.length" class="result empty">站内无匹配，可使用下方外部搜索</div>
         </template>
       </div>
     </div>

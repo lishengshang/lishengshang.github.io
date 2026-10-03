@@ -23,5 +23,8 @@ export const useSiteUrl = () => {
     return url;
   });
 
-  return { siteUrl, siteUrlFull };
+  // 艺术字文本：优先 VITE_SITE_LOGO_TEXT，回退域名首段（Right / Message 共用）
+  const logoText = computed(() => import.meta.env.VITE_SITE_LOGO_TEXT || siteUrl.value[0]);
+
+  return { siteUrl, siteUrlFull, logoText };
 };

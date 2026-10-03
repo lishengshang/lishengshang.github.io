@@ -49,8 +49,8 @@ interface APlayerInstance {
 // 获取播放器 DOM
 const player = ref<APlayerInstance | null>(null);
 
-// 歌曲播放列表
-const playList = ref<PlayerItem[]>([]);
+// 歌曲播放列表（整组替换，无需深度响应式）
+const playList = shallowRef<PlayerItem[]>([]);
 
 // author 前缀清理定时器（卸载时清理，避免触碰已卸载组件的 DOM）
 const stripTimeout = ref<ReturnType<typeof setTimeout> | null>(null);

@@ -18,10 +18,8 @@ import Func from "@/views/Func/index.vue";
 import Link from "@/components/Links.vue";
 const store = mainStore();
 
-// 站点链接
-const { siteUrl } = useSiteUrl();
-// 站名艺术字（未配置时回退为域名第一段）
-const logoText = import.meta.env.VITE_SITE_LOGO_TEXT || siteUrl.value[0];
+// 站名艺术字（未配置时回退为域名第一段，useSiteUrl 内统一维护）
+const { logoText } = useSiteUrl();
 </script>
 
 <style lang="scss" scoped>
