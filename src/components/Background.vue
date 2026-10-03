@@ -5,6 +5,8 @@
       :src="bgUrl as never"
       class="bg"
       alt="cover"
+      fetchpriority="high"
+      decoding="async"
       :style="{ filter: `blur(${store.wallpaperBlur}px) brightness(${isDark ? 0.55 : 1})` }"
       @load="imgLoadComplete"
       @error="imgLoadError"
