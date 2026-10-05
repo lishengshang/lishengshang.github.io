@@ -20,7 +20,7 @@ This repository supports collaboration across multiple AI Agents. The entry poin
 Simple little homepage, had enough of the original one and made a new one
 </p>
 
-![Homepage](/screenshots/main.jpg)
+![Homepage](./screenshots/main.jpg)
 
 > The logo font (Pacifico) on the home page has been compressed to only include the characters used by the logo; other characters will fall back to the default font.
 > The full font is NOT bundled (the former all-character file was removed); to support all characters, download the full Pacifico font (~315KB) yourself and overwrite `public/font/Pacifico-Regular.ttf`. The subset already covers the Latin characters this site uses. See `public/font/README.md`.

@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-04（第十一场）README 图片路径规范化：两份 README 共 4 处截图引用由根绝对路径 `/screenshots/*.jpg` 改为相对路径 `./screenshots/*.jpg`（QLMarkdown 本地预览不解析以 `/` 开头的路径导致破图，GitHub 虽可显示但本地不可预览；相对路径两端均正常）。纯文档改动，不涉及构建与测试。
 - 2026-10-03（第十场）全仓优化三批落地（feat/perf-batch1/2/3，--no-ff 合入，未推送）：波纹 no-motion DOM 泄漏修复（+3 单测）、壁纸 fetchpriority/setup 提前与字体 preconnect（LCP）、字体 WOFF2 化 -64%、运行时防抖与 shallowRef 精简、一言竞态令牌、PWA 缓存配额、CI 消除 push main 双构建并前置部署门禁、ESLint 全局变量自动同步、配置文件入 typecheck、重复逻辑抽离、字体/加载动画/花瓣日志/loadEnv/nginx 安全头等共 26 项；版本 5.7.0。第二批经 dev 浏览器冒烟（首屏/波纹兜底/搜索浮层/设置页/胶囊四条进度）全过。
 - 2026-10-02（第九场）移动端设置入口落地（切分支 feat/mobile-settings，--no-ff 合入）：标题栏 ⚙ 入口（仅 <721px）、宽度 watch 不再强制关设置页、MoreSet 对齐 EP xs 断点单列堆叠；三视口（390/730/1280）详细验证，过程中抓到并修复媒体查询误嵌套与断点错位两个自产问题。
 - 2026-10-02（第八场）一、二梯队批量落地（切分支 feat/small-batch，验证后合入 main）：分支清理（origin/dev + 6 条本地分支）、package.json 元信息 define 注入、搜索浮层 ↑↓ 键盘导航（+3 组件测试）、友链申请 issue 模板与页面入口、EP 2.14.7 实证复测（摇树仍未修复，继续锁 2.13.0）；Docker 本机无环境未实测。合并初版为 fast-forward，按用户要求 redo 为 --no-ff 合并提交（`3f9ec70`）并恢复分支引用。**持久约定：功能分支一律 --no-ff 合入 main（保留分支拓扑），分支引用本地与远端均保留不删。**

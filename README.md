@@ -20,7 +20,7 @@
 简单的小主页，原来的看够了，重新弄了一个
 </p>
 
-![無名の主页](/screenshots/main.jpg)
+![無名の主页](./screenshots/main.jpg)
 
 > 主页的 Logo 字体（Pacifico）已经过压缩，仅包含本站 Logo 所需字符，若使用其他字符会回退为默认字体。
 > 完整字体未随仓库内置（原 all 字体文件已移除）；如需全部字符，请自行下载 Pacifico 全量字体（约 315KB）覆盖 `public/font/Pacifico-Regular.ttf`，子集已覆盖本站所需 Latin 字符，详见 `public/font/README.md`。
@@ -56,11 +56,11 @@
 
 - 在成功 `fork` 仓库后，前往 `Actions` 页面，若您是首次开启，则会出现下面的提示，点击开启
 
-  ![步骤1](/screenshots/step1.jpg)
+  ![步骤1](./screenshots/step1.jpg)
 
 - 然后在仓库中进行任意修改后均会触发工作流的运行，在工作流完成后，会在下方生成一个可供下载的压缩包，这就是构建出的静态文件，可自行上传至服务器
 
-  ![步骤2](/screenshots/step2.jpg)
+  ![步骤2](./screenshots/step2.jpg)
 
 ### ⚙️ 手动部署
 
