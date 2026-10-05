@@ -103,6 +103,11 @@
 
 - 四门禁全绿后随批推送上线（沿用用户既定授权），推送后线上核验 og/robots 并追记。
 
+##### 推送与线上核验（同日追记）
+
+- 合并提交 `470dc67`，推送 `2fa6240..470dc67` 触发 Deploy，双绿（run 37345372876）。
+- 线上核验：首页 200；index.html 含 8 个 og 标签（title/description/url/image 值注入正确）；`/robots.txt` 200 且规则生效；`/images/og.jpg` 200。
+
 ### 2026-10-05（第十三场）
 
 #### P2 机械批（feat/p2-batch 分支，--no-ff 合入 main）
