@@ -46,6 +46,9 @@ export default defineConfig(({ mode }) => {
               cacheName: "js-css-cache",
               // 限制条目并在配额告急时自动清理，避免缓存随浏览无限累积
               expiration: { maxEntries: 60, purgeOnQuotaError: true },
+              // 仅缓存显式 200（本仓 js/css 均为同源产物，状态码可见），
+              // 接口抖动期的 4xx/5xx 响应不再被 CacheFirst 长期缓存
+              cacheableResponse: { statuses: [200] },
             },
           },
           {
@@ -54,6 +57,9 @@ export default defineConfig(({ mode }) => {
             options: {
               cacheName: "image-cache",
               expiration: { maxEntries: 60, purgeOnQuotaError: true },
+              // 外部随机壁纸为 no-cors 跨域请求（opaque 响应 status=0）需放行 0；
+              // 其余异常状态不再写入缓存，避免壁纸源抖动时缓存住失败图
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],
