@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-06（第十四场）轻量工程包落地（feat/light-batch，--no-ff 合入）：og 分享卡片全套（og:image 为 main.jpg 居中裁切 1200x630/110KB，分享链接从裸网址变卡片）+ robots.txt（排除 sw.js/manifest）+ Sakura 画布 DPR 封顶 2（3x 屏填充率减半）+ esbuild 替代 terser（构建 3.0s→2.1s，gzip 总量 +约 7KB 属已知压缩率差异）+ manualChunks 细分 vue 组（vendor 285→203KB，precache +1 entry 系新增 chunk）+ terser 依赖移除 + Set/MoreSet 组件测试补位（13 文件 51 用例，+7）。a11y 系统改造与 Box 内容化仍待拍板/排期。四门禁全绿，随批推送上线。
 - 2026-10-05（第十三场）P2 机械批落地（feat/p2-batch，--no-ff 合入）：global.scss 纯 mixin 化（响应式样式移入 style.scss 单次发射，max-width 重复 25→4 处，.xs-hidden 死规则删除）、brotli 产物关闭（nginx:alpine 无 brotli 模块）、env.d.ts 全量 ImportMetaEnv 声明（暴露并修正 Footer/Message 类型缺口）、图标库 devDeps→deps（--prod 构建修复）、QQ 音乐解析逐级判空、setPlayerState→setPlayerPaused 语义命名、Friends closeShow 死代码删除 + musicClick 语义入 .env.example（用户拍板保留功能）、SW 缓存补 cacheableResponse、vitest 补 Components、CI Node 22 统一 + timeout + pnpm action SHA 固定 + dependabot docker、文档四连修（字体指引 ttf→woff2×3 / Star 徽章仓库名 / EN 版 API / index.html 图标声明）。a11y 系统改造按用户拍板留待下一批。四门禁全绿，随批推送上线。
 - 2026-10-05（第十二场）全面 review + 修复包落地（fix/review-fixpack，--no-ff 合入）：全源码 + 工程化双路复审发现 1 个 P0（Footer `v-once` 与 `v-if/v-else` 同用致歌词永不显示，5.7.0 未推送批次引入的回归，经项目自带编译器实证）与多项 P1/P2；本批修复 P0（+Footer 组件测试 4 例，含「加回 v-once 必失败」的回归验证）、Sakura 花瓣图竞态泄漏、SearchOverlay 外部引擎键盘不可达（引擎并入统一导航列表 + 打开后关闭，+1 测试）、页脚孤立「&」、3 处 noopener、TimeCapsule 建站日期时区解析、壁纸定时器清理、build.yml 最小权限、`.env.example` 真源注释；本地 `.env` 以 `.env.example` 全量对齐（用户拍板）。四门禁全绿（11 文件 44 用例）。随批推送上线 5.7.0（推送与线上核验结果见下文追记）。
 - 2026-10-04（第十一场）README 图片路径规范化：两份 README 共 4 处截图引用由根绝对路径 `/screenshots/*.jpg` 改为相对路径 `./screenshots/*.jpg`（QLMarkdown 本地预览不解析以 `/` 开头的路径导致破图，GitHub 虽可显示但本地不可预览；相对路径两端均正常）。纯文档改动，不涉及构建与测试。
@@ -67,6 +68,40 @@
 5. **需拍板的备选项**（见第十场记录「未落地项」）：esbuild minify / manualChunks 细分 / 字体自托管 / Sakura dpr 封顶 / robots.txt / og: meta / store 字面量联合。
 
 ## 会话记录
+
+### 2026-10-06（第十四场）
+
+#### 轻量工程包（feat/light-batch 分支，--no-ff 合入 main）
+
+##### 摘要
+
+用户对「下一阶段做哪个」追问三项含义后未再选框（按推荐项执行），落地 P2 备选清单中的轻量组：
+
+1. **og 分享卡片**：index.html 补 og:type/site_name/title/description/url/image/尺寸全套（env 占位注入）；og:image 为 `screenshots/main.jpg` 居中裁切 1200x630 → `public/images/og.jpg`（110KB，sips 生成）；仅抓取器按需拉取，未入 precache；`.env.example` 注明 `VITE_SITE_URL` 需填不带协议的域名（og:url 拼接 https://）。
+2. **robots.txt**：全站放行、排除 sw.js/manifest。
+3. **Sakura 画布 DPR 封顶 2**：3x+ 屏画布填充率约减半（GPU/功耗），肉眼无差。
+4. **esbuild 替代 terser**：构建 3.0s→2.1s；`esbuild.pure: ["console.log"]` 等效 pure_funcs（dist 实测无真实调用残留——唯一次匹配是更新日志组件里的文案字符串）；移除 terser devDependency；gzip 总量 +约 7KB 属两器已知压缩率差异。
+5. **manualChunks 细分**：新增 vue 组（`/node_modules/(vue|@vue|vue-demi|pinia)/`），vendor 285→203KB、vue chunk 84.84KB（33.70 gz）；precache 26→27 entries 系新增 chunk，总量 637.24→641.61 KiB。
+6. **Set/MoreSet 组件测试补位**（+2 文件 7 用例，总 13 文件 51 用例）：Set 四分组渲染 + 樱花开关/外观主题/壁纸 radio 的 v-model 写回 store；MoreSet 版本号/站点标识/更新日志非空/关闭钮 hover 显隐与关闭链路。配套 vitest AutoImport 补 ElementPlusResolver（importStyle:false，否则 Set.vue 的 ElMessage 在测试环境 ReferenceError）。
+
+##### 涉及文件
+
+- `index.html`、`public/robots.txt`（新增）、`public/images/og.jpg`（新增）、`.env.example`、`src/components/Sakura.vue`、`vite.config.ts`、`package.json`、`pnpm-lock.yaml`、`vitest.config.ts`、`src/components/Set.test.ts`（新增）、`src/views/MoreSet/index.test.ts`（新增）、`CHANGELOG.md`、本文件
+
+##### 验证
+
+- 四门禁 lint:check / typecheck / test（13 文件 51 用例）/ build 全绿（2.07s）。
+- 产物核验：dist/index.html 八个 og 标签值注入正确；dist/robots.txt 在位；og.jpg 与 robots.txt 均未入 precache；bundle 实测 `Math.min(window.devicePixelRatio||1,2)`；chunk 拓扑 vue/element-plus/aplayer/vendor 四组。
+
+##### 风险与缺口
+
+- esbuild 压缩率低于 terser（gzip 总量 +约 7KB），换来构建提速与更简单工具链，属有意取舍。
+- og:image 为截图裁切图，非专门设计卡片图；日后可换 1200x630 品牌图。
+- `.el-radio-group` 全局居中（≤1380px）与 Set.vue scoped 的 `justify-content: space-between` 并存：scoped 副本特异性更高仍生效，行为不变。
+
+##### 下一步
+
+- 四门禁全绿后随批推送上线（沿用用户既定授权），推送后线上核验 og/robots 并追记。
 
 ### 2026-10-05（第十三场）
 
