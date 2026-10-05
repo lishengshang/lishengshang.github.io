@@ -4,7 +4,12 @@
 
 ## [Unreleased]
 
+### 新功能
+- Open Graph 分享卡片：主页链接在微信/Telegram/X 等平台展示「标题 + 简介 + 截图卡片」（og:image 为 1200x630 站点截图，仅抓取器按需拉取）；新增 `robots.txt`（全站放行，排除 sw.js/manifest）
+
 ### 性能优化
+- 樱花画布 DPR 封顶 2：3x+ 高分屏画布填充率约减半，花瓣清晰度肉眼无差
+- 压缩器换 esbuild：构建 3.0s → 2.1s（gzip 总量 +约 7KB 属压缩率差异）；`manualChunks` 细分 vue 组（vue/@vue/pinia 独立 chunk，依赖升级时缓存失效面更小，vendor 285→203KB）
 - `global.scss` 纯 mixin 化：响应式布局样式移入 `style.scss` 全局单次发射（此前经 `additionalData` 注入每个 SFC 的 style 块，`max-width:1200px` 在产物中重复 25 处，治理后 4 处）；删除无消费者的 `.xs-hidden` 规则
 - 压缩插件关闭 brotli 产物：nginx:alpine 无 brotli 模块、GitHub Pages 亦不消费，每次构建白产 17 个 `.br` 死产物
 - 壁纸 `img` 增加 `fetchpriority="high"` 与 `decoding="async"`,壁纸 URL 提前至组件 setup 同步初始化,浏览器首帧即可发起壁纸请求(LCP 提前);字体 CDN 增加 preconnect 提前建连
@@ -28,6 +33,8 @@
 ### 工程
 - CI 消除 push main 双构建:Build 检查改为仅 PR 触发,部署流水线前置 lint/test/typecheck 门禁(同一提交构建一次且门禁覆盖部署)
 - Build 工作流补最小权限声明（`permissions: contents: read`）；`.env.example` 注明其为 CI 生产配置真源（`cp .env.example .env` 构建，本地 `.env` 与其漂移以本文件为准）
+- terser 由 devDependencies 移除（压缩已换 esbuild）；`.env.example` 注明 `VITE_SITE_URL` 需填不带协议的域名
+- 新增 Set / MoreSet 组件测试 7 例（设置页核心交互首次入组件测试：开关/主题/壁纸 radio 写回 store、版本号与更新日志渲染、关闭链路），vitest AutoImport 补 ElementPlusResolver 与主配置对齐
 - `env.d.ts` 补全 ImportMetaEnv 全量声明（约 20 个 VITE_* 变量离开 any 兜底，拼写错误 typecheck 即暴露），Footer/Message 相应改为类型安全写法
 - 运行时图标库（@icon-park/vue-next、@vicons/*）由 devDependencies 归位 dependencies（`--prod` 安装后可正常构建）
 - CI Node 统一 22（与 Dockerfile node:22-alpine、engines >=22 对齐）；workflow job 补 `timeout-minutes: 15`；pnpm/action-setup 按 commit SHA 固定；dependabot 补 docker 生态并归并 minor/patch 更新
