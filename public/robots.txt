@@ -1,0 +1,5 @@
+# 站点对所有搜索引擎开放抓取（PWA 相关资源无需收录）
+User-agent: *
+Allow: /
+Disallow: /sw.js
+Disallow: /manifest.webmanifest
