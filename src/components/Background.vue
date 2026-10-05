@@ -18,6 +18,7 @@
         class="down"
         :href="bgUrl as never"
         target="_blank"
+        rel="noopener noreferrer"
       >
         下载壁纸
       </a>
@@ -56,8 +57,9 @@ const changeBg = (type: string | number) => {
   }
 };
 
-// 图片加载完成
+// 图片加载完成（先清理上一轮定时器再注册，避免快速连续触发时的覆盖竞态）
 const imgLoadComplete = () => {
+  if (imgTimeout.value !== null) clearTimeout(imgTimeout.value);
   imgTimeout.value = setTimeout(
     () => {
       store.setImgLoadStatus(true);
