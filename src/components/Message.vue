@@ -41,10 +41,10 @@ const siteLogo = import.meta.env.VITE_SITE_MAIN_LOGO;
 // 站名艺术字（未配置时回退为域名第一段，useSiteUrl 内统一维护）
 const { logoText } = useSiteUrl();
 
-// 简介区域文字
+// 简介区域文字（env 可选，缺省回退空串）
 const descriptionText = reactive({
-  hello: import.meta.env.VITE_DESC_HELLO,
-  text: import.meta.env.VITE_DESC_TEXT,
+  hello: import.meta.env.VITE_DESC_HELLO ?? "",
+  text: import.meta.env.VITE_DESC_TEXT ?? "",
 });
 
 // 切换右侧功能区
@@ -67,13 +67,10 @@ const changeBox = () => {
 watch(
   () => store.boxOpenState,
   (value) => {
-    if (value) {
-      descriptionText.hello = import.meta.env.VITE_DESC_HELLO_OTHER;
-      descriptionText.text = import.meta.env.VITE_DESC_TEXT_OTHER;
-    } else {
-      descriptionText.hello = import.meta.env.VITE_DESC_HELLO;
-      descriptionText.text = import.meta.env.VITE_DESC_TEXT;
-    }
+    descriptionText.hello =
+      (value ? import.meta.env.VITE_DESC_HELLO_OTHER : import.meta.env.VITE_DESC_HELLO) ?? "";
+    descriptionText.text =
+      (value ? import.meta.env.VITE_DESC_TEXT_OTHER : import.meta.env.VITE_DESC_TEXT) ?? "";
   },
 );
 </script>

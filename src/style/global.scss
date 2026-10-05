@@ -1,36 +1,13 @@
-// scss 全局变量
+// scss 全局变量与 mixin（纯定义，无副作用）
+//
+// 本文件经 vite additionalData 注入每一个含 scss 的 SFC style 块：
+// 只允许放 mixin/变量等"编译期定义"——若在此写实际样式规则，
+// 会被复制进每个组件的 style 产物（scoped 化后成为成片的死 CSS）。
+// 实际的全局响应式样式请写在 style.scss（main.ts 引入，全站仅发射一次）。
 
 // 响应式布局
 @mixin changeWidth($maxWidth: 1200px) {
   .container {
     max-width: $maxWidth;
-  }
-}
-
-// 首次调用
-@include changeWidth;
-
-/* 小于1380px时 */
-@media (max-width: 1380px) {
-  .el-radio-group {
-    justify-content: center !important;
-  }
-}
-
-/* 小于1280px时 */
-@media (max-width: 1280px) {
-  @include changeWidth($maxWidth: 1100px);
-}
-
-/* 小于992px时 */
-@media (max-width: 992px) {
-  @include changeWidth($maxWidth: 900px);
-}
-
-/* 小于720px时 */
-@media (max-width: 720px) {
-  // 隐藏元素
-  .xs-hidden {
-    display: none;
   }
 }

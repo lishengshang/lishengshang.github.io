@@ -147,7 +147,7 @@ const onPlay = () => {
   if (!playerInstance) return;
   playIndex.value = playerInstance.aplayer.index;
   // 播放状态
-  store.setPlayerState(playerInstance.audioRef.paused);
+  store.setPlayerPaused(playerInstance.audioRef.paused);
   // 储存播放器信息
   store.setPlayerData(playList.value[playIndex.value].name, playList.value[playIndex.value].artist);
   ElMessage({
@@ -164,7 +164,7 @@ const onPlay = () => {
 // 暂停
 const onPause = () => {
   if (!player.value) return;
-  store.setPlayerState(player.value.audioRef.paused);
+  store.setPlayerPaused(player.value.audioRef.paused);
 };
 
 // 音频时间更新事件

@@ -13,8 +13,6 @@
           theme="filled"
           size="28"
           fill="#ffffff60"
-          @mouseenter="closeShow = true"
-          @mouseleave="closeShow = false"
           @click="store.friendsOpenState = false"
         />
       </div>
@@ -61,7 +59,6 @@ import { linkIcons } from "@/utils/linkIcons";
 import type { Component } from "vue";
 
 const store = mainStore();
-const closeShow = ref(false);
 
 // 友链申请入口（issue 模板：.github/ISSUE_TEMPLATE/friend-request.yml）
 const applyUrl = `${import.meta.env.VITE_APP_GITHUB}/issues/new?template=friend-request.yml`;

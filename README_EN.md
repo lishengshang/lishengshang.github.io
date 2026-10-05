@@ -23,7 +23,7 @@ Simple little homepage, had enough of the original one and made a new one
 ![Homepage](./screenshots/main.jpg)
 
 > The logo font (Pacifico) on the home page has been compressed to only include the characters used by the logo; other characters will fall back to the default font.
-> The full font is NOT bundled (the former all-character file was removed); to support all characters, download the full Pacifico font (~315KB) yourself and overwrite `public/font/Pacifico-Regular.ttf`. The subset already covers the Latin characters this site uses. See `public/font/README.md`.
+> The full font is NOT bundled (the former all-character file was removed); to support all characters, download the full Pacifico font and convert it to woff2 (e.g. with fonttools), then overwrite `public/font/Pacifico-Regular.woff2` — the `@font-face` rules only reference woff2. See `public/font/README.md`.
 
 ### Features
 
@@ -108,10 +108,9 @@ Now using `HarmonyOS Sans` open source font, using font splitting to improve loa
 
 ### API
 
-- [韩小韩 WebAPI 接口](https://api.vvhan.com/)
-- [搏天 API](https://api.btstu.cn/doc/sjbz.php)
+- [Alcy API](https://t.alcy.cc/)（random wallpaper）
 - [Hitokoto 一言](https://hitokoto.cn/)
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=lishengshang/homepage&type=Date)](https://star-history.com/#lishengshang/homepage&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=lishengshang/lishengshang.github.io&type=Date)](https://star-history.com/#lishengshang/lishengshang.github.io&Date)

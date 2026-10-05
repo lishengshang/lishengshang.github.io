@@ -5,6 +5,8 @@
 ## [Unreleased]
 
 ### 性能优化
+- `global.scss` 纯 mixin 化：响应式布局样式移入 `style.scss` 全局单次发射（此前经 `additionalData` 注入每个 SFC 的 style 块，`max-width:1200px` 在产物中重复 25 处，治理后 4 处）；删除无消费者的 `.xs-hidden` 规则
+- 压缩插件关闭 brotli 产物：nginx:alpine 无 brotli 模块、GitHub Pages 亦不消费，每次构建白产 17 个 `.br` 死产物
 - 壁纸 `img` 增加 `fetchpriority="high"` 与 `decoding="async"`,壁纸 URL 提前至组件 setup 同步初始化,浏览器首帧即可发起壁纸请求(LCP 提前);字体 CDN 增加 preconnect 提前建连
 - 本地字体 TTF → WOFF2(44.6 KB → 15.9 KB,-64%),`@font-face` 同步切换
 - 运行时精简:歌单/时钟/时光胶囊数据改 `shallowRef`,永不变化的 env 配置去除响应式包装;resize 写入 store 与音量持久化增加防抖;Loading 动画完成后暂停三组无限旋转动画
@@ -18,12 +20,20 @@
 - 页脚备案号为空时备案段整体不渲染（原先渲染孤立的「&」）；补齐 3 处外链 `rel="noopener noreferrer"`（下载壁纸 / GitHub 主页 / 备案链接），与站内既有惯例对齐
 - 时光胶囊建站日期按本地时区解析：裸 `new Date("YYYY-MM-DD")` 按 UTC 零点解析，UTC 减时区访问者的「苟活天数」统计差一天；仅年份格式按当年 1 月 1 日本地零点
 - 壁纸加载完成定时器先清理旧实例再注册，消除快速连续触发时的覆盖竞态隐患
+- QQ 音乐解析逐级判空：Meting 返回的 sip 空数组、midurlinfo 与歌单不等长、条目 url 缺失时不再抛无定位的 TypeError，改为带语义的错误信息（外层统一降级为用户提示）
+- SW 运行时缓存补 `cacheableResponse`：js/css 仅缓存显式 200，图片放行跨域 opaque(status=0) 并排除错误状态，源站抖动期不再缓存失败响应
 - 一言请求增加令牌防护:防抖间隙外的慢响应后到时不再覆盖新文本
 - 播放器 author 前缀清理定时器在组件卸载时回收,不再触碰已卸载 DOM
 
 ### 工程
 - CI 消除 push main 双构建:Build 检查改为仅 PR 触发,部署流水线前置 lint/test/typecheck 门禁(同一提交构建一次且门禁覆盖部署)
 - Build 工作流补最小权限声明（`permissions: contents: read`）；`.env.example` 注明其为 CI 生产配置真源（`cp .env.example .env` 构建，本地 `.env` 与其漂移以本文件为准）
+- `env.d.ts` 补全 ImportMetaEnv 全量声明（约 20 个 VITE_* 变量离开 any 兜底，拼写错误 typecheck 即暴露），Footer/Message 相应改为类型安全写法
+- 运行时图标库（@icon-park/vue-next、@vicons/*）由 devDependencies 归位 dependencies（`--prod` 安装后可正常构建）
+- CI Node 统一 22（与 Dockerfile node:22-alpine、engines >=22 对齐）；workflow job 补 `timeout-minutes: 15`；pnpm/action-setup 按 commit SHA 固定；dependabot 补 docker 生态并归并 minor/patch 更新
+- vitest 配置补 Components 插件与主配置对齐（否则被测组件里的 el-* 以未知元素渲染，断言可能静默失真）
+- `setPlayerState` 更名 `setPlayerPaused`（入参即 audio.paused，消除「传播放状态再内部取反」的语义陷阱）；删除 Friends 页 closeShow 死代码；`.env.example` 标注「音乐」条目与设置页开关的联动语义
+- 文档与实现脱节清理：字体覆盖指引 ttf→woff2（两份 README + public/font/README）、Star History 徽章仓库名修正、README_EN API 列表对齐中文版、index.html 清理 rel=bookmark 误用与废弃的 apple-touch-icon-precomposed
 - ESLint 全局变量改由 unplugin-auto-import 自动生成清单(`.eslintrc-auto-import.json` 入库)同步,移除手工维护与死配置(`$openList`/`vue`)
 - `vite.config.ts` / `vitest.config.ts` 纳入 typecheck 范围
 - 重复逻辑抽离:站点/友链图标映射统一到 `utils/linkIcons.ts`,艺术字文本并入 `useSiteUrl.logoText`;搜索浮层两分支模板合并(输出逐字节一致);合并重复的 `.cards` 样式定义并清理注释死样式

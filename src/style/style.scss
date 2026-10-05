@@ -195,6 +195,29 @@ a:hover {
   }
 }
 
+// ===== 全局响应式布局 =====
+// 说明：以下规则原本写在 global.scss，而它经 vite additionalData 注入每个 SFC 的
+// style 块，导致同一规则在产物中随组件重复发射（max-width 规则实测 25 处）。
+// 移到本文件（main.ts 全局引入一次，非 scoped）后全站仅发射一份。
+// 注：原 720px 断点的 .xs-hidden 因模板无任何消费者，随本次治理一并删除。
+@include changeWidth; // .container max-width: 1200px
+
+@media (max-width: 1380px) {
+  .el-radio-group {
+    justify-content: center !important;
+  }
+}
+
+/* 小于1280px时 */
+@media (max-width: 1280px) {
+  @include changeWidth($maxWidth: 1100px);
+}
+
+/* 小于992px时 */
+@media (max-width: 992px) {
+  @include changeWidth($maxWidth: 900px);
+}
+
 // 自定义鼠标
 #cursor {
   position: fixed;

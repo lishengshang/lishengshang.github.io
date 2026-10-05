@@ -5,9 +5,9 @@
            首次渲染后条件永不再求值，播放态切换歌词的功能会整体失效 -->
       <div v-if="!store.playerState || !store.playerLrcShow" class="power">
         <span>
-          <span :class="startYear < fullYear ? 'c-hidden' : 'hidden'">Copyright&nbsp;</span>
+          <span :class="showStartYear ? 'c-hidden' : 'hidden'">Copyright&nbsp;</span>
           &copy;
-          <span v-if="startYear < fullYear"
+          <span v-if="showStartYear"
             class="site-start">
             {{ startYear }}
             -
@@ -64,9 +64,10 @@ import { useSiteUrl } from "@/composables/useSiteUrl";
 const store = mainStore();
 const fullYear = new Date().getFullYear();
 
-// 加载配置数据（构建期 env 常量，无需响应式）
-const startYear = import.meta.env.VITE_SITE_START?.length >= 4 ?
-  import.meta.env.VITE_SITE_START.substring(0, 4) : null;
+// 建站年份（"YYYY-MM-DD" 取前 4 位或裸 "YYYY"），未配置时为空串
+const siteStart = import.meta.env.VITE_SITE_START ?? "";
+const startYear = siteStart.length >= 4 ? siteStart.slice(0, 4) : "";
+const showStartYear = /^\d{4}$/.test(startYear) && Number(startYear) < fullYear;
 const siteIcp = import.meta.env.VITE_SITE_ICP;
 const siteAuthor = import.meta.env.VITE_SITE_AUTHOR;
 const { siteUrlFull: siteUrl } = useSiteUrl();
