@@ -19,29 +19,27 @@
       </div>
       <div class="results" ref="resultsRef">
         <div
-          v-for="(item, idx) in displayList"
-          :key="item.kind + item.name"
+          v-for="(row, idx) in rows"
+          :key="row.type === 'item' ? row.item.kind + row.item.name : `engine-${row.engine.name}`"
           :class="{ result: true, active: idx === activeIndex }"
           v-ripple
-          @click="openItem(item)"
+          @click="openRow(row)"
           @mouseenter="activeIndex = idx"
         >
-          <span class="name text-hidden">{{ item.name }}</span>
-          <span class="tip text-hidden">{{ item.tip }}</span>
-        </div>
-        <template v-if="keyword.trim()">
-          <div
-            v-for="engine in searchEngines"
-            :key="engine.name"
-            class="result"
-            v-ripple
-            @click="openEngine(engine)"
-          >
-            <span class="name text-hidden">使用 {{ engine.name }} 搜索「{{ keyword.trim() }}」</span>
+          <template v-if="row.type === 'item'">
+            <span class="name text-hidden">{{ row.item.name }}</span>
+            <span class="tip text-hidden">{{ row.item.tip }}</span>
+          </template>
+          <template v-else>
+            <span class="name text-hidden">
+              使用 {{ row.engine.name }} 搜索「{{ keyword.trim() }}」
+            </span>
             <span class="tip">外部搜索</span>
-          </div>
-          <div v-if="!displayList.length" class="result empty">站内无匹配，可使用下方外部搜索</div>
-        </template>
+          </template>
+        </div>
+        <div v-if="keyword.trim() && !filtered.length" class="result empty">
+          站内无匹配，可使用外部搜索
+        </div>
       </div>
     </div>
   </div>
@@ -66,16 +64,29 @@ const resultsRef = ref<HTMLElement | null>(null);
 const index = buildSearchIndex();
 const filtered = computed(() => filterSearchIndex(index, keyword.value));
 
-// 键盘导航的当前选中项（空关键词浏览全量索引，有关键词浏览过滤结果）
+// 键盘导航的当前选中项
 const activeIndex = ref(0);
-const displayList = computed(() => (keyword.value.trim() ? filtered.value : index));
+// 结果行统一模型：站内条目 + （有关键词时的）外部引擎。
+// 引擎行并入同一列表后 ↑↓/回车 即可触达外部搜索——原先引擎行独立渲染，键盘不可达
+type ResultRow =
+  | { type: "item"; item: SearchItem }
+  | { type: "engine"; engine: SearchEngine };
+
+const rows = computed<ResultRow[]>(() => {
+  const base = keyword.value.trim() ? filtered.value : index;
+  const list: ResultRow[] = base.map((item) => ({ type: "item", item }));
+  if (keyword.value.trim()) {
+    for (const engine of searchEngines) list.push({ type: "engine", engine });
+  }
+  return list;
+});
 watch(keyword, () => {
   activeIndex.value = 0;
 });
 
 // 上下移动选中项（循环滚动），并保持选中项在可视区内
 const moveActive = (delta: number): void => {
-  const total = displayList.value.length;
+  const total = rows.value.length;
   if (!total) return;
   activeIndex.value = (activeIndex.value + delta + total) % total;
   nextTick(() => {
@@ -109,15 +120,26 @@ const openItem = (item: SearchItem): void => {
   }
 };
 
-// 回车打开当前选中项
-const openActive = (): void => {
-  const item = displayList.value[activeIndex.value];
-  if (item) openItem(item);
+// 外部搜索引擎跳转（打开后同步关闭浮层，与站内条目行为一致）
+const openEngine = (engine: SearchEngine): void => {
+  window.open(
+    engine.url + encodeURIComponent(keyword.value.trim()),
+    "_blank",
+    "noopener,noreferrer",
+  );
+  close();
 };
 
-// 外部搜索引擎跳转
-const openEngine = (engine: SearchEngine): void => {
-  window.open(engine.url + encodeURIComponent(keyword.value.trim()), "_blank", "noopener,noreferrer");
+// 打开一行结果（站内条目或外部引擎）
+const openRow = (row: ResultRow): void => {
+  if (row.type === "item") openItem(row.item);
+  else openEngine(row.engine);
+};
+
+// 回车打开当前选中项
+const openActive = (): void => {
+  const row = rows.value[activeIndex.value];
+  if (row) openRow(row);
 };
 </script>
 
