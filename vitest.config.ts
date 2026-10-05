@@ -14,9 +14,10 @@ export default defineConfig({
       imports: ["vue"],
     }),
     // el-* 组件为编译期自动解析：缺了它，被测组件模板里的 Element Plus 组件
-    // 会以未知元素渲染，断言可能静默失真（与主配置保持一致）
+    // 会以未知元素渲染，断言可能静默失真（与主配置保持一致）。
+    // importStyle 关闭：测试环境不加载 EP 样式（jsdom 无法处理 theme-chalk CSS 导入）
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({ importStyle: false })],
     }),
   ],
   resolve: {
