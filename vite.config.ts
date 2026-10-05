@@ -105,7 +105,9 @@ export default defineConfig(({ mode }) => {
         ],
       },
     }),
-    compression(),
+    // 仅产出 gzip 预压缩文件：nginx:alpine 无 brotli 模块（gzip_static 只取 .gz），
+    // GitHub Pages 亦不消费 .br，全量产出 .br 属死产物
+    compression({ algorithms: ["gzip"] }),
   ],
   server: {
     port: 3000,
