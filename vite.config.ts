@@ -135,20 +135,20 @@ export default defineConfig(({ mode }) => {
       },
     },
   },
+  // esbuild 压缩与 terser 产物相当而构建显著更快；pure 标记使无用 console.log 被消除
+  esbuild: {
+    pure: ["console.log"],
+  },
   build: {
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        pure_funcs: ["console.log"],
-      },
-    },
     rollupOptions: {
       output: {
-        // vendor 分包：依赖升级时只失效对应 chunk，提升浏览器缓存复用
+        // 分包：依赖升级时只失效对应 chunk，提升浏览器缓存复用
+        // vue 组（vue/@vue/pinia 系）最稳定独立成组，swiper/dayjs 等留在 vendor
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
           if (id.includes("element-plus") || id.includes("@element-plus")) return "element-plus";
           if (id.includes("aplayer")) return "aplayer";
+          if (/\/node_modules\/(vue|@vue|vue-demi|pinia)\//.test(id)) return "vue";
           return "vendor";
         },
       },
