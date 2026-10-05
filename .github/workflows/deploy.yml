@@ -22,20 +22,22 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    # 挂起兜底：实测单次约 1 分钟，15 分钟足够宽裕
+    timeout-minutes: 15
     steps:
       # 检出本仓库源码
       - name: Check out git repository
         uses: actions/checkout@v5
 
-      # 安装 pnpm（版本由 package.json 的 packageManager 字段指定）
+      # 安装 pnpm（版本由 package.json 的 packageManager 字段指定；按 commit SHA 固定防 tag 重推）
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
 
-      # 安装 Node.js
+      # 安装 Node.js（与 Dockerfile 的 node:22-alpine、engines >=22 统一，消除多版本构建缝隙）
       - name: Install Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: "22"
           cache: "pnpm"
 
       # 复制环境变量文件
@@ -72,6 +74,7 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

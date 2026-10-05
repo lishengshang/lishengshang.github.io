@@ -19,6 +19,24 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
+    # 非破坏性更新（minor/patch）归并单个 PR，降低周 PR 噪音
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Docker 基础镜像更新（Dockerfile: node:22-alpine / nginx:alpine）
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "dependencies"
 
   # GitHub Actions 版本更新
   - package-ecosystem: "github-actions"
