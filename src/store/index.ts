@@ -54,7 +54,7 @@ export const mainStore = defineStore("main", {
       mobileOpenState: false, // 移动端开启状态
       mobileFuncState: false, // 移动端功能区开启状态
       setOpenState: false, // 设置页面开启状态
-      playerState: false, // 当前播放状态
+      playerState: false, // 当前播放状态（true = 播放中）
       playerTitle: null, // 当前播放歌曲名
       playerArtist: null, // 当前播放歌手名
       playerLrc: "歌词加载中", // 当前播放歌词
@@ -84,9 +84,9 @@ export const mainStore = defineStore("main", {
         this.mobileFuncState = false;
       }
     },
-    // 更改播放状态
-    setPlayerState(value: boolean) {
-      this.playerState = !value;
+    // 更改播放状态（入参为音频 paused：true = 暂停，与 audioRef.paused 事件语义直通）
+    setPlayerPaused(paused: boolean) {
+      this.playerState = !paused;
     },
     // 更改歌词
     setPlayerLrc(value: string) {
