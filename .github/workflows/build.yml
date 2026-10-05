@@ -7,6 +7,10 @@ on:
     branches:
       - main
 
+# 最小权限：PR 构建只需读仓库（不声明时 GITHUB_TOKEN 取仓库默认权限）
+permissions:
+  contents: read
+
 # 同一分支重复 push 时取消旧的构建
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
