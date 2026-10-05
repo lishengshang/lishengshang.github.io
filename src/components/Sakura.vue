@@ -97,11 +97,11 @@ class Petal {
   }
 }
 
-// 调整画布尺寸（处理 DPR 以保证高清屏清晰）
+// 调整画布尺寸（处理 DPR 以保证高清屏清晰；封顶 2：3x+ 屏幕画布填充率减半，花瓣清晰度肉眼无差）
 const resize = () => {
   const canvas = canvasRef.value!;
   const context = ctx!;
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   width = window.innerWidth;
   height = window.innerHeight;
   canvas.width = width * dpr;
