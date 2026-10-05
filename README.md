@@ -23,7 +23,7 @@
 ![無名の主页](./screenshots/main.jpg)
 
 > 主页的 Logo 字体（Pacifico）已经过压缩，仅包含本站 Logo 所需字符，若使用其他字符会回退为默认字体。
-> 完整字体未随仓库内置（原 all 字体文件已移除）；如需全部字符，请自行下载 Pacifico 全量字体（约 315KB）覆盖 `public/font/Pacifico-Regular.ttf`，子集已覆盖本站所需 Latin 字符，详见 `public/font/README.md`。
+> 完整字体未随仓库内置（原 all 字体文件已移除）；如需全部字符，请自行下载 Pacifico 全量字体并转换为 woff2 后覆盖 `public/font/Pacifico-Regular.woff2`（`@font-face` 仅引用 woff2，可用 fonttools 等工具转换，全量 ttf 约 315KB），详见 `public/font/README.md`。
 
 ### 🎉 功能
 
@@ -210,4 +210,4 @@ if (type == 0) {
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=lishengshang/homepage&type=Date)](https://star-history.com/#lishengshang/homepage&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=lishengshang/lishengshang.github.io&type=Date)](https://star-history.com/#lishengshang/lishengshang.github.io&Date)
