@@ -20,6 +20,9 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@icon-park/vue-next": "^1.4.2",
+    "@vicons/fa": "^0.12.0",
+    "@vicons/utils": "^0.1.4",
     "@worstone/vue-aplayer": "^1.0.6",
     "aplayer": "^1.10.1",
     "dayjs": "^1.11.10",
@@ -32,9 +35,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "@icon-park/vue-next": "^1.4.2",
-    "@vicons/fa": "^0.12.0",
-    "@vicons/utils": "^0.1.4",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/test-utils": "^2.5.0",
     "@vue/tsconfig": "^0.9.1",
