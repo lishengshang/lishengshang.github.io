@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-05（第十三场）P2 机械批落地（feat/p2-batch，--no-ff 合入）：global.scss 纯 mixin 化（响应式样式移入 style.scss 单次发射，max-width 重复 25→4 处，.xs-hidden 死规则删除）、brotli 产物关闭（nginx:alpine 无 brotli 模块）、env.d.ts 全量 ImportMetaEnv 声明（暴露并修正 Footer/Message 类型缺口）、图标库 devDeps→deps（--prod 构建修复）、QQ 音乐解析逐级判空、setPlayerState→setPlayerPaused 语义命名、Friends closeShow 死代码删除 + musicClick 语义入 .env.example（用户拍板保留功能）、SW 缓存补 cacheableResponse、vitest 补 Components、CI Node 22 统一 + timeout + pnpm action SHA 固定 + dependabot docker、文档四连修（字体指引 ttf→woff2×3 / Star 徽章仓库名 / EN 版 API / index.html 图标声明）。a11y 系统改造按用户拍板留待下一批。四门禁全绿，随批推送上线。
 - 2026-10-05（第十二场）全面 review + 修复包落地（fix/review-fixpack，--no-ff 合入）：全源码 + 工程化双路复审发现 1 个 P0（Footer `v-once` 与 `v-if/v-else` 同用致歌词永不显示，5.7.0 未推送批次引入的回归，经项目自带编译器实证）与多项 P1/P2；本批修复 P0（+Footer 组件测试 4 例，含「加回 v-once 必失败」的回归验证）、Sakura 花瓣图竞态泄漏、SearchOverlay 外部引擎键盘不可达（引擎并入统一导航列表 + 打开后关闭，+1 测试）、页脚孤立「&」、3 处 noopener、TimeCapsule 建站日期时区解析、壁纸定时器清理、build.yml 最小权限、`.env.example` 真源注释；本地 `.env` 以 `.env.example` 全量对齐（用户拍板）。四门禁全绿（11 文件 44 用例）。随批推送上线 5.7.0（推送与线上核验结果见下文追记）。
 - 2026-10-04（第十一场）README 图片路径规范化：两份 README 共 4 处截图引用由根绝对路径 `/screenshots/*.jpg` 改为相对路径 `./screenshots/*.jpg`（QLMarkdown 本地预览不解析以 `/` 开头的路径导致破图，GitHub 虽可显示但本地不可预览；相对路径两端均正常）。纯文档改动，不涉及构建与测试。
 - 2026-10-03（第十场）全仓优化三批落地（feat/perf-batch1/2/3，--no-ff 合入，未推送）：波纹 no-motion DOM 泄漏修复（+3 单测）、壁纸 fetchpriority/setup 提前与字体 preconnect（LCP）、字体 WOFF2 化 -64%、运行时防抖与 shallowRef 精简、一言竞态令牌、PWA 缓存配额、CI 消除 push main 双构建并前置部署门禁、ESLint 全局变量自动同步、配置文件入 typecheck、重复逻辑抽离、字体/加载动画/花瓣日志/loadEnv/nginx 安全头等共 26 项；版本 5.7.0。第二批经 dev 浏览器冒烟（首屏/波纹兜底/搜索浮层/设置页/胶囊四条进度）全过。
@@ -66,6 +67,51 @@
 5. **需拍板的备选项**（见第十场记录「未落地项」）：esbuild minify / manualChunks 细分 / 字体自托管 / Sakura dpr 封顶 / robots.txt / og: meta / store 字面量联合。
 
 ## 会话记录
+
+### 2026-10-05（第十三场）
+
+#### P2 机械批（feat/p2-batch 分支，--no-ff 合入 main）
+
+##### 摘要
+
+接第十二场 review 的 P2 存量，经用户选框拍板（范围=机械 P2 全包、a11y 留待下一批；Links「音乐」分支与 musicClick 开关保留仅删死代码），落地 11 笔提交：
+
+1. **global.scss 纯 mixin 化**：该文件经 `additionalData` 注入每个 SFC 的 style 块，写在其内的实际规则随组件重复发射（`max-width:1200px` 实测产物 25 处、绝大多数为 scoped 化死 CSS，`.container` 全局限宽此前依赖 App.vue 副本偶然命中）。mixin 留守并写明「只允许纯定义」约定；`@include changeWidth`×3 与 `.el-radio-group` 居中移入 style.scss（全局单次发射，产物降至 4 处）；`.xs-hidden` 无任何模板消费者，随治理删除。
+2. **brotli 产物关闭**：`compression({ algorithms: ["gzip"] })`，nginx:alpine 无 brotli 模块、Pages 不消费，此前每次构建白产 17 个 `.br`；nginx.conf 注释同步修正。
+3. **env.d.ts 全量 ImportMetaEnv**（约 20 个 VITE_*，define 注入 3 项必选）：暴露并修正两处类型缺口——Footer 建站年份改显式 `showStartYear`（原 string|null 与 number 比较靠 any 才成立）、Message 简介文本 env 缺省回退空串。
+4. **图标库 devDeps → dependencies**（@icon-park/vue-next、@vicons/fa、@vicons/utils，均被运行时 import）：修正 `pnpm install --prod` 后 build 失败的分类错误。
+5. **QQ 音乐解析逐级判空**：sip 空数组 / midurlinfo 与歌单不等长 / 条目 url 缺失不再抛无定位 TypeError，改为带语义 Error（外层 Player 统一降级）。
+6. **setPlayerState → setPlayerPaused**：入参即 audio.paused，消除「传播放状态再内部取反」陷阱；store 字段注释补 true=播放中。
+7. **Friends closeShow 死代码删除**（无消费者，关闭钮恒显）；**musicClick 功能保留**，联动语义写入 `.env.example` 网站链接小节（用户拍板）。
+8. **SW 运行时缓存补 `cacheableResponse`**：js/css 仅显式 200（同源产物状态码可见），图片放行 opaque(0)（外部随机壁纸 no-cors）并排除错误状态。
+9. **vitest 补 Components 插件**与主配置对齐（否则被测组件里 el-* 以未知元素渲染，断言可能静默失真）。
+10. **CI**：Node 24→22（与 Dockerfile/engines 对齐）；job 补 `timeout-minutes: 15`；pnpm/action-setup 按 v6 解引用 commit SHA 固定（ls-remote 核验一致）；dependabot 补 docker 生态 + npm minor/patch 归并。
+11. **文档四连修**：字体指引 ttf→woff2（README/README_EN/public font README）；Star History 徽章仓库名 lishengshang/homepage → lishengshang.github.io；README_EN API 列表对齐中文版（Alcy + Hitokoto）；index.html 删 rel=bookmark 误用与废弃的 apple-touch-icon-precomposed（sizes 200x200 与实际 256x256 不符）。
+
+##### 涉及文件
+
+- `src/style/global.scss`、`src/style/style.scss`、`vite.config.ts`、`vitest.config.ts`、`src/env.d.ts`、`src/components/Footer.vue`、`src/components/Message.vue`、`src/api/index.ts`、`src/store/index.ts`、`src/components/Player.vue`、`src/views/Friends/index.vue`、`package.json`、`pnpm-lock.yaml`、`nginx.conf`、`.github/workflows/{build,deploy}.yml`、`.github/dependabot.yml`、`index.html`、`README.md`、`README_EN.md`、`public/font/README.md`、`CHANGELOG.md`、本文件
+
+##### 验证
+
+- 四门禁 lint:check / typecheck / test（11 文件 44 用例）/ build 全绿。
+- 产物核验：`max-width:1200px` 25→4 处；`dist/assets/*.br` 0 个；sw.js 含 2 处 `CacheableResponsePlugin`（statuses [200] / [0,200]）。
+- 浏览器冒烟（dev，IAB）：
+  - **1280×720**：`.container` 计算限宽 1100px（≤1280 断点生效，全局单发射副本命中）；CSSOM 实测 `.el-radio-group` 居中规则全局 1 处、scoped 0 处；底栏渲染无孤立「&」；樱花 canvas 正常。
+  - **搜索浮层回归**（SearchOverlay 统一行模型）：Ctrl+K 唤起 → 输入「友」出 6 行（2 站内 + 4 引擎）→ ↓×5 选中末行「使用 GitHub 搜索」→ Enter 实测新开 `github.com/search?q=友` 标签，浮层在离场过渡后关闭（键盘发起外部搜索链路全通，即第十二场 P1 修复的实测确认）。
+  - **390×844**：`.container` max-width 900px（≤992 断点）/ 实宽 391px、无横向溢出、底栏在位。
+- 备注：IAB 截图因樱花 rAF 持续渲染超时，以计算样式 + CSSOM 断言替代视觉核验。
+
+##### 风险与缺口
+
+- `.el-radio-group` 居中由 scoped 副本改为全局非 scoped：命中面从「组件内 radio-group」扩为全站 radio-group，当前仅设置页使用，无实际差异；将来引入新 radio-group 若不希望居中需自行覆盖。
+- Footer 无建站年份时 Copyright 段的隐藏断点语义微调（c-hidden→hidden 分支），当前配置有建站年份，线上无变化。
+- a11y 系统改造（div 交互键盘化/弹层焦点圈禁/音量条触屏可达）为下一批，工程量最大需视觉回归。
+- QQ 判空为防御性修正，QQ 源链路无单测（fetch-jsonp mock 成本高，外层已有降级），依赖语义错误信息定位。
+
+##### 下一步
+
+- 四门禁与浏览器冒烟全绿后随批推送上线（沿用用户既定授权），推送后线上核验并追记。
 
 ### 2026-10-05（第十二场）
 
