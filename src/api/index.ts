@@ -64,24 +64,32 @@ export const getPlayerList = async (
     throw new Error("音乐播放列表为空，请检查 VITE_SONG_API 配置");
   }
 
-  if (data[0].url.startsWith("@")) {
+  if (data[0].url?.startsWith("@")) {
     const [, , , url] = data[0].url.split("@").slice(1);
     if (!url) throw new Error("QQ 音乐链接解析失败，请检查歌曲 URL 格式");
     // 动态加载 fetch-jsonp，避免其进入首屏包（仅 QQ 音乐源会走到该分支）
     const { default: fetchJsonp } = await import("fetch-jsonp");
     const jsonpData: JsonpPlayerResponse = await fetchJsonp(url).then((res) => res.json());
-    const domain = (
-      jsonpData.req_0.data.sip.find((i) => !i.startsWith("http://ws")) ||
-      jsonpData.req_0.data.sip[0]
-    ).replace("http://", "https://");
+    // 第三方 Meting 返回结构不可信任：sip 可能为空数组、midurlinfo 可能与歌单不等长，
+    // 逐级判空并给出可定位的错误（外层 Player 统一降级为用户提示）
+    const sipList = jsonpData.req_0?.data?.sip ?? [];
+    const domain = (sipList.find((i) => !i.startsWith("http://ws")) || sipList[0] || "").replace(
+      "http://",
+      "https://",
+    );
+    if (!domain) throw new Error("QQ 音乐解析失败：响应缺少 sip 域名");
 
-    return data.map((v, i): PlayerItem => ({
-      name: v.name || v.title,
-      artist: v.artist || v.author,
-      url: domain + jsonpData.req_0.data.midurlinfo[i].purl,
-      cover: v.cover || v.pic,
-      lrc: v.lrc,
-    }));
+    return data.map((v, i): PlayerItem => {
+      const purl = jsonpData.req_0?.data?.midurlinfo?.[i]?.purl;
+      if (!purl) throw new Error(`QQ 音乐解析失败：歌曲「${v.name || v.title}」缺少直链`);
+      return {
+        name: v.name || v.title,
+        artist: v.artist || v.author,
+        url: domain + purl,
+        cover: v.cover || v.pic,
+        lrc: v.lrc,
+      };
+    });
   } else {
     return data.map((v): PlayerItem => ({
       name: v.name || v.title,
