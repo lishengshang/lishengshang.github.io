@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-05（第十二场）全面 review + 修复包落地（fix/review-fixpack，--no-ff 合入）：全源码 + 工程化双路复审发现 1 个 P0（Footer `v-once` 与 `v-if/v-else` 同用致歌词永不显示，5.7.0 未推送批次引入的回归，经项目自带编译器实证）与多项 P1/P2；本批修复 P0（+Footer 组件测试 4 例，含「加回 v-once 必失败」的回归验证）、Sakura 花瓣图竞态泄漏、SearchOverlay 外部引擎键盘不可达（引擎并入统一导航列表 + 打开后关闭，+1 测试）、页脚孤立「&」、3 处 noopener、TimeCapsule 建站日期时区解析、壁纸定时器清理、build.yml 最小权限、`.env.example` 真源注释；本地 `.env` 以 `.env.example` 全量对齐（用户拍板）。四门禁全绿（11 文件 44 用例）。随批推送上线 5.7.0（推送与线上核验结果见下文追记）。
 - 2026-10-04（第十一场）README 图片路径规范化：两份 README 共 4 处截图引用由根绝对路径 `/screenshots/*.jpg` 改为相对路径 `./screenshots/*.jpg`（QLMarkdown 本地预览不解析以 `/` 开头的路径导致破图，GitHub 虽可显示但本地不可预览；相对路径两端均正常）。纯文档改动，不涉及构建与测试。
 - 2026-10-03（第十场）全仓优化三批落地（feat/perf-batch1/2/3，--no-ff 合入，未推送）：波纹 no-motion DOM 泄漏修复（+3 单测）、壁纸 fetchpriority/setup 提前与字体 preconnect（LCP）、字体 WOFF2 化 -64%、运行时防抖与 shallowRef 精简、一言竞态令牌、PWA 缓存配额、CI 消除 push main 双构建并前置部署门禁、ESLint 全局变量自动同步、配置文件入 typecheck、重复逻辑抽离、字体/加载动画/花瓣日志/loadEnv/nginx 安全头等共 26 项；版本 5.7.0。第二批经 dev 浏览器冒烟（首屏/波纹兜底/搜索浮层/设置页/胶囊四条进度）全过。
 - 2026-10-02（第九场）移动端设置入口落地（切分支 feat/mobile-settings，--no-ff 合入）：标题栏 ⚙ 入口（仅 <721px）、宽度 watch 不再强制关设置页、MoreSet 对齐 EP xs 断点单列堆叠；三视口（390/730/1280）详细验证，过程中抓到并修复媒体查询误嵌套与断点错位两个自产问题。
@@ -56,15 +57,54 @@
 
 ## 下一步
 
-复审路线图（2026-10-03 第十场更新）：
+复审路线图（2026-10-05 第十二场更新）：
 
-1. ~~历次小修与功能批~~（第七~九场）；~~全仓优化三批 26 项~~（第十场，已合入 main 待推送上线）。
-2. **待办**：推送 main 上线 5.7.0（触发 Deploy，推送后核验线上版本串/woff2 字体/sw.js 配额）。
+1. ~~历次小修与功能批~~（第七~九场）；~~全仓优化三批 26 项~~（第十场）；~~全面 review 修复包 8 项~~（第十二场，P0 歌词回归/樱花泄漏/搜索键盘可达/CI 权限等，5.7.0 随批上线）。
+2. **P2 存量（需拍板或随批次消化，第十二场复审产出）**：a11y 系统改造（全站 div 交互改 button/键盘可达/弹层焦点圈禁，工程量最大）；global.scss additionalData 死 CSS 治理（产物实测 max-width 规则重复 25 处）；brotli 产物关闭（nginx:alpine 无 brotli 模块，17 个 .br 无人消费）或换支持 brotli_static 的镜像；env.d.ts 全量 ImportMetaEnv 声明（约 15 个 VITE_* 变量跑在 any 上）；运行时图标库 devDependencies → dependencies（@icon-park/vue-next/@vicons/*，--prod 安装会挂）；vitest 配置补 Components 插件；Node 版本统一（CI 24 / Docker 22 / engines >=22）；workflow timeout-minutes + 第三方 action SHA 固定 + dependabot docker 生态；文档四连修（字体指引 ttf→woff2 ×3 / Star History 徽章仓库名 / README_EN API 列表 / apple-touch-icon 声明与尺寸）；QQ 音乐解析逐项判空（sip 空数组/midurlinfo 越界/url 缺失）；死代码清理（Friends closeShow、Links 音乐分支与 musicClick 开关拍板）；setPlayerState 语义反转命名。
 3. **功能候选（经用户选框决定后落地）**：Box 内 MoreContent 内容化（现为占位文案，先定内容方向）；多语言 i18n（历史候选，工作量最大，明确要做再排）。
-4. **工程跟进（条件触发）**：Element Plus 2.15+ 发布后按 ADR-0005 判据复测（EP JS chunk 应回 ~110 kB 水位，2.14.7 复测仍 778.59 kB）；Docker 镜像构建实测（本机无 Docker，需先备环境；nginx 安全头未经运行时检验）；组件级测试补位（Set/MoreSet 交互）。
+4. **工程跟进（条件触发）**：Element Plus 2.15+ 发布后按 ADR-0005 判据复测（EP JS chunk 应回 ~110 kB 水位，2.14.7 复测仍 778.59 kB）；Docker 镜像构建实测（本机无 Docker，需先备环境；nginx 安全头未经运行时检验，非 root 化/HEALTHCHECK/缓存策略可一并落地）；组件级测试补位（Set/MoreSet 交互）。
 5. **需拍板的备选项**（见第十场记录「未落地项」）：esbuild minify / manualChunks 细分 / 字体自托管 / Sakura dpr 封顶 / robots.txt / og: meta / store 字面量联合。
 
 ## 会话记录
+
+### 2026-10-05（第十二场）
+
+#### 全面 review + 修复包（fix/review-fixpack 分支，--no-ff 合入 main）
+
+##### 摘要
+
+应用户「全面 review、发现问题、找优化点、详细解读、推荐相似项目」要求做第三轮全仓复审（第十二场；源码与工程化两路并行深读 src/ 全 46 文件 + 全部工程配置，并实测四门禁与构建产物）。复审去重了历次已修/已记录项后产出 1 个 P0、4 个 P1、约 20 个 P2，全部给出实证（关键发现经 vue/compiler-sfc 编译产物、dist 产物 grep、sips/env 实测复核）。经用户三组选框拍板（修复范围=第一批必修包 / `.env` 以 `.env.example` 为准 / 门禁全绿后直接推送），本批落地 8 项修复：
+
+1. **P0 底栏歌词永不显示**（`Footer.vue:4`）：第十场第二批给版权区加的 `v-once` 与 `v-if/v-else` 同用——Vue 3 编译产物实证：`_cache[0] || (_cache[0] = (条件 ? power : lrc))` 整个条件表达式被缓存进 render cache，首次渲染后条件永不再求值，歌词分支不可达（设置页「底栏歌词显示」开关同时失效）。修复：移除 `v-once` 并加注释说明禁用原因；新增 `Footer.test.ts` 4 用例，**回归有效性经实证：临时加回 `v-once` 后恰好 2 个切换用例失败、移除后全过**。
+2. **P1 Sakura rAF 循环泄漏**（`Sakura.vue`）：花瓣图异步加载，卸载早于 `onload` 时 `stop()` 空操作、`start()` 后无任何取消路径（visibilitychange 监听器已移除）——50 花瓣在脱离文档的 canvas 永久空转。修复：`disposed` 置位守卫 + 卸载时清空图片回调。
+3. **P1 SearchOverlay 外部引擎键盘不可达**：↑↓/回车只作用于站内条目数组，引擎行独立渲染，有关键词时无法用键盘发起外部搜索，且打开引擎后浮层不关闭。修复：引入 `ResultRow` 统一行模型（item/engine），引擎并入 `rows` 参与 activeIndex 循环与 mouseenter 同步，`openEngine` 末尾补 `close()`；新增引擎键盘导航回归测试 1 例。
+4. 页脚备案号为空时不再渲染孤立的「&」（`&amp;` 移入 `v-if="siteIcp"` 容器，+1 测试）。
+5. 3 处外链补 `rel="noopener noreferrer"`（Background 下载壁纸/Footer GitHub/Footer 备案），对齐 5.2.0 起的站内惯例。
+6. TimeCapsule 建站日期按本地时区解析（裸 `new Date("YYYY-MM-DD")` 按 UTC 零点，UTC 减时区访问者「苟活天数」差一天；兼容仅年份格式按 1 月 1 日本地零点）。
+7. Background 壁纸加载定时器先 `clearTimeout` 旧实例再注册（覆盖竞态隐患）。
+8. build.yml 补 `permissions: contents: read` 最小权限；`.env.example` 头部注明「CI 生产配置真源」；本地 `.env` 以 `.env.example` 全量对齐（消除「Lishengshang/li'remio」与线上「liremio の主页/liremio'」的漂移）。
+
+##### 涉及文件
+
+- `src/components/Footer.vue`、`src/components/Footer.test.ts`（新增）、`src/components/Sakura.vue`、`src/components/SearchOverlay.vue`、`src/components/SearchOverlay.test.ts`、`src/components/Background.vue`、`src/components/TimeCapsule.vue`、`.github/workflows/build.yml`、`.env.example`、`CHANGELOG.md`、本文件
+- 本地 `.env`（gitignore，`cp .env.example .env` 全量对齐，未入库）
+
+##### 验证
+
+- 四门禁：`pnpm lint:check` / `typecheck` / `test`（**11 文件 44 用例**，+1 文件 +5 用例）/ `build` 全绿；precache 26 entries / 641.00 KiB。
+- P0 回归测试有效性：`v-once` 加回 → Footer 恰好 2 用例失败（歌词切换 waitFor 超时）→ 移除 → 4/4 通过。
+- 复审高危点排查后确认无问题（避免后续重复劳动）：v-html 全仓 0 处；fetch-jsonp 自带 5s 超时；@worstone/vue-aplayer 内部 error 后 2s 切下一首属实（非项目虚假承诺）；定时器/监听器清理除 Sakura 竞态外成对；store persist pick 无易腐字段；无 console/密钥泄漏。
+
+##### 风险与缺口
+
+- **P2 存量未修**（详见 `## 下一步` 第 2 条）：a11y 系统缺位（全站 div-click 无键盘可达/弹层无焦点圈禁/音量条 hover-only）、global.scss 经 additionalData 注入每 SFC 致产物死 CSS（`max-width:1200px` 重复 25 处）、brotli 产物 17 个文件无消费者、env.d.ts 仅声明 5 变量（约 15 个 VITE_* 落 any）、图标库误置 devDependencies（`--prod` 安装后 build 失败）、SW runtimeCaching 正则未锚定同源、Node 版本三处不一致、文档四连修等——均已记录待拍板/随批次消化。
+- SearchOverlay 模板合并后 `.result` 行数语义变化（引擎行纳入），第九场验收的「空关键词 7 项」仍成立（引擎行仅有关键词时追加），真实浏览器未复测（组件测试覆盖键盘路径）。
+- 本地 `.env` 对齐后，本机 dev 站名将从「Lishengshang 的主页」变为线上同款「liremio の主页」（用户拍板接受）。
+
+##### 下一步
+
+- 随批推送 main 上线 5.7.0（用户已授权门禁全绿后直接推送），推送后核验线上版本串/歌词切换/`.result` 引擎行。
+- P2 存量与功能候选见 `## 下一步`。
 
 ### 2026-10-03（第十场）
 

@@ -38,10 +38,17 @@ const startDate = import.meta.env.VITE_SITE_START;
 const startDateText = ref<string | null>(null);
 const timeInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
+// 建站日期按本地时区解析：裸 new Date("YYYY-MM-DD") 按 UTC 零点解析，
+// UTC 减时区的访问者用本地 getFullYear/getMonth/getDate 统计会差一天；仅年份按当年 1 月 1 日
+const parseStartDate = (value: string): Date => {
+  const full = value.includes("-") ? value : `${value}-01-01`;
+  return new Date(`${full}T00:00:00`);
+};
+
 // 刷新进度条与建站日期文本
 const updateCapsule = () => {
   timeData.value = getTimeCapsule();
-  if (startDate) startDateText.value = siteDateStatistics(new Date(startDate));
+  if (startDate) startDateText.value = siteDateStatistics(parseStartDate(startDate));
 };
 
 onMounted(() => {

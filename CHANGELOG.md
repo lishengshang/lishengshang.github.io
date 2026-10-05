@@ -12,11 +12,18 @@
 - PWA 运行时缓存(js/css 与图片)增加条目上限(`maxEntries: 60`)与配额告急自动清理
 
 ### 修复
+- 修复底栏歌词永不显示：版权区 `v-once` 与 `v-if/v-else` 同用时，Vue 会把整个条件表达式连同分支一并缓存，首次渲染后条件永不再求值（播放态切换歌词与设置页歌词开关全部失效）；移除 `v-once` 并新增 Footer 组件测试 4 例（含「加回 v-once 必失败」的回归验证）
+- 樱花组件在花瓣图加载完成前卸载不再泄漏动画循环：补卸载置位守卫（原先 `onload` 晚于卸载触发时，rAF 循环无任何取消路径，50 花瓣在脱离文档的 canvas 上永久空转）
+- 搜索浮层外部引擎行纳入 ↑↓/回车键盘导航（原先引擎行独立渲染，键盘用户无法发起外部搜索），打开引擎后浮层同步关闭（与站内条目行为一致），新增回归测试
+- 页脚备案号为空时备案段整体不渲染（原先渲染孤立的「&」）；补齐 3 处外链 `rel="noopener noreferrer"`（下载壁纸 / GitHub 主页 / 备案链接），与站内既有惯例对齐
+- 时光胶囊建站日期按本地时区解析：裸 `new Date("YYYY-MM-DD")` 按 UTC 零点解析，UTC 减时区访问者的「苟活天数」统计差一天；仅年份格式按当年 1 月 1 日本地零点
+- 壁纸加载完成定时器先清理旧实例再注册，消除快速连续触发时的覆盖竞态隐患
 - 一言请求增加令牌防护:防抖间隙外的慢响应后到时不再覆盖新文本
 - 播放器 author 前缀清理定时器在组件卸载时回收,不再触碰已卸载 DOM
 
 ### 工程
 - CI 消除 push main 双构建:Build 检查改为仅 PR 触发,部署流水线前置 lint/test/typecheck 门禁(同一提交构建一次且门禁覆盖部署)
+- Build 工作流补最小权限声明（`permissions: contents: read`）；`.env.example` 注明其为 CI 生产配置真源（`cp .env.example .env` 构建，本地 `.env` 与其漂移以本文件为准）
 - ESLint 全局变量改由 unplugin-auto-import 自动生成清单(`.eslintrc-auto-import.json` 入库)同步,移除手工维护与死配置(`$openList`/`vue`)
 - `vite.config.ts` / `vitest.config.ts` 纳入 typecheck 范围
 - 重复逻辑抽离:站点/友链图标映射统一到 `utils/linkIcons.ts`,艺术字文本并入 `useSiteUrl.logoText`;搜索浮层两分支模板合并(输出逐字节一致);合并重复的 `.cards` 样式定义并清理注释死样式

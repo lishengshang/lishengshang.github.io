@@ -1,7 +1,9 @@
 <template>
   <footer id="footer" :class="store.footerBlur ? 'blur' : null">
     <Transition name="fade" mode="out-in">
-      <div v-if="!store.playerState || !store.playerLrcShow" class="power" v-once>
+      <!-- 注意：此处不可加 v-once——v-once 会把整个 v-if/v-else 条件表达式连同分支一并缓存，
+           首次渲染后条件永不再求值，播放态切换歌词的功能会整体失效 -->
+      <div v-if="!store.playerState || !store.playerLrcShow" class="power">
         <span>
           <span :class="startYear < fullYear ? 'c-hidden' : 'hidden'">Copyright&nbsp;</span>
           &copy;
@@ -16,14 +18,14 @@
         <!-- 当前维护者署名 -->
         <span class="hidden">
           &amp;&nbsp;Made&nbsp;by
-          <a href="https://github.com/lishengshang" target="_blank">
+          <a href="https://github.com/lishengshang" target="_blank" rel="noopener noreferrer">
             {{ siteAuthor }}
           </a>
         </span>
-        <!-- 站点备案 -->
-        <span>
+        <!-- 站点备案（无备案号时整段不渲染，避免底栏出现孤立的「&」） -->
+        <span v-if="siteIcp">
           &amp;
-          <a v-if="siteIcp" href="https://beian.miit.gov.cn" target="_blank">
+          <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer">
             {{ siteIcp }}
           </a>
         </span>

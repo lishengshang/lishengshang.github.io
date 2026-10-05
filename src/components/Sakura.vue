@@ -23,6 +23,9 @@ let width = 0;
 let height = 0;
 let sakuraImg: HTMLImageElement | null = null;
 let imgReady = false;
+// 卸载守卫：花瓣图为异步加载，若图片就绪晚于组件卸载，onload 仍会触发并启动 rAF 循环，
+// 而此时监听器已被移除、无人再能取消——置位后让 onload/start 全部短路
+let disposed = false;
 
 // 花瓣数量
 const COUNT = 50;
@@ -120,7 +123,7 @@ const animate = () => {
 };
 
 const start = () => {
-  if (animationId || !imgReady) return;
+  if (disposed || animationId || !imgReady) return;
   animationId = requestAnimationFrame(animate);
 };
 
@@ -144,6 +147,7 @@ onMounted(() => {
   const image = sakuraImg;
   image.src = "/images/sakura.png";
   image.onload = () => {
+    if (disposed) return;
     imgReady = true;
     // 图片就绪后创建花瓣并启动动画（初始铺满屏幕）
     petals = Array.from({ length: COUNT }, () => new Petal(true));
@@ -159,6 +163,11 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  disposed = true;
+  if (sakuraImg) {
+    sakuraImg.onload = null;
+    sakuraImg.onerror = null;
+  }
   stop();
   window.removeEventListener("resize", resize);
   document.removeEventListener("visibilitychange", onVisibilityChange);
