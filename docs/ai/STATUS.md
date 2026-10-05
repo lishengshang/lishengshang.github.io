@@ -113,6 +113,12 @@
 
 - 四门禁与浏览器冒烟全绿后随批推送上线（沿用用户既定授权），推送后线上核验并追记。
 
+##### 推送与线上核验（同日追记）
+
+- 合并提交 `01810cc`，推送 `b641226..01810cc` 触发 Deploy，Build/Deploy 双绿（run 37322431758）。
+- 线上核验：首页 200、`<title>` "liremio の主页"、新 bundle `index-CVePyIUn.js` 含 5.7.0 版本串；线上 CSS `max-width:1200px` 字符串 4 处（1 处真实规则 + 3 处 App.vue 自身断点条件，治理前同口径 25 处）；sw.js 含 `CacheableResponsePlugin` 两档（[200] / [0,200]）。
+- precache 642.51 → 637.24 KiB（死 CSS 治理副产品 -5.27 KiB）。
+
 ### 2026-10-05（第十二场）
 
 #### 全面 review + 修复包（fix/review-fixpack 分支，--no-ff 合入 main）
