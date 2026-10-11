@@ -1,6 +1,6 @@
 <template>
-<!-- 音乐控制面板 -->
-<div class="music" v-show="store.musicOpenState">
+  <!-- 音乐控制面板 -->
+  <div class="music" v-show="store.musicOpenState">
     <div class="btns">
       <button type="button" @click="openMusicList()">音乐列表</button>
       <button type="button" @click="store.musicOpenState = false">回到一言</button>
