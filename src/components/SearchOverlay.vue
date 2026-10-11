@@ -1,6 +1,6 @@
 <template>
   <div class="search-overlay" @click.self="close">
-    <div class="panel cards">
+    <div ref="panelRef" class="panel cards" role="dialog" aria-modal="true" aria-label="搜索">
       <div class="input-row">
         <Icon size="20">
           <Search />
@@ -10,6 +10,11 @@
           v-model="keyword"
           class="search-input"
           type="text"
+          role="combobox"
+          aria-expanded="true"
+          aria-controls="search-results"
+          :aria-activedescendant="activeDescendant"
+          aria-label="搜索站内内容"
           placeholder="搜索站内内容，↑↓ 选择，回车打开，Esc 关闭"
           @keydown.enter.prevent="openActive"
           @keydown.up.prevent="moveActive(-1)"
@@ -17,10 +22,13 @@
           @keydown.esc.stop="close"
         />
       </div>
-      <div class="results" ref="resultsRef">
+      <div class="results" ref="resultsRef" id="search-results" role="listbox" aria-label="搜索结果">
         <div
           v-for="(row, idx) in rows"
           :key="row.type === 'item' ? row.item.kind + row.item.name : `engine-${row.engine.name}`"
+          :id="`search-option-${idx}`"
+          role="option"
+          :aria-selected="idx === activeIndex"
           :class="{ result: true, active: idx === activeIndex }"
           v-ripple
           @click="openRow(row)"
@@ -49,6 +57,7 @@
 import { Icon } from "@vicons/utils";
 import { Search } from "@vicons/fa";
 import { mainStore } from "@/store";
+import { useModalA11y } from "@/composables/useModalA11y";
 import {
   buildSearchIndex,
   filterSearchIndex,
@@ -63,6 +72,9 @@ const inputRef = ref<HTMLInputElement | null>(null);
 const resultsRef = ref<HTMLElement | null>(null);
 const index = buildSearchIndex();
 const filtered = computed(() => filterSearchIndex(index, keyword.value));
+
+// 弹层可访问性：焦点圈禁 + Esc 关闭 + 焦点还原（输入框自聚焦，无需重复 autofocus）
+const panelRef = ref<HTMLElement | null>(null);
 
 // 键盘导航的当前选中项
 const activeIndex = ref(0);
@@ -84,6 +96,11 @@ watch(keyword, () => {
   activeIndex.value = 0;
 });
 
+// combobox 模式：行不实际聚焦（焦点保持在输入框），选中态经 aria-activedescendant 播报
+const activeDescendant = computed(() =>
+  rows.value[activeIndex.value] ? `search-option-${activeIndex.value}` : undefined,
+);
+
 // 上下移动选中项（循环滚动），并保持选中项在可视区内
 const moveActive = (delta: number): void => {
   const total = rows.value.length;
@@ -102,6 +119,9 @@ onMounted(() => {
 const close = (): void => {
   store.searchOpenState = false;
 };
+
+// 焦点圈禁与 Esc（置于 close 声明后，避免引用未初始化的 const）
+useModalA11y({ panelRef, onClose: close, autofocus: false });
 
 // 打开站内条目
 const openItem = (item: SearchItem): void => {

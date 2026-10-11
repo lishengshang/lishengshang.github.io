@@ -1,6 +1,12 @@
 <template>
   <div class="friends">
-    <div class="panel">
+    <div
+      ref="panelRef"
+      class="panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="友链页面"
+    >
       <div class="head">
         <div class="title">
           <Icon size="20">
@@ -57,11 +63,16 @@ import { Icon } from "@vicons/utils";
 import { Compass, UserFriends } from "@vicons/fa";
 import { CloseOne } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
+import { useModalA11y } from "@/composables/useModalA11y";
 import friendLinks from "@/assets/friendLinks.json";
 import { linkIcons } from "@/utils/linkIcons";
 import type { Component } from "vue";
 
 const store = mainStore();
+
+// 弹层可访问性：焦点圈禁 + Esc 关闭 + 焦点还原
+const panelRef = ref<HTMLElement | null>(null);
+useModalA11y({ panelRef, onClose: () => (store.friendsOpenState = false) });
 
 // 友链申请入口（issue 模板：.github/ISSUE_TEMPLATE/friend-request.yml）
 const applyUrl = `${import.meta.env.VITE_APP_GITHUB}/issues/new?template=friend-request.yml`;

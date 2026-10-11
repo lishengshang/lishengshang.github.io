@@ -57,7 +57,15 @@
   <Transition name="fade" mode="out-in">
     <div class="music-list" v-if="listMounted" v-show="musicListShow" @click="closeMusicList()">
       <Transition name="zoom">
-        <div class="list" v-show="musicListShow" @click.stop>
+        <div
+          ref="listPanelRef"
+          class="list"
+          role="dialog"
+          aria-modal="true"
+          aria-label="音乐列表"
+          v-show="musicListShow"
+          @click.stop
+        >
           <button type="button" class="close" aria-label="关闭音乐列表" @click="closeMusicList()">
             <close-one theme="filled" size="28" fill="#ffffff60" />
           </button>
@@ -87,6 +95,7 @@ import {
 } from "@icon-park/vue-next";
 import Player from "@/components/Player.vue";
 import { mainStore } from "@/store";
+import { useModalA11y } from "@/composables/useModalA11y";
 import debounce from "@/utils/debounce";
 const store = mainStore();
 type PlayerInstance = InstanceType<typeof Player>;
@@ -118,6 +127,10 @@ const closeMusicList = () => {
   musicListShow.value = false;
 };
 
+// 列表弹窗可访问性：焦点圈禁 + Esc 关闭 + 焦点还原（列表为 v-show 复用挂载，传 active 门控）
+const listPanelRef = ref<HTMLElement | null>(null);
+useModalA11y({ panelRef: listPanelRef, active: musicListShow, onClose: closeMusicList });
+
 // 监听外部打开音乐列表请求（替代全局 window.$openList）
 watch(
   () => store.musicListOpenState,
@@ -139,13 +152,8 @@ const changeMusicIndex = (type: number) => {
   playerRef.value?.changeSong(type);
 };
 
-// 键盘事件：空格播放/暂停，ESC 关闭音乐列表弹窗
+// 键盘事件：空格播放/暂停（Esc 关闭列表由 useModalA11y 统一处理）
 const onKeyDown = (e: KeyboardEvent) => {
-  if (e.code === "Escape" && musicListShow.value) {
-    closeMusicList();
-    e.preventDefault();
-    return;
-  }
   if (!store.musicIsOk) {
     return;
   }

@@ -1,6 +1,10 @@
 <template>
   <div
+    ref="panelRef"
     class="set"
+    role="dialog"
+    aria-modal="true"
+    aria-label="全局设置"
     @mouseenter="closeShow = true"
     @mouseleave="closeShow = false"
     @focusin="closeShow = true"
@@ -79,10 +83,15 @@ const upData = parseChangelog(changelogRaw);
 import { CloseOne, SettingTwo, GithubOne, AddOne, Bug } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useSiteUrl } from "@/composables/useSiteUrl";
+import { useModalA11y } from "@/composables/useModalA11y";
 import Set from "@/components/Set.vue";
 
 const store = mainStore();
 const closeShow = ref(false);
+
+// 弹层可访问性：焦点圈禁 + Esc 关闭 + 焦点还原
+const panelRef = ref<HTMLElement | null>(null);
+useModalA11y({ panelRef, onClose: () => (store.setOpenState = false) });
 
 // 站点元信息（构建期由 vite.config.ts define 注入，避免整包 import package.json）
 const appVersion = import.meta.env.VITE_APP_VERSION;
