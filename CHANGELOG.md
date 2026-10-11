@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### 新功能
+- 无障碍（a11y）系统改造：全站裸 div/span 交互原生 `button`/`a` 化（约 15 处，Tab 可达、回车/空格触发）；四个模态弹层（设置/友链/音乐列表/搜索）接入自研 `useModalA11y` 焦点圈禁（Tab 面板内循环、Esc 关闭、关闭后焦点还原触发元素、`role="dialog"` + `aria-modal`）；全站键盘焦点圈（`:focus-visible`，仅键盘操作时显示）；自动尊重系统「减弱动态效果」（`prefers-reduced-motion`，手动开关仍可叠加）；搜索浮层补 combobox/listbox 语义（`aria-activedescendant` 播报选中项）；装饰元素 aria 声明（壁纸 alt 空、樱花 canvas `aria-hidden`、加载层 `role="status"`）；底栏播放进度条 `role="slider"` + ←/→/Home/End 键盘跳转
 - Open Graph 分享卡片：主页链接在微信/Telegram/X 等平台展示「标题 + 简介 + 截图卡片」（og:image 为 1200x630 站点截图，仅抓取器按需拉取）；新增 `robots.txt`（全站放行，排除 sw.js/manifest）
 
 ### 性能优化

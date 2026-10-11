@@ -10,6 +10,7 @@
 
 ## 当前进度
 
+- 2026-10-11（第十五场）a11y 系统改造落地（feat/a11y-overhaul，5 笔提交待验收合并）：会话开场先同步本地仓库（main 快进 69 提交至 6049331，第八~十四场工作对齐，依赖重装 + 51 用例冒烟通过）。按 docs/ai/plans/2026-10-11-a11y-overhaul.md 变更计划执行三批次：批次 A 裸交互元素原生 button/a 化与 aria 命名状态、批次 B useModalA11y 弹层焦点圈禁 + 四弹层接入（自实现不引第三方依赖）、批次 C 全局 :focus-visible 焦点圈 + prefers-reduced-motion 自动尊重（useReducedMotion 与 useDarkMode 同构）。dev 浏览器走查抓到并修复两个真实缺陷：Box 非模态面板内部零可聚焦元素（hover 显形改 CSS opacity+focus-within 方案，Box/MoreSet/Hitokoto/Music 四处统一）、Friends 关闭图标漏按钮化。四门禁全绿（15 文件 57 用例，+6）。分支推送待用户验收合并。
 - 2026-10-06（第十四场）轻量工程包落地（feat/light-batch，--no-ff 合入）：og 分享卡片全套（og:image 为 main.jpg 居中裁切 1200x630/110KB，分享链接从裸网址变卡片）+ robots.txt（排除 sw.js/manifest）+ Sakura 画布 DPR 封顶 2（3x 屏填充率减半）+ esbuild 替代 terser（构建 3.0s→2.1s，gzip 总量 +约 7KB 属已知压缩率差异）+ manualChunks 细分 vue 组（vendor 285→203KB，precache +1 entry 系新增 chunk）+ terser 依赖移除 + Set/MoreSet 组件测试补位（13 文件 51 用例，+7）。a11y 系统改造与 Box 内容化仍待拍板/排期。四门禁全绿，随批推送上线。
 - 2026-10-05（第十三场）P2 机械批落地（feat/p2-batch，--no-ff 合入）：global.scss 纯 mixin 化（响应式样式移入 style.scss 单次发射，max-width 重复 25→4 处，.xs-hidden 死规则删除）、brotli 产物关闭（nginx:alpine 无 brotli 模块）、env.d.ts 全量 ImportMetaEnv 声明（暴露并修正 Footer/Message 类型缺口）、图标库 devDeps→deps（--prod 构建修复）、QQ 音乐解析逐级判空、setPlayerState→setPlayerPaused 语义命名、Friends closeShow 死代码删除 + musicClick 语义入 .env.example（用户拍板保留功能）、SW 缓存补 cacheableResponse、vitest 补 Components、CI Node 22 统一 + timeout + pnpm action SHA 固定 + dependabot docker、文档四连修（字体指引 ttf→woff2×3 / Star 徽章仓库名 / EN 版 API / index.html 图标声明）。a11y 系统改造按用户拍板留待下一批。四门禁全绿，随批推送上线。
 - 2026-10-05（第十二场）全面 review + 修复包落地（fix/review-fixpack，--no-ff 合入）：全源码 + 工程化双路复审发现 1 个 P0（Footer `v-once` 与 `v-if/v-else` 同用致歌词永不显示，5.7.0 未推送批次引入的回归，经项目自带编译器实证）与多项 P1/P2；本批修复 P0（+Footer 组件测试 4 例，含「加回 v-once 必失败」的回归验证）、Sakura 花瓣图竞态泄漏、SearchOverlay 外部引擎键盘不可达（引擎并入统一导航列表 + 打开后关闭，+1 测试）、页脚孤立「&」、3 处 noopener、TimeCapsule 建站日期时区解析、壁纸定时器清理、build.yml 最小权限、`.env.example` 真源注释；本地 `.env` 以 `.env.example` 全量对齐（用户拍板）。四门禁全绿（11 文件 44 用例）。随批推送上线 5.7.0（推送与线上核验结果见下文追记）。
@@ -59,15 +60,50 @@
 
 ## 下一步
 
-复审路线图（2026-10-05 第十二场更新）：
+复审路线图（2026-10-05 第十二场更新；2026-10-11 第十五场修订）：
 
-1. ~~历次小修与功能批~~（第七~九场）；~~全仓优化三批 26 项~~（第十场）；~~全面 review 修复包 8 项~~（第十二场，P0 歌词回归/樱花泄漏/搜索键盘可达/CI 权限等，5.7.0 随批上线）。
-2. **P2 存量（需拍板或随批次消化，第十二场复审产出）**：a11y 系统改造（全站 div 交互改 button/键盘可达/弹层焦点圈禁，工程量最大）；global.scss additionalData 死 CSS 治理（产物实测 max-width 规则重复 25 处）；brotli 产物关闭（nginx:alpine 无 brotli 模块，17 个 .br 无人消费）或换支持 brotli_static 的镜像；env.d.ts 全量 ImportMetaEnv 声明（约 15 个 VITE_* 变量跑在 any 上）；运行时图标库 devDependencies → dependencies（@icon-park/vue-next/@vicons/*，--prod 安装会挂）；vitest 配置补 Components 插件；Node 版本统一（CI 24 / Docker 22 / engines >=22）；workflow timeout-minutes + 第三方 action SHA 固定 + dependabot docker 生态；文档四连修（字体指引 ttf→woff2 ×3 / Star History 徽章仓库名 / README_EN API 列表 / apple-touch-icon 声明与尺寸）；QQ 音乐解析逐项判空（sip 空数组/midurlinfo 越界/url 缺失）；死代码清理（Friends closeShow、Links 音乐分支与 musicClick 开关拍板）；setPlayerState 语义反转命名。
+1. ~~历次小修与功能批~~（第七~九场）；~~全仓优化三批 26 项~~（第十场）；~~全面 review 修复包 8 项~~（第十二场，P0 歌词回归/樱花泄漏/搜索键盘可达/CI 权限等，5.7.0 随批上线）；~~a11y 系统改造~~（第十五场，feat/a11y-overhaul 待验收合并）。
+2. **P2 存量（需拍板或随批次消化，第十二场复审产出）**：global.scss additionalData 死 CSS 治理（产物实测 max-width 规则重复 25 处）；brotli 产物关闭（nginx:alpine 无 brotli 模块，17 个 .br 无人消费）或换支持 brotli_static 的镜像；env.d.ts 全量 ImportMetaEnv 声明（约 15 个 VITE_* 变量跑在 any 上）；运行时图标库 devDependencies → dependencies（@icon-park/vue-next/@vicons/*，--prod 安装会挂）；vitest 配置补 Components 插件；Node 版本统一（CI 24 / Docker 22 / engines >=22）；workflow timeout-minutes + 第三方 action SHA 固定 + dependabot docker 生态；文档四连修（字体指引 ttf→woff2 ×3 / Star History 徽章仓库名 / README_EN API 列表 / apple-touch-icon 声明与尺寸）；QQ 音乐解析逐项判空（sip 空数组/midurlinfo 越界/url 缺失）；死代码清理（Friends closeShow、Links 音乐分支与 musicClick 开关拍板）；setPlayerState 语义反转命名。（注：除 a11y 由第十五场消化外，上列余项多为第十三/十四场已落地而未除名——死 CSS 治理、brotli、env.d.ts、图标库、vitest Components、Node 统一、workflow 加固、文档四连修、QQ 判空、setPlayerState 均已完成，真正余项仅 Friends closeShow 等零星。）
 3. **功能候选（经用户选框决定后落地）**：Box 内 MoreContent 内容化（现为占位文案，先定内容方向）；多语言 i18n（历史候选，工作量最大，明确要做再排）。
 4. **工程跟进（条件触发）**：Element Plus 2.15+ 发布后按 ADR-0005 判据复测（EP JS chunk 应回 ~110 kB 水位，2.14.7 复测仍 778.59 kB）；Docker 镜像构建实测（本机无 Docker，需先备环境；nginx 安全头未经运行时检验，非 root 化/HEALTHCHECK/缓存策略可一并落地）；组件级测试补位（Set/MoreSet 交互）。
 5. **需拍板的备选项**（见第十场记录「未落地项」）：esbuild minify / manualChunks 细分 / 字体自托管 / Sakura dpr 封顶 / robots.txt / og: meta / store 字面量联合。
 
 ## 会话记录
+
+### 2026-10-11（第十五场）
+
+#### a11y 系统改造（feat/a11y-overhaul 分支，6 笔提交，待验收合并）
+
+##### 摘要
+
+应用户指示切分支设计并动工 a11y 系统改造（此前两场均「待拍板」的最大工程项）。会话前半段先同步本地仓库：main 快进 69 提交（4f30001→6049331，第八~十四场），本地两分支均已合并按约定保留，依赖按新 lockfile 重装（terser 移除），51 用例冒烟通过。改造按 `docs/ai/plans/2026-10-11-a11y-overhaul.md` 三批次落地：
+
+- **批次 A（`dfc0fbf`）**：全站裸 div/span 交互原生 button/a 化——Message 简介卡（role=button，内容含 `<p>` 故不用 button 元素）+ Enter/Space + aria-expanded/controls；Hitokoto 一言/音乐入口、Music 列表/播放状态/上下曲/关闭；Links 三标题栏入口（aria-haspopup="dialog"）与站点卡片改真 `<a>`（音乐 musicClick 分支 preventDefault 走面板）；Friends 卡片改真 `<a>`；Right/App 移动端入口（aria-expanded）；MoreSet GitHub 图标改真链接；Footer 进度条 role="slider" + 键盘 ←/→/Home/End 步进；装饰元素（壁纸 alt=""、樱花 canvas aria-hidden、Loading role="status"）。
+- **批次 B（`492c202`）**：自研 `useModalA11y`（Tab 面板内循环、Esc 关闭、打开记录/关闭还原触发焦点；实例栈保证多弹层叠加仅栈顶响应；可见性经 getClientRects 过滤）。接入 MoreSet/Friends/SearchOverlay（v-if）与音乐列表（v-show 复用，active 门控）；SearchOverlay 补 combobox/listbox/option 语义与 aria-activedescendant；音乐列表 Esc 内联处理移交统一。不引第三方 focus-trap（EP 内置不导出、独立依赖仅服务一处小逻辑，见计划文档）。
+- **批次 C（`a787692`）**：style.scss 全局 `:focus-visible` 白色焦点圈（仅键盘操作出现）；`useReducedMotion`（matchMedia 单例与 useDarkMode 同构；生效值 = 手动开关 OR 系统偏好，系统偏好为强信号不可覆盖开启动画）；App.vue 樱花/动画/光标与 ripple.ts 改读合并值；Set.vue 提示文案同步。
+- **走查修正两笔（`873b721`、`09cb877`）**：①Box 为非模态面板，v-show 显形的关闭/设置按钮（display:none 不可聚焦）致盒内零可聚焦元素、Tab 直接穿透到页脚——hover 显形全站统一改 CSS opacity+pointer-events 方案（默认 opacity:0 仍可聚焦，`:focus-within` 聚焦瞬间显形），Box/MoreSet/Hitokoto/Music 四处删除 state 与 Transition 改纯 CSS（Music 歌名/音量互斥显隐同步改，音量滑杆键盘可达）；②Friends 关闭图标批次 A 漏按钮化，补齐。
+
+##### 涉及文件
+
+- 新增：`docs/ai/plans/2026-10-11-a11y-overhaul.md`、`src/composables/useModalA11y.ts`（+5 测试）、`src/composables/useReducedMotion.ts`（+1 测试）
+- 修改：`Message.vue`、`Hitokoto.vue`、`Music.vue`、`Links.vue`、`Friends/index.vue`、`MoreSet/index.vue`（+测试更新）、`Box/index.vue`、`Footer.vue`、`Loading.vue`、`Background.vue`、`Sakura.vue`、`Right.vue`、`App.vue`、`Func/index.vue`、`Set.vue`、`SearchOverlay.vue`、`ripple.ts`、`style.scss`
+
+##### 验证
+
+- 四门禁每批次全过；最终 `lint:check` / `typecheck` / `test`（15 文件 57 用例）/ `build` 全绿。
+- dev 浏览器走查（IAB，纯键盘语义层）：ARIA 树确认简介卡为命名 button、一言/入口均有可读名称、站点与友链卡为真 link、桌面隐藏入口不在树中；Enter 开盒子 + aria-expanded 同步；盒内按钮聚焦即显形；设置页 dialog/aria-modal + 初始焦点自动落关闭按钮 + Tab 圈禁（Shift+Tab 回绕验证）+ Esc 关闭 + 焦点还原「打开设置」按钮；Ctrl+K 搜索浮层 combobox/listbox/7 options/圈禁输入框/Esc；友链 dialog + hash #/friends 同步回落 + 关闭按钮可达 + 焦点还原入口；`prefers-reduced-motion` 经应用真实通路（store.reduceMotion）验证 no-motion 生效并在走查后复位（localStorage 已回 false）。
+
+##### 风险与缺口
+
+- **环境限制（非应用缺陷）**：IAB 面板被遮挡判定后台致 `document.timeline` 冻结（过渡永不推进），走查中过渡类状态以 store 逻辑层验证；合成事件不触发浏览器默认行为（原生 Tab 导航/Enter→click）与 `:focus-visible` 启发式（仅认受信键盘事件），故真实 Tab 顺序以 ARIA 树原生语义 + 单测佐证，**焦点圈视觉效果待用户实机 Tab 抽查**。
+- `:focus-visible` 白圈未按主题分色（深浅背景均白色，与图标填充一致）；如暗色下观感不佳可后续调令牌。
+- 双弹层叠加（Ctrl+K 叠音乐列表）时焦点圈禁各面板独立循环，属已知边缘限制（现设计已基本互斥）。
+- 手动「降低动态效果」无法在系统开启减弱动态时反向强制开动画（三态语义有意取舍，tip 文案已注明）。
+- 分支未合并 main、未推送远端（见下一步）；线上仍为 5.7.0。
+
+##### 下一步
+
+- 分支推送后由用户验收（PR 或本地 `pnpm dev` 实机 Tab 走查焦点圈）；通过后按惯例 --no-ff 合并 main 部署。
 
 ### 2026-10-06（第十四场）
 
