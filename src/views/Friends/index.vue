@@ -14,13 +14,9 @@
           </Icon>
           <span>友链</span>
         </div>
-        <close-one
-          class="close"
-          theme="filled"
-          size="28"
-          fill="#ffffff60"
-          @click="store.friendsOpenState = false"
-        />
+        <button type="button" class="close" aria-label="关闭友链" @click="store.friendsOpenState = false">
+          <close-one theme="filled" size="28" fill="#ffffff60" />
+        </button>
       </div>
       <el-row class="list" :gutter="20">
         <el-col
@@ -129,6 +125,12 @@ const friendIcon: Record<string, Component> = { ...linkIcons, UserFriends };
         right: 14px;
         width: 28px;
         height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        padding: 0;
         cursor: pointer;
         transition:
           transform 0.3s,
