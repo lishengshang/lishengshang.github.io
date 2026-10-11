@@ -40,13 +40,21 @@
         </Transition>
       </div>
     </Transition>
-    <!-- 歌曲进度条（点击跳转） -->
+    <!-- 歌曲进度条（点击/键盘 ←→ Home End 跳转） -->
     <div
       v-if="store.playerDuration > 0"
       class="progress"
+      role="slider"
+      tabindex="0"
+      aria-label="播放进度"
+      :aria-valuemin="0"
+      :aria-valuemax="Math.round(store.playerDuration)"
+      :aria-valuenow="Math.round(store.playerTime)"
+      :aria-valuetext="formatTime(store.playerTime)"
       @click="onProgressSeek"
       @mousemove="onProgressHover"
       @mouseleave="hoverTime = null"
+      @keydown="onProgressKeydown"
     >
       <div class="progress-played" :style="{ width: `${progressPercent}%` }" />
       <span v-if="hoverTime !== null" class="progress-tip" :style="{ left: `${hoverLeft}px` }">
@@ -100,6 +108,21 @@ const onProgressSeek = (e: MouseEvent) => {
   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
   const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
   store.requestPlayerSeek(ratio * store.playerDuration);
+};
+
+// 进度条键盘跳转（role=slider：←/→ 步进 5s，Home/End 到头）
+const onProgressKeydown = (e: KeyboardEvent) => {
+  const duration = store.playerDuration;
+  if (!duration) return;
+  let target: number | null = null;
+  if (e.key === "ArrowLeft" || e.key === "ArrowDown") target = Math.max(store.playerTime - 5, 0);
+  else if (e.key === "ArrowRight" || e.key === "ArrowUp") target = Math.min(store.playerTime + 5, duration);
+  else if (e.key === "Home") target = 0;
+  else if (e.key === "End") target = duration;
+  if (target !== null) {
+    e.preventDefault();
+    store.requestPlayerSeek(target);
+  }
 };
 </script>
 

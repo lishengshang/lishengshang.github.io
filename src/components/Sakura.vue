@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvasRef" class="sakura-canvas"></canvas>
+  <canvas ref="canvasRef" class="sakura-canvas" aria-hidden="true"></canvas>
 </template>
 
 <script setup lang="ts">

@@ -19,14 +19,18 @@
           </section>
         </div>
         <!-- 移动端菜单按钮 -->
-        <Icon
+        <button
+          type="button"
           class="menu"
-          size="24"
           v-show="!store.backgroundShow"
+          :aria-expanded="store.mobileOpenState"
+          :aria-label="store.mobileOpenState ? '关闭菜单' : '打开菜单'"
           @click="store.mobileOpenState = !store.mobileOpenState"
         >
-          <component :is="store.mobileOpenState ? CloseSmall : HamburgerButton" />
-        </Icon>
+          <Icon size="24">
+            <component :is="store.mobileOpenState ? CloseSmall : HamburgerButton" />
+          </Icon>
+        </button>
         <!-- 页脚 -->
         <Transition name="fade" mode="out-in">
           <Footer class="f-ter" v-show="!store.backgroundShow && !store.setOpenState" />
@@ -265,6 +269,10 @@ onBeforeUnmount(() => {
     background: rgb(0 0 0 / 20%);
     backdrop-filter: blur(10px);
     border-radius: 6px;
+    border: none;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
     transition: transform 0.3s;
     animation: fade 0.5s;
     &:active {

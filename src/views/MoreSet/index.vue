@@ -1,14 +1,22 @@
 <template>
-  <div class="set" @mouseenter="closeShow = true" @mouseleave="closeShow = false" @click.stop>
+  <div
+    class="set"
+    @mouseenter="closeShow = true"
+    @mouseleave="closeShow = false"
+    @focusin="closeShow = true"
+    @focusout="closeShow = false"
+    @click.stop
+  >
     <transition name="el-fade-in-linear">
-      <close-one
+      <button
+        type="button"
         class="close"
-        theme="filled"
-        size="28"
-        fill="#ffffff60"
+        aria-label="关闭设置"
         v-show="closeShow"
         @click="store.setOpenState = false"
-      />
+      >
+        <close-one theme="filled" size="28" fill="#ffffff60" />
+      </button>
     </transition>
     <el-row :gutter="40">
       <el-col :span="12" :xs="24" class="left">
@@ -19,7 +27,15 @@
         <div class="version">
           <div class="num">v&nbsp;{{ appVersion }}</div>
           <el-tooltip content="Github 源代码仓库" placement="right" :show-arrow="false">
-            <github-one class="github" theme="outline" size="24" @click="jumpTo(appGithub)" />
+            <a
+              class="github"
+              :href="appGithub"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub 源代码仓库"
+            >
+              <github-one theme="outline" size="24" />
+            </a>
           </el-tooltip>
         </div>
         <el-card class="update">
@@ -74,11 +90,6 @@ const appGithub = import.meta.env.VITE_APP_GITHUB;
 
 // 站点链接
 const { siteUrl } = useSiteUrl();
-
-// 跳转源代码仓库
-const jumpTo = (url: string): void => {
-  window.open(url, "_blank", "noopener,noreferrer");
-};
 </script>
 
 <style lang="scss" scoped>
@@ -100,6 +111,13 @@ const jumpTo = (url: string): void => {
     right: 14px;
     width: 28px;
     height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 
     &:hover {
       transform: scale(1.2);
@@ -171,6 +189,8 @@ const jumpTo = (url: string): void => {
           height: 24px;
           margin-left: 12px;
           margin-top: 6px;
+          display: flex;
+          color: inherit;
 
           &:hover {
             transform: scale(1.2);

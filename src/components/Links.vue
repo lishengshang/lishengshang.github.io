@@ -7,19 +7,43 @@
       <span class="title">网站列表</span>
       <div class="actions">
         <el-tooltip content="设置" placement="top" :show-arrow="false">
-          <Icon size="18" class="entry setting-entry" @click="store.setOpenState = true">
-            <Cog />
-          </Icon>
+          <button
+            type="button"
+            class="entry setting-entry"
+            aria-label="设置"
+            aria-haspopup="dialog"
+            @click="store.setOpenState = true"
+          >
+            <Icon size="18">
+              <Cog />
+            </Icon>
+          </button>
         </el-tooltip>
         <el-tooltip content="搜索（Ctrl+K）" placement="top" :show-arrow="false">
-          <Icon size="18" class="entry" @click="store.searchOpenState = true">
-            <Search />
-          </Icon>
+          <button
+            type="button"
+            class="entry"
+            aria-label="搜索"
+            aria-haspopup="dialog"
+            @click="store.searchOpenState = true"
+          >
+            <Icon size="18">
+              <Search />
+            </Icon>
+          </button>
         </el-tooltip>
         <el-tooltip content="友链页面" placement="top" :show-arrow="false">
-          <Icon size="18" class="entry" @click="store.friendsOpenState = true">
-            <UserFriends />
-          </Icon>
+          <button
+            type="button"
+            class="entry"
+            aria-label="友链页面"
+            aria-haspopup="dialog"
+            @click="store.friendsOpenState = true"
+          >
+            <Icon size="18">
+              <UserFriends />
+            </Icon>
+          </button>
         </el-tooltip>
       </div>
     </div>
@@ -35,17 +59,21 @@
       <SwiperSlide v-for="(site, idx) in siteLinksList" :key="idx">
         <el-row class="link-all" :gutter="20">
           <el-col v-for="(item, index) in site" :span="8" :key="item.name">
-            <div
+            <!-- 站点本质是外链，用原生 a 承载（中键/新标签/Echo 均为浏览器原生行为） -->
+            <a
               class="item cards enter"
               :style="[index < 3 ? 'margin-bottom: 20px' : null, { '--enter-delay': `${0.4 + index * 0.05}s` }]"
+              :href="item.link"
+              target="_blank"
+              rel="noopener noreferrer"
               v-ripple
-              @click="jumpLink(item)"
+              @click="jumpLink($event, item)"
             >
               <Icon size="26">
                 <component :is="linkIcons[item.icon]" />
               </Icon>
               <span class="name text-hidden">{{ item.name }}</span>
-            </div>
+            </a>
           </el-col>
         </el-row>
       </SwiperSlide>
@@ -86,12 +114,11 @@ const siteLinksList = computed<SiteLink[][]>(() => {
   return result;
 });
 
-// 链接跳转
-const jumpLink = (data: SiteLink): void => {
+// 链接跳转：默认交给 a 原生行为；音乐卡片在开启 musicClick 时拦下面板打开
+const jumpLink = (event: MouseEvent, data: SiteLink): void => {
   if (data.name === "音乐" && store.musicClick) {
+    event.preventDefault();
     store.openMusicList();
-  } else {
-    window.open(data.link, "_blank", "noopener,noreferrer");
   }
 };
 </script>
@@ -116,6 +143,11 @@ const jumpLink = (data: SiteLink): void => {
       gap: 12px;
       .entry {
         display: flex;
+        align-items: center;
+        background: none;
+        border: none;
+        padding: 0;
+        color: inherit;
         cursor: pointer;
         opacity: 0.85;
         transition: transform 0.3s;
@@ -177,7 +209,10 @@ const jumpLink = (data: SiteLink): void => {
       padding: 0 10px;
       animation: fade 0.5s;
 
+      // 抵消全局 a:hover 的变色与下划线（卡片本身有 hover 浮起反馈）
       &:hover {
+        color: #fff;
+        text-decoration: none;
         transform: scale(1.02);
         background: rgb(0 0 0 / 40%);
         transition: 0.3s;

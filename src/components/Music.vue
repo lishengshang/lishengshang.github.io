@@ -7,18 +7,28 @@
     v-show="store.musicOpenState"
   >
     <div class="btns">
-      <span @click="openMusicList()">音乐列表</span>
-      <span @click="store.musicOpenState = false">回到一言</span>
+      <button type="button" @click="openMusicList()">音乐列表</button>
+      <button type="button" @click="store.musicOpenState = false">回到一言</button>
     </div>
     <div class="control">
-      <go-start theme="filled" size="30" fill="#efefef" @click="changeMusicIndex(0)" />
+      <button type="button" class="ctrl i-icon" aria-label="上一曲" @click="changeMusicIndex(0)">
+        <go-start theme="filled" size="30" fill="#efefef" />
+      </button>
       <Transition name="fade" mode="out-in">
-        <div :key="store.playerState as never" class="state" @click="changePlayState">
+        <button
+          :key="store.playerState as never"
+          type="button"
+          class="state"
+          :aria-label="store.playerState ? '暂停' : '播放'"
+          @click="changePlayState"
+        >
           <play-one theme="filled" size="50" fill="#efefef" v-show="!store.playerState" />
           <pause theme="filled" size="50" fill="#efefef" v-show="store.playerState" />
-        </div>
+        </button>
       </Transition>
-      <go-end theme="filled" size="30" fill="#efefef" @click="changeMusicIndex(1)" />
+      <button type="button" class="ctrl i-icon" aria-label="下一曲" @click="changeMusicIndex(1)">
+        <go-end theme="filled" size="30" fill="#efefef" />
+      </button>
     </div>
     <div class="menu">
       <div class="name" v-show="!volumeShow">
@@ -48,13 +58,9 @@
     <div class="music-list" v-if="listMounted" v-show="musicListShow" @click="closeMusicList()">
       <Transition name="zoom">
         <div class="list" v-show="musicListShow" @click.stop>
-          <close-one
-            class="close"
-            theme="filled"
-            size="28"
-            fill="#ffffff60"
-            @click="closeMusicList()"
-          />
+          <button type="button" class="close" aria-label="关闭音乐列表" @click="closeMusicList()">
+            <close-one theme="filled" size="28" fill="#ffffff60" />
+          </button>
           <Player
             ref="playerRef"
             :songServer="playerData.server"
@@ -194,7 +200,7 @@ watch(
     display: flex;
     align-items: center;
     margin-bottom: 6px;
-    span {
+    button {
       background: var(--surface-2);
       padding: 2px 8px;
       border-radius: 6px;
@@ -202,6 +208,10 @@ watch(
       text-overflow: ellipsis;
       overflow-x: hidden;
       white-space: nowrap;
+      border: none;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
       &:hover {
         background: var(--surface-3);
       }
@@ -213,8 +223,21 @@ watch(
     align-items: center;
     justify-content: space-evenly;
     width: 100%;
+    // 上/下一曲按钮（原为 icon 根元素直接挂 click，改为原生 button 承载）
+    .ctrl {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      cursor: pointer;
+    }
     .state {
       transition: opacity 0.1s;
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      cursor: pointer;
       .i-icon {
         width: 50px;
         height: 50px;
@@ -343,12 +366,11 @@ watch(
       justify-content: center;
       border-radius: 50%;
       background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
       transition: background 0.2s, transform 0.2s;
       z-index: 10;
-      :deep(.i-icon) {
-        width: 22px;
-        height: 22px;
-      }
       &:hover {
         background: #00000018;
         transform: scale(1.1);

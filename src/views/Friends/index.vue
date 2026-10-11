@@ -25,11 +25,14 @@
           :sm="12"
           :xs="24"
         >
-          <div
+          <!-- 友链本质是外链，用原生 a 承载 -->
+          <a
             class="item cards enter"
             :style="{ '--enter-delay': `${0.1 + index * 0.06}s` }"
+            :href="friend.link"
+            target="_blank"
+            rel="noopener noreferrer"
             v-ripple
-            @click="openFriend(friend)"
           >
             <Icon size="26">
               <component :is="friendIcon[friend.icon] ?? Compass" />
@@ -38,7 +41,7 @@
               <span class="name text-hidden">{{ friend.name }}</span>
               <span class="desc text-hidden">{{ friend.desc }}</span>
             </div>
-          </div>
+          </a>
         </el-col>
       </el-row>
       <div v-if="!friendLinks[0]" class="empty cards">暂无友链，欢迎通过 Github 交换友链</div>
@@ -63,15 +66,8 @@ const store = mainStore();
 // 友链申请入口（issue 模板：.github/ISSUE_TEMPLATE/friend-request.yml）
 const applyUrl = `${import.meta.env.VITE_APP_GITHUB}/issues/new?template=friend-request.yml`;
 
-type FriendLink = (typeof friendLinks)[number];
-
 // 友链图标（复用站点列表映射并附加 UserFriends，未识别时回退指南针）
 const friendIcon: Record<string, Component> = { ...linkIcons, UserFriends };
-
-// 打开友链
-const openFriend = (friend: FriendLink): void => {
-  window.open(friend.link, "_blank", "noopener,noreferrer");
-};
 </script>
 
 <style lang="scss" scoped>
@@ -140,6 +136,13 @@ const openFriend = (friend: FriendLink): void => {
         padding: 16px 20px;
         margin-bottom: 20px;
         cursor: pointer;
+        color: inherit;
+
+        // 抵消全局 a:hover 的变色与下划线（卡片本身有浮起反馈）
+        &:hover {
+          color: inherit;
+          text-decoration: none;
+        }
 
         .i-icon {
           display: flex;

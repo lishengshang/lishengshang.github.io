@@ -1,5 +1,5 @@
 <template>
-  <div id="loader-wrapper" :class="store.imgLoadStatus ? 'loaded' : null">
+  <div id="loader-wrapper" :class="store.imgLoadStatus ? 'loaded' : null" role="status" aria-label="页面加载中">
     <div class="loader">
       <div class="loader-circle" />
       <div class="loader-text">

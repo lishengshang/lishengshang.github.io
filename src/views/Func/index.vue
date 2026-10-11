@@ -1,6 +1,6 @@
 <template>
   <!-- 功能区域 -->
-  <div :class="store.mobileFuncState ? 'function mobile' : 'function'">
+  <div id="mobile-func" :class="store.mobileFuncState ? 'function mobile' : 'function'">
     <el-row :gutter="20">
       <el-col :span="12">
         <div class="left">

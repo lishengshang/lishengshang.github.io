@@ -4,25 +4,34 @@
     v-show="!store.musicOpenState"
     @mouseenter="openMusicShow = true"
     @mouseleave="openMusicShow = false"
+    @focusin="openMusicShow = true"
+    @focusout="openMusicShow = false"
     @click.stop
   >
-    <!-- 打开音乐面板 -->
+    <!-- 打开音乐面板（hover 或面板内获得焦点时显形） -->
     <Transition name="el-fade-in-linear">
-      <div
+      <button
+        type="button"
         class="open-music"
         v-show="openMusicShow && playerHasId"
         @click="store.musicOpenState = true"
       >
         <music-menu theme="filled" size="18" fill="#efefef" />
         <span>打开音乐播放器</span>
-      </div>
+      </button>
     </Transition>
-    <!-- 一言内容 -->
+    <!-- 一言内容（点击换一句） -->
     <Transition name="el-fade-in-linear" mode="out-in">
-      <div :key="hitokotoData.text" class="content" @click="updateHitokoto">
+      <button
+        :key="hitokotoData.text"
+        type="button"
+        class="content"
+        aria-label="换一句话"
+        @click="updateHitokoto"
+      >
         <span class="text">{{ hitokotoData.text }}</span>
         <span class="from">-「&nbsp;{{ hitokotoData.from }}&nbsp;」</span>
-      </div>
+      </button>
     </Transition>
   </div>
 </template>
@@ -99,6 +108,10 @@ onMounted(() => {
     background: #00000026;
     padding: 4px 0;
     border-radius: 8px 8px 0 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
     .i-icon {
       width: 18px;
       height: 18px;
@@ -111,9 +124,17 @@ onMounted(() => {
   }
   .content {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    padding: 0;
+    cursor: pointer;
+    text-align: inherit;
     .text {
       font-size: 1.1rem;
       word-break: break-all;

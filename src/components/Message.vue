@@ -3,13 +3,24 @@
   <div class="message">
     <!-- Logo -->
     <div class="logo">
-      <img class="logo-img" :src="siteLogo" alt="logo" />
+      <img class="logo-img" :src="siteLogo" alt="" />
       <div :class="{ name: true, 'text-hidden': true, long: logoText.length >= 6 }">
         <span class="bg">{{ logoText }}</span>
       </div>
     </div>
-    <!-- 简介 -->
-    <div class="description cards enter" style="--enter-delay: 0.15s" v-ripple @click="changeBox">
+    <!-- 简介（点击开盒子；内容含 p 元素，button 内非法，故用 role=button 方案） -->
+    <div
+      class="description cards enter"
+      style="--enter-delay: 0.15s"
+      v-ripple
+      role="button"
+      tabindex="0"
+      :aria-expanded="store.boxOpenState"
+      aria-controls="box"
+      @click="changeBox"
+      @keydown.enter.prevent="changeBox"
+      @keydown.space.prevent="changeBox"
+    >
       <div class="content">
         <Icon size="16">
           <QuoteLeft />
@@ -131,6 +142,7 @@ watch(
     margin-top: 3.5rem;
     max-width: 460px;
     animation: fade 0.5s;
+    cursor: pointer;
 
     .content {
       display: flex;

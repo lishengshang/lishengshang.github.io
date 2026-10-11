@@ -1,24 +1,33 @@
 <template>
-  <div class="box cards" @mouseenter="closeShow = true" @mouseleave="closeShow = false">
+  <div
+    id="box"
+    class="box cards"
+    @mouseenter="closeShow = true"
+    @mouseleave="closeShow = false"
+    @focusin="closeShow = true"
+    @focusout="closeShow = false"
+  >
     <transition name="el-fade-in-linear">
-      <close-one
+      <button
+        type="button"
         class="close"
-        theme="filled"
-        size="28"
-        fill="#ffffff60"
+        aria-label="关闭盒子"
         v-show="closeShow"
         @click="store.boxOpenState = false"
-      />
+      >
+        <close-one theme="filled" size="28" fill="#ffffff60" />
+      </button>
     </transition>
     <transition name="el-fade-in-linear">
-      <setting-two
+      <button
+        type="button"
         class="setting"
-        theme="filled"
-        size="28"
-        fill="#ffffff60"
+        aria-label="打开设置"
         v-show="closeShow"
         @click="store.setOpenState = true"
-      />
+      >
+        <setting-two theme="filled" size="28" fill="#ffffff60" />
+      </button>
     </transition>
     <div class="content">
       <!-- 可在此处自定义任意内容 -->
@@ -58,6 +67,13 @@ const closeShow = ref(false);
     right: 14px;
     width: 28px;
     height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     transition:
       transform 0.3s,
       opacity 0.3s;

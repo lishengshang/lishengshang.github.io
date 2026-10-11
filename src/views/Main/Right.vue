@@ -1,9 +1,15 @@
 <template>
   <div :class="store.mobileOpenState ? 'right' : 'right hidden'">
-    <!-- 移动端 Logo -->
-    <div class="logo text-hidden" @click="store.mobileFuncState = !store.mobileFuncState">
+    <!-- 移动端 Logo（点击切换功能区显隐） -->
+    <button
+      type="button"
+      class="logo text-hidden"
+      :aria-expanded="store.mobileFuncState"
+      aria-controls="mobile-func"
+      @click="store.mobileFuncState = !store.mobileFuncState"
+    >
       <span class="bg">{{ logoText }}</span>
-    </div>
+    </button>
     <!-- 功能区 -->
     <Func />
     <!-- 网站链接 -->
@@ -37,6 +43,11 @@ const { logoText } = useSiteUrl();
     text-align: center;
     transition: transform 0.3s;
     animation: fade 0.5s;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
     &:active {
       transform: scale(0.95);
     }
