@@ -1,11 +1,6 @@
 <template>
-  <!-- 音乐控制面板 -->
-  <div
-    class="music"
-    @mouseenter="volumeShow = true"
-    @mouseleave="volumeShow = false"
-    v-show="store.musicOpenState"
-  >
+<!-- 音乐控制面板 -->
+<div class="music" v-show="store.musicOpenState">
     <div class="btns">
       <button type="button" @click="openMusicList()">音乐列表</button>
       <button type="button" @click="store.musicOpenState = false">回到一言</button>
@@ -31,14 +26,15 @@
       </button>
     </div>
     <div class="menu">
-      <div class="name" v-show="!volumeShow">
+      <!-- 歌曲名与音量条互斥显隐：hover 或焦点进入面板时切换到音量（CSS 方案，音量条保持可聚焦） -->
+      <div class="name">
         <span>{{
           store.playerTitle
             ? store.playerTitle + " - " + store.playerArtist
             : "未播放音乐"
         }}</span>
       </div>
-      <div class="volume" v-show="volumeShow">
+      <div class="volume">
         <div class="icon">
           <volume-mute theme="filled" size="24" fill="#efefef" v-if="volumeNum == 0" />
           <volume-small
@@ -101,7 +97,6 @@ const store = mainStore();
 type PlayerInstance = InstanceType<typeof Player>;
 
 // 音量条数据（?? 保留 0 静音值，未持久化过才回退默认）
-const volumeShow = ref(false);
 const volumeNum = ref(store.musicVolume ?? 0.7);
 
 // 播放列表数据
@@ -269,7 +264,19 @@ watch(
       }
     }
   }
+  // hover 或焦点进入面板时：隐藏歌名、显形音量条（opacity 方案保留音量条可聚焦性）
+  &:hover .menu .name,
+  &:focus-within .menu .name {
+    opacity: 0;
+    pointer-events: none;
+  }
+  &:hover .menu .volume,
+  &:focus-within .menu .volume {
+    opacity: 1;
+    pointer-events: auto;
+  }
   .menu {
+    position: relative;
     height: 26px;
     width: 100%;
     line-height: 26px;
@@ -277,21 +284,32 @@ watch(
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    // 歌曲名与音量条绝对定位重叠、互斥显隐
     .name {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       text-align: center;
       text-overflow: ellipsis;
       overflow-x: hidden;
       white-space: nowrap;
       animation: fade 0.3s;
+      transition: opacity 0.3s;
     }
     .volume {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       padding: 0 12px;
       display: flex;
       align-items: center;
       flex-direction: row;
       animation: fade 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
       .icon {
         margin-right: 12px;
         span {

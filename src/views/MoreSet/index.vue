@@ -1,27 +1,9 @@
 <template>
-  <div
-    ref="panelRef"
-    class="set"
-    role="dialog"
-    aria-modal="true"
-    aria-label="全局设置"
-    @mouseenter="closeShow = true"
-    @mouseleave="closeShow = false"
-    @focusin="closeShow = true"
-    @focusout="closeShow = false"
-    @click.stop
-  >
-    <transition name="el-fade-in-linear">
-      <button
-        type="button"
-        class="close"
-        aria-label="关闭设置"
-        v-show="closeShow"
-        @click="store.setOpenState = false"
-      >
-        <close-one theme="filled" size="28" fill="#ffffff60" />
-      </button>
-    </transition>
+  <div ref="panelRef" class="set" role="dialog" aria-modal="true" aria-label="全局设置" @click.stop>
+    <!-- 关闭按钮常驻可聚焦（opacity 显隐，hover 或焦点进入面板即显形） -->
+    <button type="button" class="close" aria-label="关闭设置" @click="store.setOpenState = false">
+      <close-one theme="filled" size="28" fill="#ffffff60" />
+    </button>
     <el-row :gutter="40">
       <el-col :span="12" :xs="24" class="left">
         <div class="logo text-hidden">
@@ -87,7 +69,6 @@ import { useModalA11y } from "@/composables/useModalA11y";
 import Set from "@/components/Set.vue";
 
 const store = mainStore();
-const closeShow = ref(false);
 
 // 弹层可访问性：焦点圈禁 + Esc 关闭 + 焦点还原
 const panelRef = ref<HTMLElement | null>(null);
@@ -114,6 +95,13 @@ const { siteUrl } = useSiteUrl();
   border-radius: 6px;
   padding: 40px;
 
+  // hover 或焦点进入面板时显形关闭按钮（opacity 方案保留可聚焦性）
+  &:hover .close,
+  &:focus-within .close {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .close {
     position: absolute;
     top: 14px;
@@ -127,6 +115,10 @@ const { siteUrl } = useSiteUrl();
     border: none;
     padding: 0;
     cursor: pointer;
+    // 默认隐形但保留可聚焦性（opacity 方案）
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
 
     &:hover {
       transform: scale(1.2);

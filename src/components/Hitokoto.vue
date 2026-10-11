@@ -1,25 +1,15 @@
 <template>
-  <div
-    class="hitokoto cards"
-    v-show="!store.musicOpenState"
-    @mouseenter="openMusicShow = true"
-    @mouseleave="openMusicShow = false"
-    @focusin="openMusicShow = true"
-    @focusout="openMusicShow = false"
-    @click.stop
-  >
-    <!-- 打开音乐面板（hover 或面板内获得焦点时显形） -->
-    <Transition name="el-fade-in-linear">
-      <button
-        type="button"
-        class="open-music"
-        v-show="openMusicShow && playerHasId"
-        @click="store.musicOpenState = true"
-      >
-        <music-menu theme="filled" size="18" fill="#efefef" />
-        <span>打开音乐播放器</span>
-      </button>
-    </Transition>
+  <div class="hitokoto cards" v-show="!store.musicOpenState" @click.stop>
+    <!-- 打开音乐面板（hover 或焦点进入卡片即显形；opacity 方案保留可聚焦性） -->
+    <button
+      type="button"
+      class="open-music"
+      v-if="playerHasId"
+      @click="store.musicOpenState = true"
+    >
+      <music-menu theme="filled" size="18" fill="#efefef" />
+      <span>打开音乐播放器</span>
+    </button>
     <!-- 一言内容（点击换一句） -->
     <Transition name="el-fade-in-linear" mode="out-in">
       <button
@@ -46,9 +36,6 @@ const store = mainStore();
 
 // 是否配置了音乐（Player 懒加载后不再依赖 musicIsOk 判断入口显隐）
 const playerHasId = !!import.meta.env.VITE_SONG_ID;
-
-// 开启音乐面板按钮显隐
-const openMusicShow = ref(false);
 
 // 一言数据
 const hitokotoData = reactive({
@@ -112,6 +99,10 @@ onMounted(() => {
     font: inherit;
     color: inherit;
     cursor: pointer;
+    // 默认隐形但保留可聚焦性（opacity 方案），hover 或焦点进入卡片即显形
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
     .i-icon {
       width: 18px;
       height: 18px;
@@ -121,6 +112,11 @@ onMounted(() => {
     span {
       font-size: 0.95rem;
     }
+  }
+  &:hover .open-music,
+  &:focus-within .open-music {
+    opacity: 1;
+    pointer-events: auto;
   }
   .content {
     height: 100%;

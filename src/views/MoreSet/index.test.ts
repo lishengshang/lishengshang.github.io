@@ -32,14 +32,14 @@ describe("MoreSet 设置面板", () => {
     expect(wrapper.findAll(".uptext").length).toBeGreaterThan(0);
   });
 
-  it("面板 hover 显示关闭按钮，点击向 store 关闭设置页", async () => {
+  it("关闭按钮常驻可聚焦（opacity 显隐），点击向 store 关闭设置页", async () => {
     const wrapper = mountPanel();
     const store = mainStore();
     store.setOpenState = true;
+    // opacity 显隐方案：按钮始终挂载且可聚焦，焦点进入面板即通过 :focus-within 显形
     const closeBtn = wrapper.find(".close");
-    expect(closeBtn.isVisible()).toBe(false);
-    await wrapper.trigger("mouseenter");
-    expect(closeBtn.isVisible()).toBe(true);
+    expect(closeBtn.exists()).toBe(true);
+    expect(closeBtn.attributes("aria-label")).toBe("关闭设置");
     await closeBtn.trigger("click");
     expect(store.setOpenState).toBe(false);
   });

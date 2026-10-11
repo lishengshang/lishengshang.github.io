@@ -1,34 +1,12 @@
 <template>
-  <div
-    id="box"
-    class="box cards"
-    @mouseenter="closeShow = true"
-    @mouseleave="closeShow = false"
-    @focusin="closeShow = true"
-    @focusout="closeShow = false"
-  >
-    <transition name="el-fade-in-linear">
-      <button
-        type="button"
-        class="close"
-        aria-label="关闭盒子"
-        v-show="closeShow"
-        @click="store.boxOpenState = false"
-      >
-        <close-one theme="filled" size="28" fill="#ffffff60" />
-      </button>
-    </transition>
-    <transition name="el-fade-in-linear">
-      <button
-        type="button"
-        class="setting"
-        aria-label="打开设置"
-        v-show="closeShow"
-        @click="store.setOpenState = true"
-      >
-        <setting-two theme="filled" size="28" fill="#ffffff60" />
-      </button>
-    </transition>
+  <div id="box" class="box cards">
+    <!-- 关闭/设置按钮常驻可聚焦（opacity 显隐，键盘 Tab 进入盒子即显形） -->
+    <button type="button" class="close" aria-label="关闭盒子" @click="store.boxOpenState = false">
+      <close-one theme="filled" size="28" fill="#ffffff60" />
+    </button>
+    <button type="button" class="setting" aria-label="打开设置" @click="store.setOpenState = true">
+      <setting-two theme="filled" size="28" fill="#ffffff60" />
+    </button>
     <div class="content">
       <!-- 可在此处自定义任意内容 -->
       <TimeCapsule />
@@ -44,7 +22,6 @@ import TimeCapsule from "@/components/TimeCapsule.vue";
 import MoreContent from "@/components/MoreContent.vue";
 
 const store = mainStore();
-const closeShow = ref(false);
 </script>
 
 <style lang="scss" scoped>
@@ -74,16 +51,28 @@ const closeShow = ref(false);
     border: none;
     padding: 0;
     cursor: pointer;
+    // 默认隐形但保留可聚焦性（opacity 方案），hover 或焦点进入盒子即显形
+    opacity: 0;
+    pointer-events: none;
     transition:
-      transform 0.3s,
-      opacity 0.3s;
+      opacity 0.3s,
+      transform 0.3s;
+  }
 
-    &:hover {
-      transform: scale(1.2);
-    }
+  &:hover,
+  &:focus-within {
+    .close,
+    .setting {
+      opacity: 1;
+      pointer-events: auto;
 
-    &:active {
-      transform: scale(1);
+      &:hover {
+        transform: scale(1.2);
+      }
+
+      &:active {
+        transform: scale(1);
+      }
     }
   }
 
