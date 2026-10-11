@@ -195,6 +195,12 @@ const openActive = (): void => {
       border-radius: 8px;
       background-color: #ffffff18;
       border-bottom: 1px solid #ffffff30;
+      transition: background-color 0.3s;
+
+      // 输入框 outline: none，键盘焦点反馈落在容器上
+      &:focus-within {
+        background-color: #ffffff28;
+      }
 
       .i-icon {
         display: flex;

@@ -124,7 +124,7 @@
             :inactive-icon="CloseSmall"
           />
         </div>
-        <div class="tip">开启后将同时关闭樱花飘落、点击波纹、自定义光标与页面动画</div>
+        <div class="tip">开启后将同时关闭樱花飘落、点击波纹、自定义光标与页面动画；系统开启「减弱动态效果」时自动生效</div>
       </el-collapse-item>
     </el-collapse>
   </div>

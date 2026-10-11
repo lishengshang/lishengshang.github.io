@@ -41,6 +41,13 @@ a:hover {
   text-decoration: underline;
 }
 
+// 键盘焦点可见性：仅在键盘操作（focus-visible）时显示焦点圈，鼠标点击不出现；
+// 白圈与站点图标填充色一致，浅色/暗色背景均可辨认；outline 自动跟随元素圆角
+:focus-visible {
+  outline: 2px solid #efefef;
+  outline-offset: 2px;
+}
+
 // 字体文件（woff2：体积较 ttf 约省 64%，现代浏览器全支持）
 @font-face {
   font-family: "Pacifico-Regular";

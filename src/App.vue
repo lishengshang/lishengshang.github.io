@@ -52,6 +52,7 @@ import { helloInit, checkDays } from "@/utils/getTime";
 import { HamburgerButton, CloseSmall } from "@icon-park/vue-next";
 import { mainStore } from "@/store";
 import { useDarkMode } from "@/composables/useDarkMode";
+import { useReducedMotion } from "@/composables/useReducedMotion";
 import { Icon } from "@vicons/utils";
 import Loading from "@/components/Loading.vue";
 import MainLeft from "@/views/Main/Left.vue";
@@ -70,11 +71,14 @@ const SearchOverlay = defineAsyncComponent(() => import("@/components/SearchOver
 
 const store = mainStore();
 
-// 樱花显示：单独开关 + 降低动态效果主开关
-const showSakura = computed(() => store.sakuraShow && !store.reduceMotion);
+// 降低动态效果生效值：手动开关 OR 系统 prefers-reduced-motion（系统偏好为强信号）
+const { isReduceMotion } = useReducedMotion();
+
+// 樱花显示：单独开关 + 降低动态效果生效值
+const showSakura = computed(() => store.sakuraShow && !isReduceMotion.value);
 
 // 页面动画开关：关闭时在根元素挂 no-motion 全局禁用动画与过渡
-const animationEnabled = computed(() => store.animationShow && !store.reduceMotion);
+const animationEnabled = computed(() => store.animationShow && !isReduceMotion.value);
 watchEffect(() => {
   document.documentElement.classList.toggle("no-motion", !animationEnabled.value);
 });
@@ -126,10 +130,10 @@ const onContextMenu = (event: MouseEvent) => {
   });
 };
 
-// 自定义光标：随"降低动态效果"开关即时创建/销毁
+// 自定义光标：随"降低动态效果"生效值即时创建/销毁（手动开关或系统偏好）
 let cursorInstance: ReturnType<typeof cursorInit> | null = null;
 watch(
-  () => store.reduceMotion,
+  isReduceMotion,
   (value) => {
     if (value && cursorInstance) {
       cursorInstance.destroy();
